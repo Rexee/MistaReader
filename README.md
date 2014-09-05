@@ -1,3 +1,3 @@
-MistaReader
+Mista Reader
 ===========
 Мобильный клиент для форума сайта Mista.ru
