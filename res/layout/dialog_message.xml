@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <Spinner
+        android:id="@+id/spinVote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <EditText
+        android:id="@+id/editNewMessage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top|left"
+        android:hint="@string/sMessage"
+        android:inputType="textCapSentences|textMultiLine"
+        android:minLines="7"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbars="vertical" >
+
+        <requestFocus />
+    </EditText>
+
+</LinearLayout>

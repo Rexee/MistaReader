@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+     
+     <TextView
+         android:id="@+id/navmenusection_label"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:layout_marginBottom="1dp"
+         android:gravity="bottom"
+         android:height="40dp"
+         android:paddingLeft="7dp"
+         android:paddingTop="7dp"
+         android:text="Section"
+         android:textAllCaps="true"
+         android:textColor="?text_inactive"
+         android:textSize="12sp" />
+
+</RelativeLayout>

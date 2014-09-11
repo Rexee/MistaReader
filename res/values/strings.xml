@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources
+  xmlns:tools="http://schemas.android.com/tools"
+  tools:ignore="MissingTranslation" >
+
+    <string name="app_name">Mista Reader</string>
+    <string name="action_settings">Настройки</string>
+    <string name="sTheme">Темы оформления</string>
+    
+    <string name="sThemeGray">Gray</string>
+    <string name="sThemeLight">Light</string>
+    <string name="sThemePureBlack">Pure Black</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="sample_text">Sample text</string>
+    
+    <string name="sAllSections">Mista.ru</string>
+    <string name="sNavDrawerMore">Больше...</string>
+    <string name="sNavDrawerLess">Меньше...</string>
+    <string name="sNavDrawerAll">Все</string>
+    <string name="sNavDrawerSect1">ФОРУМЫ</string>
+    <string name="sNavDrawerSect2">НАСТРОЙКИ</string>
+    <string name="sLoading">Загрузка...</string>
+    
+    <string name="sAccount">Аккаунт</string>
+    <string name="sLogin">Логин</string>
+    <string name="sPassword">Пароль</string>
+    <string name="sAuthorizationError">Ошибка авторизации</string>
+    
+    <string name="sExitTitle">Программа будет закрыта</string>
+    <string name="sExitConfirmation">Вы уверены?</string>
+    <string name="sYes">Да</string>
+    <string name="sNo">Нет</string>
+ 
+    <string name="sDoLogin">Войти</string>
+    <string name="sCancel">Отмена</string>
+    
+    <string name="sMyTopics">Мои темы</string>
+    <string name="sMyTopics2">Темы с моим участием</string>
+    
+    <string name="sNewTopic">Новая тема</string>
+    <string name="sSubject">Тема</string>
+    <string name="sMessage">Сообщение</string>
+    <string name="sCreate">Создать</string>
+    <string name="sSection">Секция</string>
+  
+	<string name="sNewMessage">Новое сообщение</string>
+	
+	<string name="sPopupMenyHeader">Действия с темой</string>
+	<string name="sMenuGoToLastMessage">К последнему сообщению</string>
+	
+	<string name="sPopupMenyHeaderMessage">Действия с сообщением</string>
+	<string name="sMenuRelyToThis">Ответить</string>
+	
+	<string name="sNoConnections">Нет связи с интернет!</string>
+	<string name="sIsVote">Голосование</string>
+	<string name="sVote1">Вариант 1</string>
+	<string name="sVote2">Вариант 2</string>
+	<string name="sVote3">Вариант 3</string>
+	<string name="sVote4">Вариант 4</string>
+	<string name="sVote5">Вариант 5</string>
+	<string name="sVoteResults">Результаты голосования:</string>
+	<string name="sVoteHint">Пункт голосования</string>
+	<string name="sVoteError">Укажите как минимум 2 варианта голосования!</string>
+	<string name="sTopicError">Введите тему</string>
+	<string name="sMessageError">Введите текст сообщения</string>	
+	<string name="sError">Ошибка!</string>
+	
+	
+	<string name="sLogoff">Выйти из аккаунта</string>
+	<string name="sAbout">О программе</string>
+	
+	<string name="sAboutDetailsVersion">Версия: 1.2.2</string>
+	<string name="sAboutDetails">Разработка: vhl</string>
+	<string name="sAboutDetails2">При поддержке: Asmody</string>
+	<string name="sAboutDetails3">Open source licenses:</string>
+	<string name="sAboutLicenseItem1">Simple JSON v. 1.1.1</string>
+	
+	<string name="sWHatsNew">Что нового</string>
+	<string name="sWHatsNewDetal1">Список изменений:</string>
+	<string name="sWHatsNewDetal2"><Data><![CDATA[
+	    <b>Версия: 1.2.2:<br><br></b>
+	    + Добавлена полноценная поддержка голосований: отображение результатов/добавление ответов/добавление темы.<br>
+	    * Багфиксы.<br><br>
+	     <b>Версия: 1.1.1:<br><br></b>
+	    * Исправлена проблема с отсутствием отображения только что добавленного сообщения.<br>
+	    * Добавлено автоматическое обновление сессии при запуске программы.<br>
+	    * Добавлена дополнительная проверка наличия связи с интернетом.<br>
+	    * Исправлены ошибки, возникающие при смене тем, а так же задваивание номеров ответов.<br><br>
+	     <b>Версия: 1.1:<br><br></b>
+	    + Добавлена возможность перехода к последнему сообщению в теме: по лонг-тапу в списке тем.<br>
+		+ Добавлено автовставка номера сообщения при ответе: по лонг тапу на сообщении.<br>
+		* При переходе к последнему сообщению \"по стрелочке\" теперь загружаются не вся тема, а только 20 последних сообщений.<br> 	     
+	    * Теперь при добавлении тем и сообщений первое слово будет автоматически начинаться с большой буквы.<br>
+	    * Перенес список ответов на сообщение вправо. Посмотрим что получится.<br><br>
+	    <b>Версия: 1.0.3:<br><br></b>
+	    * Кнопка \"Обновить\" при нахождении в конце темы догружает 20 новых сообщений, а не перечитывает тему заново<br>  
+	    * Вернул картинку боковой стрелки в светлую тему<br>
+	    * Добавлено еще немного стабильности при обновлении списков :)<br><br> 
+	    <b>Версия: 1.0.2:<br><br></b>
+	    * Исправлены крэши при обновлении списков при низкой скорости соединения<br>
+	    * Теперь скроллинг сообщений в теме происходит плавнее]]></Data></string>
+	
+	
+<!-- Диалоговые сообщения-->
+ 
+	<string name="sAuthorizationInProgress">Авторизация...</string>
+	<string name="sAddingInProgress">Добавление...</string>
+    
+        
+</resources>

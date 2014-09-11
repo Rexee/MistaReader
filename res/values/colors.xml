@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="Red">#FF0000</color>
+    <color name="Green">#00FF00</color>
+    <color name="lightCyan">#28BEFF</color>
+    <color name="lvLightGreenCol">#0FFF80</color>
+    <color name="lvTextCol">#F7F7F7</color>
+         
+                  
+    <color name="Gray">#7F7F7F</color>
+    <color name="White">#FFFFFF</color>
+    <color name="Black">#000000</color>
+    <color name="LightGray">#C8C8C8</color>
+    <color name="DarkGray">#2D2D2D</color>
+    
+    <color name="purple_middle">#8658ce</color>
+    <color name="purple_dark">#6a3ab2</color>
+   
+    <color name="lvBackCol">#1D1D1D</color>
+    <color name="lvHeaderCol">#2F2F2F</color>
+    <color name="lvHeaderDivCol">#F7F7F7</color>
+    <color name="lvBodyCol">#333333</color>
+   
+    <color name="lvTextInactiveCol">#A9A9A9</color>
+    
+    
+    <color name="transparent_color">#09000000</color>
+									
+</resources>

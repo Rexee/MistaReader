@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:mistareader="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.httpsampler.MainActivity" >
+
+    <item
+        android:id="@+id/menu_reload"
+        android:icon="?iconRefresh"
+        mistareader:showAsAction="ifRoom">
+    </item>
+    
+ 	     <item
+	        android:id="@+id/menu_add"
+	        android:icon="?iconNewItem"
+	        mistareader:showAsAction="ifRoom" >
+</item>
+</menu>

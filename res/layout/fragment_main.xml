@@ -1,0 +1,43 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="?bg_main"
+    tools:context="com.mistareader.MainActivity$TopicListFragment" >
+
+    <ListView
+        android:id="@+id/lvMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?bg_main"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:listSelector="@android:color/transparent"
+        android:longClickable="true"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollingCache="true"
+        android:smoothScrollbar="true" >
+
+    </ListView>
+
+    <ImageView
+        android:id="@+id/imgFastScrollDown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:src="?iconArrowDown"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/imgFastScrollUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:src="?iconArrowUp"
+        android:visibility="gone" />
+
+</RelativeLayout>

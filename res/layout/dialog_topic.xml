@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <Spinner
+        android:id="@+id/spinForum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Spinner
+        android:id="@+id/spinSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/spinForum" />
+
+    <EditText
+        android:id="@+id/editSubject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/spinSection"
+        android:ems="10"
+        android:hint="@string/sSubject"
+        android:imeOptions="flagNoExtractUi"
+        android:inputType="textCapSentences" >
+
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/editMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editSubject"
+        android:gravity="top|left"
+        android:hint="@string/sMessage"
+        android:imeOptions="actionSend"
+        android:inputType="textCapSentences|textMultiLine"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbars="vertical" />
+
+    <CheckBox
+        android:id="@+id/cb_Vote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/editMessage"
+        android:text="@string/sIsVote" />
+
+    <RelativeLayout
+        android:id="@+id/RL_Votes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/cb_Vote"
+        android:visibility="gone" >
+
+        <EditText
+            android:id="@+id/tvVote1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/sVote1" />
+
+        <EditText
+            android:id="@+id/tvVote2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvVote1"
+            android:hint="@string/sVote2" />
+
+        <EditText
+            android:id="@+id/tvVote3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvVote2"
+            android:hint="@string/sVote3" />
+
+        <EditText
+            android:id="@+id/tvVote4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvVote3"
+            android:hint="@string/sVote4" />
+
+        <EditText
+            android:id="@+id/tvVote5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvVote4"
+            android:hint="@string/sVote5" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/RL_Votes" >
+
+        <Button
+            android:id="@+id/dtb_Cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/sCancel" />
+
+        <Button
+            android:id="@+id/dtb_OK"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/sCreate" />
+
+    </LinearLayout>
+
+</RelativeLayout>

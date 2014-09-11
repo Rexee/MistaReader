@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="bg_main" format="reference|color" />
+    <attr name="bg_drawer" format="reference|color" />
+    <attr name="bg_license" format="reference|color" />
+    
+    
+    <attr name="text_main" format="reference|color" />
+    <attr name="text_hyperlink" format="reference|color" />
+    
+    <attr name="text_user" format="reference|color" />
+    <attr name="text_author" format="reference|color" />
+    <attr name="text_account" format="reference|color" />
+    <attr name="text_inactive" format="reference|color" />
+    <attr name="text_drawer" format="reference|color" />
+    <attr name="text_vote" format="reference|color" />
+    
+    <attr name="bg_topic_header" format="reference|color" />
+    <attr name="bg_topic_footer" format="reference|color" />
+    <attr name="bg_topic_body" format="reference|color" />
+    
+    <attr name="bg_message_header" format="reference|color" />
+    <attr name="bg_message_footer" format="reference|color" />
+    <attr name="bg_message_body" format="reference|color" />
+    
+    <attr name="divider_drawer" format="reference|color" />
+    
+    <attr name="iconAbout" format="reference" />
+    <attr name="iconRefresh" format="reference" />
+    <attr name="iconNewItem" format="reference" />
+    <attr name="iconForum" format="reference" />
+    <attr name="iconAccount" format="reference" />
+    <attr name="iconThemes" format="reference" />
+    <attr name="iconArrowDown" format="reference" />
+    <attr name="iconArrowUp" format="reference" />
+    <attr name="iconReplies" format="reference" />
+    <attr name="iconSend" format="reference" /> 
+</resources>
