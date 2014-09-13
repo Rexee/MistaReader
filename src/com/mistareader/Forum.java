@@ -1,6 +1,5 @@
 package com.mistareader;
 
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Random;
@@ -152,7 +151,7 @@ public class Forum {
         reachedMaxTopics = false;
     }
 
-    public void addNewTopics(String JSONresult) throws UnsupportedEncodingException {
+    public void addNewTopics(String JSONresult) {
 
         ArrayList<Topic> newTopics = JSONProcessor.ParseTopics(JSONresult);
  

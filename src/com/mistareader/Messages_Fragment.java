@@ -1,6 +1,5 @@
 package com.mistareader;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import android.animation.Animator;
@@ -474,14 +473,8 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
         }
 
         protected void onPostExecute(String result) {
-            try {
-                currentTopic.addNewMessages(result, mMessages_from, mMessages_to);
-            }
-            catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
             
+            currentTopic.addNewMessages(result, mMessages_from, mMessages_to);
             drawMessages();
             messages_isLoading = false;
         }

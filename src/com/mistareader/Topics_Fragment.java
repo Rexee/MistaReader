@@ -1,7 +1,5 @@
 package com.mistareader;
 
-import java.io.UnsupportedEncodingException;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.AsyncTask;
@@ -158,13 +156,7 @@ public class Topics_Fragment extends Fragment {
 
         protected void onPostExecute(String result) {
 
-            try {
-                forum.addNewTopics(result);
-            }
-            catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
+            forum.addNewTopics(result);
             drawTopicsList();
 
             topics_isLoading = false;

@@ -1,6 +1,5 @@
 package com.mistareader.TextProcessors;
 
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,7 +20,7 @@ import com.mistareader.TextProcessors.S.ResultContainer;
 @SuppressLint("SimpleDateFormat")
 public class JSONProcessor {
 
-    public static ArrayList<Topic> ParseTopics(String inputString) throws UnsupportedEncodingException {
+    public static ArrayList<Topic> ParseTopics(String inputString) {
 
         ArrayList<Topic> locTopics = new ArrayList<Topic>();
 
@@ -56,7 +55,7 @@ public class JSONProcessor {
                 newTopic.time_text = sdf.format(date).toString();
 
                 newTopic.answ = mainObj.getInt("answ");
-                newTopic.is_voting = mainObj.getInt("is_voting");
+                newTopic.is_voting = mainObj.optInt("is_voting");
 
                 locTopics.add(newTopic);
 
@@ -71,8 +70,7 @@ public class JSONProcessor {
         return locTopics;
     }
 
-    public static void ParseMessages(String inputString, ArrayList<Message> messages, int answ, int messages_from, int messages_to)
-            throws UnsupportedEncodingException {
+    public static void ParseMessages(String inputString, ArrayList<Message> messages, int answ, int messages_from, int messages_to) {
 
         try {
 
