@@ -269,17 +269,35 @@ Full-Width Styles
   margin: 0 auto;
 }
 
+#googleplay_banner {
+  display: block;
+  padding: 10px 50px 10px 70px;
+  color: #fff;
+  background: url('../images/Google_Play_Store_48.png') #0090ff no-repeat 10px 50%;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(200,200,200,.5);
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+}
+
 #forkme_banner {
   display: block;
-  position: absolute;
-  top:0;
-  right: 10px;
-  z-index: 10;
-  padding: 10px 50px 10px 10px;
+  padding: 10px 50px 10px 70px;
   color: #fff;
-  background: url('../images/blacktocat.png') #0090ff no-repeat 95% 50%;
+  background: url('../images/blacktocat.png') #0090ff no-repeat 20px 50%;
   font-weight: 700;
-  box-shadow: 0 0 10px rgba(0,0,0,.5);
+  box-shadow: 0 0 10px rgba(200,200,200,.5);
+  border-bottom-left-radius: 2px;
+  border-bottom-right-radius: 2px;
+}
+
+#title_banner {
+  display: block;
+  padding: 10px 50px 10px 70px;
+  color: #fff;
+  background: url('../images/blacktocat.png') #0090ff no-repeat 20px 50%;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(200,200,200,.5);
   border-bottom-left-radius: 2px;
   border-bottom-right-radius: 2px;
 }
@@ -294,10 +312,11 @@ Full-Width Styles
 }
 
 #header_wrap .inner {
-  padding: 50px 10px 30px 10px;
+  padding: 20px 10px 10px 10px;
 }
 
 #project_title {
+
   margin: 0;
   color: #fff;
   font-size: 42px;
@@ -359,7 +378,7 @@ Full-Width Styles
 }
 
 #main_content {
-  padding-top: 40px;
+  padding-top: 5px;
 }
 
 #footer_wrap {
