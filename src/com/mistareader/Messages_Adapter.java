@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class Messages_Adapter extends BaseAdapter {
@@ -29,6 +30,7 @@ public class Messages_Adapter extends BaseAdapter {
     private String[]    mVotes;
 
     public Messages_Adapter(Context context, Topic currentTopic, String account, int resource) {
+        
         mMessages = currentTopic.messages;
         mAuthor = currentTopic.user0;
         
@@ -69,11 +71,12 @@ public class Messages_Adapter extends BaseAdapter {
         public TextView mess_Text;
         public TextView mess_Replies;
         public TextView mess_Vote;
+        public RelativeLayout mess_filled;
     }
 
     @Override
     public int getCount() {
-        return mMessages.size();
+        return mMessages.size(); 
     }
 
     @Override
@@ -85,7 +88,7 @@ public class Messages_Adapter extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
-
+    
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -93,15 +96,12 @@ public class Messages_Adapter extends BaseAdapter {
         View v = convertView;
 
         Message currentMessage = mMessages.get(position);
-        if (currentMessage.isDeleted == true || !currentMessage.isLoaded) {
-
-            return mInflater.inflate(R.layout.message_row_null, null);
-
-        }
+        
         if (v == null) {
             v = mInflater.inflate(mResource, parent, false);
 
             holder = new ViewHolder();
+            holder.mess_filled = (RelativeLayout) v.findViewById(R.id.messageMainFrame);
             holder.mess_N = (TextView) v.findViewById(R.id.mess_n);
             holder.mess_Time = (TextView) v.findViewById(R.id.mess_time);
             holder.mess_User = (TextView) v.findViewById(R.id.mess_user);
@@ -110,25 +110,17 @@ public class Messages_Adapter extends BaseAdapter {
             holder.mess_Vote = (TextView) v.findViewById(R.id.mess_vote);
 
             v.setTag(holder);
-
         }
         else {
-            holder = (ViewHolder) v.getTag();
-            if (holder == null) {
-
-                v = mInflater.inflate(mResource, parent, false);
-
-                holder = new ViewHolder();
-                holder.mess_N = (TextView) v.findViewById(R.id.mess_n);
-                holder.mess_Time = (TextView) v.findViewById(R.id.mess_time);
-                holder.mess_User = (TextView) v.findViewById(R.id.mess_user);
-                holder.mess_Text = (TextView) v.findViewById(R.id.mess_text);
-                holder.mess_Replies = (TextView) v.findViewById(R.id.mess_replies);
-                holder.mess_Vote = (TextView) v.findViewById(R.id.mess_vote);
-
-                v.setTag(holder);
-            }
+            holder = (ViewHolder) v.getTag();}
+        
+        if (currentMessage.isDeleted == true || !currentMessage.isLoaded)
+        {
+            holder.mess_filled.setVisibility(View.GONE);
+            return v;
         }
+            else
+                holder.mess_filled.setVisibility(View.VISIBLE);
 
         if (currentMessage.vote > 0) {
             holder.mess_Vote.setText(currentMessage.vote+". "+mVotes[currentMessage.vote-1]);

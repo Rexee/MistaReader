@@ -15,7 +15,12 @@ public class S {
 
 	public static void L(Object object) {
 		
-		Log.d("mylog", "Value String: " + object);
+		Log.d("mylog", "" + object);
 	}
+	
+
+    public static void L(String string, Exception e) {
+        Log.d("mylog", "" + string + " " + Log.getStackTraceString(e));
+    }
 	
 }

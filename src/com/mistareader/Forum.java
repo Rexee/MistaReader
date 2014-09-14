@@ -54,8 +54,21 @@ public class Forum {
 
     public ArrayList<Section> sections;
     public ArrayList<String>  forums;
+    
+    static long mm;
+    static long mm1;
+    
+    public static void Trace(String inStr) {
 
-    public Forum() {
+        mm1 = System.currentTimeMillis();
+//        S.L(inStr + " - " + (mm1 - mm));
+        mm = mm1;
+
+    }
+    
+    public DB mainDB; 
+
+    private Forum() {
 
         topics = new ArrayList<Topic>(20);
         reachedMaxTopics = false;
@@ -64,7 +77,7 @@ public class Forum {
 
     }
 
-    void initialize(boolean inIsInternetConnection) {
+    void initialize(boolean inIsInternetConnection, Activity activity) {
 
         isInternetConnection = inIsInternetConnection;
 
@@ -72,6 +85,9 @@ public class Forum {
 
             new asyncGetSectionsList().execute(API.getSectionsList());
         }
+        
+        mainDB = new DB(activity);
+        
     }
 
     public String                   accountName, accountPass;

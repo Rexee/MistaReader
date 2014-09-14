@@ -27,7 +27,7 @@ public class Topics_Fragment extends Fragment {
 
     public interface OnTopicSelectedListener {
 
-        public void onTopicSelected(Topic selectedTopic, boolean focusLast);
+        public void onTopicSelected(Topic selectedTopic, boolean focusLast, boolean forceFirst);
 
     }
 
@@ -55,7 +55,7 @@ public class Topics_Fragment extends Fragment {
         public void onItemClick(AdapterView<?> adapter, View view, int position, final long id) {
 
             try {
-                mOntopicSelectedCallback.onTopicSelected((Topic) adapter.getItemAtPosition(position), false);
+                mOntopicSelectedCallback.onTopicSelected((Topic) adapter.getItemAtPosition(position), false, false);
 
             }
             catch (Exception e) {
@@ -99,9 +99,14 @@ public class Topics_Fragment extends Fragment {
 
         int itemId = item.getItemId();
         if (itemId == R.id.menu_GoToLastMessage) {
-            mOntopicSelectedCallback.onTopicSelected(topics_sAdapter.getItem(info.position), true);
+            mOntopicSelectedCallback.onTopicSelected(topics_sAdapter.getItem(info.position), true, false);
             return true;
         }
+        else if (itemId == R.id.menu_GoToFirstMessage)
+        {
+            mOntopicSelectedCallback.onTopicSelected(topics_sAdapter.getItem(info.position), false, true);
+            return true;
+       }
         else {
             return super.onContextItemSelected(item);
         }

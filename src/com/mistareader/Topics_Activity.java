@@ -49,7 +49,7 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         if (forum == null) {
             forum = Forum.getInstance();
             forum.loadSettings(sPref);
-            forum.initialize(isInternetConnection);
+            forum.initialize(isInternetConnection,this);
             forum.showWhatsNew(sPref, this);
             forum.delayedLogin(this);
         }
@@ -195,17 +195,20 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        
         forum = Forum.getInstance();
         if (forum != null) {
             SharedPreferences sPref = getPreferences(MODE_PRIVATE);
             forum.saveSettings(sPref);
+            forum.mainDB.close();
         }
+        
+        super.onDestroy();
 
     }
 
     @Override
-    public void onTopicSelected(Topic selectedTopic, boolean focusLast) {
+    public void onTopicSelected(Topic selectedTopic, boolean focusLast, boolean forceFirst) {
 
         if (!isInternetConnection) {
             return;
@@ -218,6 +221,9 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         intent.putExtra("section", selectedTopic.sect1);
         intent.putExtra("forum", selectedTopic.forum);
         intent.putExtra("focusLast", focusLast);
+        if (!forceFirst) {
+            intent.putExtra("focusOn", forum.mainDB.getBookmarkMessage(selectedTopic.id));            
+        }
 
         startActivity(intent);
 

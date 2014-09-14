@@ -69,9 +69,8 @@ public class Topic {
                 messages.add(newMessage);
             }
         }
-
         JSONProcessor.ParseMessages(JSONresult, messages, answ, messages_from, messages_to);
-
+        
     }
 
 }

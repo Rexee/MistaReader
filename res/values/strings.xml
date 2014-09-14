@@ -47,6 +47,8 @@
 	<string name="sNewMessage">Новое сообщение</string>
 	
 	<string name="sPopupMenyHeader">Действия с темой</string>
+	
+	<string name="sMenuGoToFirstMessage">К первому сообщению</string>
 	<string name="sMenuGoToLastMessage">К последнему сообщению</string>
 	
 	<string name="sPopupMenyHeaderMessage">Действия с сообщением</string>

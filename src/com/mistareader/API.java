@@ -4,11 +4,10 @@ import com.mistareader.TextProcessors.StringProcessor;
 
 public class API {
 
-    //    718342
+    // 718342
     // URL = "http://www.forum.mista.ru/ajax_topic.php?id=710089";
     // URL = "http://www.forum.mista.ru/ajax_topic.php?id=708776"; 0xFFFFFFF
-   // http://www.forum.mista.ru/ajax_topic.php?id=719832 - html в заголовке
-
+    // http://www.forum.mista.ru/ajax_topic.php?id=719832 - html в заголовке
 
     final static int           DEFAULT_TOPICS          = 20;
     final static String        MAIN_URL                = "http://www.forum.mista.ru/";
@@ -169,7 +168,7 @@ public class API {
     public final static String POST_select3           = "select3=";
     public final static String POST_select4           = "select4=";
     public final static String POST_select5           = "select5=";
-    
+
     public final static String POST_private_user_name = "private_user_name=";
 
     public final static String POST_voting_select     = "voting_select=";
