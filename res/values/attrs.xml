@@ -35,5 +35,6 @@
     <attr name="iconArrowDown" format="reference" />
     <attr name="iconArrowUp" format="reference" />
     <attr name="iconReplies" format="reference" />
-    <attr name="iconSend" format="reference" /> 
+    <attr name="iconSend" format="reference" />
+    <attr name="iconSettings" format="reference" /> 
 </resources>

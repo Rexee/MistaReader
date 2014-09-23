@@ -23,6 +23,7 @@ public class ThemesManager {
     public static int          iconReplies;
     public static int          iconNewItem;
     public static int          iconSend;
+    public static int          iconSettings;
 
     public static void changeTheme(Activity activity, int theme) {
 
@@ -30,6 +31,16 @@ public class ThemesManager {
 
         activity.recreate();
 
+    }
+
+    public static String getCurrentThemeName(Activity activity) {
+        switch (CurrentTheme) {
+            case THEME_LIGHT:
+                return activity.getString(R.string.sThemeLight);
+            case THEME_BLACK:
+                return activity.getString(R.string.sThemePureBlack);
+        }
+        return activity.getString(R.string.sThemeGray);
     }
 
     public static void onActivityCreateSetTheme(Activity activity) {
@@ -83,9 +94,12 @@ public class ThemesManager {
 
         theme.resolveAttribute(R.attr.iconNewItem, typedValue, true);
         iconNewItem = typedValue.resourceId;
-        
+
         theme.resolveAttribute(R.attr.iconSend, typedValue, true);
         iconSend = typedValue.resourceId;
+
+        theme.resolveAttribute(R.attr.iconSettings, typedValue, true);
+        iconSettings = typedValue.resourceId;
 
     }
 }

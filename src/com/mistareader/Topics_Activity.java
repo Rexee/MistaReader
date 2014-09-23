@@ -21,19 +21,21 @@ import com.mistareader.NavigationDrawer.NavDrawerMenuItem;
 import com.mistareader.NavigationDrawer.NavDrawer_Main;
 
 public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnTopicSelectedListener, OnNavigationListener, Forum.iOnPOSTRequestExecuted,
-        Forum.iOnLoggedIn, Forum.iOnThemeChanged {
+        Forum.iOnLoggedIn {
 
-    NavDrawer_Main             mND;
-    DropDownNav                ddN;
-    Forum                      forum;
-    Topics_Fragment            topics_Fragment;
-    public final static String COMMAND_CREATE_NEW_TOPIC = "createnewtopic";
+    NavDrawer_Main        mND;
+    DropDownNav           ddN;
+    Forum                 forum;
+    Topics_Fragment       topics_Fragment;
 
-    int                        selectedForumPosition    = 1;
-    int                        selectedSectionPosition  = 0;
-    String                     selectedForumName        = "";
-    String                     selectedSectionName      = "";
-    boolean                    isInternetConnection;
+    public static boolean isLoginChanged          = false;
+    public static boolean isThemeChanged          = false;
+
+    int                   selectedForumPosition   = 1;
+    int                   selectedSectionPosition = 0;
+    String                selectedForumName       = "";
+    String                selectedSectionName     = "";
+    boolean               isInternetConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +51,7 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         if (forum == null) {
             forum = Forum.getInstance();
             forum.loadSettings(sPref);
-            forum.initialize(isInternetConnection,this);
-            forum.showWhatsNew(sPref, this);
-            forum.delayedLogin(this);
+            forum.initialize(isInternetConnection, this);
         }
 
         if (savedInstanceState != null) {
@@ -59,6 +59,11 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
             selectedSectionName = savedInstanceState.getString("section", "");
             selectedForumPosition = savedInstanceState.getInt("selectedForumPos", 1);
             selectedSectionPosition = savedInstanceState.getInt("selectedSectionPos", 0);
+        }
+        else {
+            forum.showWhatsNew(sPref, this);
+            forum.delayedLogin(this);
+            forum.delayedStartNotifications();
         }
 
         topics_Fragment = (Topics_Fragment) getFragmentManager().findFragmentByTag("TOPICS");
@@ -73,6 +78,29 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         else {
             ddN = new DropDownNav();
             ddN.reBuildSubmenu(this, selectedForumName, selectedSectionPosition);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
+        // После recreate() открывает Drawer. Не знаю почему.
+        mND.mDrawerLayout.closeDrawer(mND.mDrawerList);
+        mND.mDrawerToggle.syncState();
+        
+        if (isLoginChanged) {
+            isLoginChanged = false;
+
+            onLoggedIn(!forum.sessionID.isEmpty());
+        }
+
+        if (isThemeChanged) {
+            isThemeChanged = false;
+            
+            recreate();
+
         }
 
     }
@@ -164,6 +192,8 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        super.onActivityResult(requestCode, resultCode, data);
+
         if (data == null || resultCode != RESULT_OK) {
             return;
         }
@@ -171,13 +201,24 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         Bundle args = data.getExtras();
         if (args != null) {
 
-            String commandName = args.getString("commandName", null);
-            if (commandName == null) {
-                return;
-            }
+            switch (requestCode) {
+                case Forum.ACTIVITY_RESULT_NEWTOPIC:
 
-            if (commandName.equals(COMMAND_CREATE_NEW_TOPIC)) {
-                forum.createNewTopic(Topics_Activity.this, args);
+                    String commandName = args.getString("commandName", null);
+                    if (commandName == null) {
+                        return;
+                    }
+
+                    if (commandName.equals(Forum.COMMAND_CREATE_NEW_TOPIC)) {
+                        forum.createNewTopic(Topics_Activity.this, args);
+                    }
+
+                    break;
+
+                case Forum.ACTIVITY_RESULT_SETTINGS:
+                    break;
+                default:
+                    break;
             }
 
         }
@@ -195,14 +236,14 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
     @Override
     protected void onDestroy() {
-        
+
         forum = Forum.getInstance();
         if (forum != null) {
             SharedPreferences sPref = getPreferences(MODE_PRIVATE);
             forum.saveSettings(sPref);
             forum.mainDB.close();
         }
-        
+
         super.onDestroy();
 
     }
@@ -222,7 +263,7 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         intent.putExtra("forum", selectedTopic.forum);
         intent.putExtra("focusLast", focusLast);
         if (!forceFirst) {
-            intent.putExtra("focusOn", forum.mainDB.getBookmarkMessage(selectedTopic.id));            
+            intent.putExtra("focusOn", forum.mainDB.getBookmarkMessage(selectedTopic.id));
         }
 
         startActivity(intent);
@@ -256,6 +297,7 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
                 switch (menuId) {
                     case NavDrawer_Main.MENU_SETTINGS:
+                        startActivity(new Intent(Topics_Activity.this, Settings_Activity.class));
                         break;
 
                     case NavDrawer_Main.MENU_ACCOUNT:
@@ -373,17 +415,6 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         mND.mListAdapter.notifyDataSetInvalidated();
         mND.mListAdapter.notifyDataSetChanged();
 
-    }
-
-    @Override
-    public void onThemeChanged(int newTheme) {
-
-        ThemesManager.CurrentTheme = newTheme;
-
-        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
-        forum.saveSettings(sPref);
-
-        ThemesManager.changeTheme(Topics_Activity.this, newTheme);
     }
 
 }

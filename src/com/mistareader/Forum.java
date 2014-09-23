@@ -54,19 +54,19 @@ public class Forum {
 
     public ArrayList<Section> sections;
     public ArrayList<String>  forums;
-    
-    static long mm;
-    static long mm1;
-    
+
+    static long               mm;
+    static long               mm1;
+
     public static void Trace(String inStr) {
 
         mm1 = System.currentTimeMillis();
-//        S.L(inStr + " - " + (mm1 - mm));
+        // S.L(inStr + " - " + (mm1 - mm));
         mm = mm1;
 
     }
-    
-    public DB mainDB; 
+
+    public DB mainDB;
 
     private Forum() {
 
@@ -85,9 +85,9 @@ public class Forum {
 
             new asyncGetSectionsList().execute(API.getSectionsList());
         }
-        
+
         mainDB = new DB(activity);
-        
+
     }
 
     public String                   accountName, accountPass;
@@ -96,16 +96,21 @@ public class Forum {
     public boolean                  reachedMaxTopics;
     boolean                         isInternetConnection;
 
-    final static String             TOPIC_ATTRIBUTE_id    = "id";
-    final static String             TOPIC_ATTRIBUTE_forum = "forum";
-    final static String             TOPIC_ATTRIBUTE_text  = "text";
-    final static String             TOPIC_ATTRIBUTE_user0 = "user0";
-    final static String             TOPIC_ATTRIBUTE_utime = "utime";
-    final static String             TOPIC_ATTRIBUTE_user  = "user";
-    final static String             TOPIC_ATTRIBUTE_answ  = "answ";
+    final static String             TOPIC_ATTRIBUTE_id       = "id";
+    final static String             TOPIC_ATTRIBUTE_forum    = "forum";
+    final static String             TOPIC_ATTRIBUTE_text     = "text";
+    final static String             TOPIC_ATTRIBUTE_user0    = "user0";
+    final static String             TOPIC_ATTRIBUTE_utime    = "utime";
+    final static String             TOPIC_ATTRIBUTE_user     = "user";
+    final static String             TOPIC_ATTRIBUTE_answ     = "answ";
 
+    public final static int         ACTIVITY_RESULT_NEWTOPIC = 1;
+    public final static int         ACTIVITY_RESULT_SETTINGS = 2;
+    
+    public final static String COMMAND_CREATE_NEW_TOPIC = "createnewtopic";
+    
     @SuppressLint("SimpleDateFormat")
-    private static SimpleDateFormat sdf                   = new SimpleDateFormat("d MMM H:mm");
+    private static SimpleDateFormat sdf                      = new SimpleDateFormat("d MMM H:mm");
 
     private class asyncGetSectionsList extends AsyncTask<String, Integer, String> {
 
@@ -170,7 +175,7 @@ public class Forum {
     public void addNewTopics(String JSONresult) {
 
         ArrayList<Topic> newTopics = JSONProcessor.ParseTopics(JSONresult);
- 
+
         if (newTopics.size() == 0) {
             reachedMaxTopics = true;
             return;
@@ -275,12 +280,12 @@ public class Forum {
     // ************************************SETTINGS*******************************
     public void loadSettings(SharedPreferences sPref) {
 
-        accountName = sPref.getString(Settings.SETTINGS_ACCOUNT_NAME, "");
-        accountPass = sPref.getString(Settings.SETTINGS_ACCOUNT_PASS, "");
-        sessionID = sPref.getString(Settings.SETTINGS_SESSION_ID, "");
-        accountUserID = sPref.getString(Settings.SETTINGS_ACCOUNT_USER_ID, "");
+        accountName = sPref.getString(Settings_Activity.SETTINGS_ACCOUNT_NAME, "");
+        accountPass = sPref.getString(Settings_Activity.SETTINGS_ACCOUNT_PASS, "");
+        sessionID = sPref.getString(Settings_Activity.SETTINGS_SESSION_ID, "");
+        accountUserID = sPref.getString(Settings_Activity.SETTINGS_ACCOUNT_USER_ID, "");
 
-        String sSections = sPref.getString(Settings.SETTINGS_SECTIONS, "");
+        String sSections = sPref.getString(Settings_Activity.SETTINGS_SECTIONS, "");
         sections = Section.getSectionsFromString(sSections);
         updateSectionsWithIndex();
 
@@ -293,16 +298,16 @@ public class Forum {
         Editor ed = sPref.edit();
 
         ed.clear();
-        ed.putString(Settings.SETTINGS_ACCOUNT_NAME, accountName);
-        ed.putString(Settings.SETTINGS_ACCOUNT_PASS, accountPass);
-        ed.putString(Settings.SETTINGS_SESSION_ID, sessionID);
-        ed.putString(Settings.SETTINGS_ACCOUNT_USER_ID, accountUserID);
+        ed.putString(Settings_Activity.SETTINGS_ACCOUNT_NAME, accountName);
+        ed.putString(Settings_Activity.SETTINGS_ACCOUNT_PASS, accountPass);
+        ed.putString(Settings_Activity.SETTINGS_SESSION_ID, sessionID);
+        ed.putString(Settings_Activity.SETTINGS_ACCOUNT_USER_ID, accountUserID);
 
         String sSections = Section.getSectionsAsString(sections);
-        ed.putString(Settings.SETTINGS_SECTIONS, sSections);
+        ed.putString(Settings_Activity.SETTINGS_SECTIONS, sSections);
 
         ed.putInt(ThemesManager.SETTINGS_THEME, ThemesManager.CurrentTheme);
-        ed.putString(Settings.SETTINGS_VESION, Settings.SETTINGS_VESION_N);
+        ed.putString(Settings_Activity.SETTINGS_VESION, Settings_Activity.SETTINGS_VESION_N);
 
         ed.commit();
 
@@ -468,13 +473,11 @@ public class Forum {
 
     public void addNewTopic(final Activity activity) {
 
-
         Intent intent = new Intent();
         intent.setClass(activity, NewTopic_Activity.class);
 
-        
-//        Intent intent = new Intent(activity, NewTopic_Activity.class);
-        activity.startActivityForResult(intent, 1);
+        // Intent intent = new Intent(activity, NewTopic_Activity.class);
+        activity.startActivityForResult(intent, ACTIVITY_RESULT_NEWTOPIC);
 
     };
 
@@ -513,9 +516,8 @@ public class Forum {
                 + API.POST_target_section + sectionIndex + "&" + API.POST_rnd + "" + Math.abs(rand.nextLong());
 
         if (isVoting) {
-            newMessagePOST.POSTString = newMessagePOST.POSTString + "&" + API.POST_voting + "&" + API.POST_select1 + select1 + "&"
-                    + API.POST_select2 + select2 + "&" + API.POST_select3 + select3 + "&" + API.POST_select4 + select4 + "&"
-                    + API.POST_select5 + select5;
+            newMessagePOST.POSTString = newMessagePOST.POSTString + "&" + API.POST_voting + "&" + API.POST_select1 + select1 + "&" + API.POST_select2 + select2
+                    + "&" + API.POST_select3 + select3 + "&" + API.POST_select4 + select4 + "&" + API.POST_select5 + select5;
         }
 
         iOnPOSTRequestExecuted mCallback = (iOnPOSTRequestExecuted) activity;
@@ -576,7 +578,7 @@ public class Forum {
         if (curTopic == null || (curTopic.is_voting == 1 && curTopic.votes == null)) {
             return;
         }
-        
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(R.string.sNewMessage);
         builder.setIcon(ThemesManager.iconNewItem);
@@ -585,7 +587,6 @@ public class Forum {
         builder.setView(dialogView);
         builder.setCancelable(true);
 
-        
         final Spinner spinVote;
         if (curTopic.is_voting == 1) {
             spinVote = ((Spinner) dialogView.findViewById(R.id.spinVote));
@@ -617,8 +618,7 @@ public class Forum {
         editSubject.requestFocusFromTouch();
 
         builder.setPositiveButton(R.string.sCreate, new DialogInterface.OnClickListener() {
-            public void onClick(final DialogInterface dialogInterface, final int i) {
-            }
+            public void onClick(final DialogInterface dialogInterface, final int i) {}
 
         });
 
@@ -638,10 +638,10 @@ public class Forum {
                     @Override
                     public void onClick(View view) {
                         String message = ((EditText) dialogView.findViewById(R.id.editNewMessage)).getText().toString().trim();
-                        
+
                         if (message.isEmpty()) {
-                           ErrorMessage.Show(R.string.sMessageError, activity);
-                           return;
+                            ErrorMessage.Show(R.string.sMessageError, activity);
+                            return;
                         }
 
                         int vote = 0;
@@ -652,12 +652,12 @@ public class Forum {
 
                         createNewMessage(activity, curTopicId, message, vote);
                         dialog.dismiss();
-                        
+
                     }
                 });
-            }          
+            }
         });
-        
+
         dialog.show();
 
     }
@@ -742,10 +742,10 @@ public class Forum {
 
     public void showWhatsNew(SharedPreferences sPref, Topics_Activity topics_Activity) {
 
-        if (!sPref.getString(Settings.SETTINGS_VESION, "").equals(Settings.SETTINGS_VESION_N)) {
+        if (!sPref.getString(Settings_Activity.SETTINGS_VESION, "").equals(Settings_Activity.SETTINGS_VESION_N)) {
 
             Editor ed = sPref.edit();
-            ed.putString(Settings.SETTINGS_VESION, Settings.SETTINGS_VESION_N);
+            ed.putString(Settings_Activity.SETTINGS_VESION, Settings_Activity.SETTINGS_VESION_N);
             ed.commit();
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(topics_Activity);
@@ -787,6 +787,23 @@ public class Forum {
         };
 
         loginHandler.postDelayed(loginProcedure, DEFAUTL_DELAY);
+
+    }
+
+    public void delayedStartNotifications() {
+        final int DEFAUTL_DELAY = 700;
+
+        final Handler backgroundHandler = new Handler();
+        final Runnable backgroundProcedure = new Runnable() {
+            @Override
+            public void run() {
+
+                // startService(intent.putExtra("time", 3).putExtra("label", "Call 1"));
+
+            }
+        };
+
+        backgroundHandler.postDelayed(backgroundProcedure, DEFAUTL_DELAY);
 
     }
 

@@ -30,6 +30,7 @@
         <item name="iconArrowUp">@drawable/ic_arrow_up_lt</item>
         <item name="iconReplies">@drawable/ic_action_chat_lt</item>
         <item name="iconSend">@drawable/ic_action_send_now_lt</item>
+        <item name="iconSettings">@drawable/ic_action_settings_lt</item>
     </style>
 
     <style name="Theme_Gray" parent="android:Theme.Holo">
@@ -60,7 +61,7 @@
         <item name="iconArrowUp">@drawable/ic_arrow_up</item>
         <item name="iconReplies">@drawable/ic_action_chat</item>
         <item name="iconSend">@drawable/ic_action_send_now</item>
-        
+        <item name="iconSettings">@drawable/ic_action_settings</item>
     </style>
 
     <style name="Theme_Black" parent="android:Theme.Holo">
@@ -91,6 +92,7 @@
         <item name="iconArrowUp">@drawable/ic_arrow_up</item>
         <item name="iconReplies">@drawable/ic_action_chat</item>
         <item name="iconSend">@drawable/ic_action_send_now</item>
+        <item name="iconSettings">@drawable/ic_action_settings</item>
     </style>
 
 </resources>

@@ -4,12 +4,12 @@
   tools:ignore="MissingTranslation" >
 
     <string name="app_name">Mista Reader</string>
-    <string name="action_settings">Настройки</string>
-    <string name="sTheme">Темы оформления</string>
+    <string name="sSettings">Настройки</string>
+    <string name="sTheme">Тема оформления</string>
     
-    <string name="sThemeGray">Gray</string>
-    <string name="sThemeLight">Light</string>
-    <string name="sThemePureBlack">Pure Black</string>
+    <string name="sThemeGray">Серая</string>
+    <string name="sThemeLight">Светлая</string>
+    <string name="sThemePureBlack">Черная</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="sample_text">Sample text</string>
@@ -22,6 +22,8 @@
     <string name="sNavDrawerSect2">НАСТРОЙКИ</string>
     <string name="sLoading">Загрузка...</string>
     
+    
+    <string name="sAuthorization">Авторизация</string>
     <string name="sAccount">Аккаунт</string>
     <string name="sLogin">Логин</string>
     <string name="sPassword">Пароль</string>
@@ -72,11 +74,16 @@
 	<string name="sLogoff">Выйти из аккаунта</string>
 	<string name="sAbout">О программе</string>
 	
-	<string name="sAboutDetailsVersion">Версия: 1.2.2</string>
+	<string name="sAboutDetailsVersion">Версия: 1.3</string>
 	<string name="sAboutDetails">Разработка: vhl</string>
 	<string name="sAboutDetails2">При поддержке: Asmody</string>
-	<string name="sAboutDetails3">Open source licenses:</string>
-	<string name="sAboutLicenseItem1">Simple JSON v. 1.1.1</string>
+
+	<string name="sNotifications">Уведомления</string>
+	<string name="sNotificationsUse">Уведомления</string>
+	<string name="sNotificationsUseD">Включить уведомления</string>
+	<string name="sNotificationsShowInBar">Всплывающие</string>
+	<string name="sNotificationsShowInBarD">Выводить в панели уведомлений</string>
+	<string name="sNotificationsInterval">Интервал</string>
 	
 	<string name="sWHatsNew">Что нового</string>
 	<string name="sWHatsNewDetal1">Список изменений:</string>

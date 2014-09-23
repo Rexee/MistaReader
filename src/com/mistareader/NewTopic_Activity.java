@@ -156,7 +156,7 @@ public class NewTopic_Activity extends Activity {
         }
 
         Intent intent = new Intent();
-        intent.putExtra("commandName", Topics_Activity.COMMAND_CREATE_NEW_TOPIC);
+        intent.putExtra("commandName", Forum.COMMAND_CREATE_NEW_TOPIC);
         intent.putExtra("forumName", forumName);
         intent.putExtra("sectionIndex", sectionIndex);
         intent.putExtra("subject", subject);

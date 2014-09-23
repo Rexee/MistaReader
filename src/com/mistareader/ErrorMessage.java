@@ -3,6 +3,7 @@ package com.mistareader;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.widget.Toast;
 
 public class ErrorMessage {
 
@@ -21,4 +22,9 @@ public class ErrorMessage {
         
     }
 
+    public static void Toast(String inStr, Activity activity)
+    {
+        Toast.makeText(activity, inStr, Toast.LENGTH_SHORT).show();
+    }
+    
 }
