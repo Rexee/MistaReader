@@ -494,7 +494,7 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
     public void onDestroy() {
 
         Forum forum = Forum.getInstance();
-        forum.mainDB.addBookmarkMessage(currentTopicId, lvMain.getLastVisiblePosition());
+        forum.mainDB.addLastPositionToMessage(currentTopicId, lvMain.getLastVisiblePosition());
         super.onDestroy();
     }
 

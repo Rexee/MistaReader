@@ -5,12 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -89,7 +86,7 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         // После recreate() открывает Drawer. Не знаю почему.
         mND.mDrawerLayout.closeDrawer(mND.mDrawerList);
         mND.mDrawerToggle.syncState();
-        
+
         if (isLoginChanged) {
             isLoginChanged = false;
 
@@ -98,22 +95,11 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
         if (isThemeChanged) {
             isThemeChanged = false;
-            
+
             recreate();
 
         }
 
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-
-        if (v.getId() == R.id.lvMain) {
-            MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.topic_dropdown, menu);
-            menu.setHeaderTitle(R.string.sPopupMenyHeader);
-        }
     }
 
     @Override
@@ -263,7 +249,7 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         intent.putExtra("forum", selectedTopic.forum);
         intent.putExtra("focusLast", focusLast);
         if (!forceFirst) {
-            intent.putExtra("focusOn", forum.mainDB.getBookmarkMessage(selectedTopic.id));
+            intent.putExtra("focusOn", forum.mainDB.getLastPositionForMessage(selectedTopic.id));
         }
 
         startActivity(intent);
@@ -322,6 +308,11 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
                     case NavDrawer_Main.MENU_ABOUT:
 
                         forum.showAbout(Topics_Activity.this);
+                        break;
+
+                    case NavDrawer_Main.MENU_SUBSCRIPTIONS:
+
+//                        forum.showAbout(Topics_Activity.this);
                         break;
 
                     default:
@@ -383,11 +374,18 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
         selectedSectionPosition = position;
 
-        if (selectedSectionPosition != 0)
-            selectedSectionName = ddN.shortNamesList.get(selectedSectionPosition);
-        else
-            selectedSectionName = "";
-
+        if (selectedForumName.equals(API.TOPICS_WITH_ME)) {
+            if (selectedSectionPosition == 1)
+                selectedSectionName = API.MYTOPICS;
+            else
+                selectedSectionName = API.TOPICS_WITH_ME;
+        }
+        else {
+            if (selectedSectionPosition != 0)
+                selectedSectionName = ddN.shortSectionsNamesList.get(selectedSectionPosition);
+            else
+                selectedSectionName = "";
+        }
         createTopicsFragment(false);
 
         return true;

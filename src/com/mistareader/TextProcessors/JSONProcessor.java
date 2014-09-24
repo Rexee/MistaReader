@@ -80,7 +80,7 @@ public class JSONProcessor {
 
             SimpleDateFormat sdf = new SimpleDateFormat("d MMM H:mm");
             Message newMessage;
-            
+
             JSONArray jArray = new JSONArray(inputString);
 
             for (int i = 0; i < jArray.length(); i++) {
@@ -98,7 +98,7 @@ public class JSONProcessor {
                 newMessage.n = n;
                 newMessage.text = mainObj.getString("text");
                 newMessage.user = mainObj.getString("user");
-                newMessage.vote =  mainObj.getInt("vote");
+                newMessage.vote = mainObj.getInt("vote");
                 newMessage.utime = mainObj.getLong("utime");
                 newMessage.isLoaded = true;
                 newMessage.isDeleted = false;
@@ -139,7 +139,7 @@ public class JSONProcessor {
         }
 
         try {
-            
+
             JSONObject mainObj = new JSONObject(inputString);
 
             String errorText = mainObj.getString(API.LOGIN_RESULT_ERROR);
@@ -215,10 +215,33 @@ public class JSONProcessor {
         }
         catch (Exception e) {
 
-            S.L("Forum.ParseMessages: " + Log.getStackTraceString(e));
+            S.L("Forum.ParseTopicInfo: " + Log.getStackTraceString(e));
         }
 
         return newTopic;
+    }
+
+    public static int getTopicAnsw(String inputString) {
+
+        int res = -1;
+        try {
+
+            if (inputString.equals("{}") || inputString.isEmpty()) {
+                return res;
+            }
+
+            JSONObject mainObj = new JSONObject(inputString);
+
+            res = mainObj.getInt("answers_count");
+
+        }
+        catch (Exception e) {
+
+            res = -1;
+            S.L("Forum.getTopicAnsw: " + Log.getStackTraceString(e));
+        }
+
+        return res;
     }
 
     public static ArrayList<Section> parseSectionsList(String inputString) {
@@ -350,7 +373,7 @@ public class JSONProcessor {
         try {
 
             JSONArray jArray = new JSONArray();
-            
+
             for (int i = 0; i < list.size(); i++) {
                 Section sec = list.get(i);
 

@@ -4,8 +4,14 @@
     <item
         android:id="@+id/menu_GoToFirstMessage"
         android:title="@string/sMenuGoToFirstMessage"/>
-        <item
+    <item
         android:id="@+id/menu_GoToLastMessage"
         android:title="@string/sMenuGoToLastMessage"/>
+    <item
+        android:id="@+id/menu_addToSubscription"
+        android:title="@string/sAddToSubscription"/>
+    <item
+        android:id="@+id/menu_removeFromSubscriptions"
+        android:title="@string/sRemoveFromSubscriptions"/>
 
 </menu>

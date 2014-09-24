@@ -16,11 +16,10 @@ import com.mistareader.Section;
 
 public class DropDownNav {
 
-    public ArrayList<String> shortNamesList;
+    public ArrayList<String> shortSectionsNamesList;
 
     public void reBuildSubmenu(Activity mainActivity, String selectedForumName, int selectedSectionPosition) {
 
-        final Resources locRes = mainActivity.getResources();
         final ActionBar actionBar = mainActivity.getActionBar();
 
         if (selectedForumName.isEmpty()) {
@@ -30,43 +29,40 @@ public class DropDownNav {
             return;
         }
 
-        switch (selectedForumName) {
-            case API.MYTOPICS:
-                actionBar.setDisplayShowTitleEnabled(true);
-                actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-                actionBar.setTitle(R.string.sMyTopics);
-                return;
-            case API.TOPICS_WITH_ME:
-                actionBar.setDisplayShowTitleEnabled(true);
-                actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-                actionBar.setTitle(R.string.sMyTopics2);
-                return;
-            default:
-                break;
-        }
-
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
-        ArrayList<String> fullNamesList = new ArrayList<String>();
-        shortNamesList = new ArrayList<String>();
+        ArrayList<String> dropdownItems = new ArrayList<String>();
 
-        fullNamesList.add(selectedForumName + " (" + locRes.getText(string.sNavDrawerAll) + ")");
-        shortNamesList.add(selectedForumName);
+        if (selectedForumName.equals(API.TOPICS_WITH_ME)) {
 
-        Forum forum = Forum.getInstance();
-
-        for (int i = 0; i < forum.sections.size(); i++) {
-
-            Section sec = forum.sections.get(i);
-            if (sec.forumName.equals(selectedForumName)) {
-                fullNamesList.add(sec.sectionFullName);
-                shortNamesList.add(sec.sectionShortName);
-            }
+            dropdownItems.add(mainActivity.getString(R.string.sMyTopics2));
+            dropdownItems.add(mainActivity.getString(R.string.sMyTopics));
 
         }
+        else
+        {
+            final Resources locRes = mainActivity.getResources();
 
-        ArrayAdapter<String> aAdpt = new ArrayAdapter<String>(mainActivity, R.layout.actionbar_dropdowntext, android.R.id.text1, fullNamesList);
+            shortSectionsNamesList = new ArrayList<String>();
+
+            dropdownItems.add(selectedForumName + " (" + locRes.getText(string.sNavDrawerAll) + ")");
+            shortSectionsNamesList.add(selectedForumName);
+
+            Forum forum = Forum.getInstance();
+
+            for (int i = 0; i < forum.sections.size(); i++) {
+
+                Section sec = forum.sections.get(i);
+                if (sec.forumName.equals(selectedForumName)) {
+                    dropdownItems.add(sec.sectionFullName);
+                    shortSectionsNamesList.add(sec.sectionShortName);
+                }
+
+            }
+        }
+
+        ArrayAdapter<String> aAdpt = new ArrayAdapter<String>(mainActivity, R.layout.actionbar_dropdowntext, android.R.id.text1, dropdownItems);
         aAdpt.setDropDownViewResource(android.R.layout.simple_list_item_1);
 
         actionBar.setListNavigationCallbacks(aAdpt, (OnNavigationListener) mainActivity);
@@ -74,6 +70,5 @@ public class DropDownNav {
         actionBar.setSelectedNavigationItem(selectedSectionPosition);
 
     }
-    
 
 }

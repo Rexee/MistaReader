@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -25,7 +24,7 @@ public class WebIteraction {
     // static final String GET_ACCEPT_DEFAULT =
     // "text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/webp, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1";
 
-    public static boolean isInternetAvailable(Activity context) {
+    public static boolean isInternetAvailable(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();

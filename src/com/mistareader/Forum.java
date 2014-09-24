@@ -56,11 +56,10 @@ public class Forum {
     public ArrayList<String>  forums;
 
     static long               mm;
-    static long               mm1;
-
+ 
     public static void Trace(String inStr) {
 
-        mm1 = System.currentTimeMillis();
+        long mm1 = System.currentTimeMillis();
         // S.L(inStr + " - " + (mm1 - mm));
         mm = mm1;
 
@@ -280,12 +279,12 @@ public class Forum {
     // ************************************SETTINGS*******************************
     public void loadSettings(SharedPreferences sPref) {
 
-        accountName = sPref.getString(Settings_Activity.SETTINGS_ACCOUNT_NAME, "");
-        accountPass = sPref.getString(Settings_Activity.SETTINGS_ACCOUNT_PASS, "");
-        sessionID = sPref.getString(Settings_Activity.SETTINGS_SESSION_ID, "");
-        accountUserID = sPref.getString(Settings_Activity.SETTINGS_ACCOUNT_USER_ID, "");
+        accountName = sPref.getString(Settings.SETTINGS_ACCOUNT_NAME, "");
+        accountPass = sPref.getString(Settings.SETTINGS_ACCOUNT_PASS, "");
+        sessionID = sPref.getString(Settings.SETTINGS_SESSION_ID, "");
+        accountUserID = sPref.getString(Settings.SETTINGS_ACCOUNT_USER_ID, "");
 
-        String sSections = sPref.getString(Settings_Activity.SETTINGS_SECTIONS, "");
+        String sSections = sPref.getString(Settings.SETTINGS_SECTIONS, "");
         sections = Section.getSectionsFromString(sSections);
         updateSectionsWithIndex();
 
@@ -298,16 +297,16 @@ public class Forum {
         Editor ed = sPref.edit();
 
         ed.clear();
-        ed.putString(Settings_Activity.SETTINGS_ACCOUNT_NAME, accountName);
-        ed.putString(Settings_Activity.SETTINGS_ACCOUNT_PASS, accountPass);
-        ed.putString(Settings_Activity.SETTINGS_SESSION_ID, sessionID);
-        ed.putString(Settings_Activity.SETTINGS_ACCOUNT_USER_ID, accountUserID);
+        ed.putString(Settings.SETTINGS_ACCOUNT_NAME, accountName);
+        ed.putString(Settings.SETTINGS_ACCOUNT_PASS, accountPass);
+        ed.putString(Settings.SETTINGS_SESSION_ID, sessionID);
+        ed.putString(Settings.SETTINGS_ACCOUNT_USER_ID, accountUserID);
 
         String sSections = Section.getSectionsAsString(sections);
-        ed.putString(Settings_Activity.SETTINGS_SECTIONS, sSections);
+        ed.putString(Settings.SETTINGS_SECTIONS, sSections);
 
         ed.putInt(ThemesManager.SETTINGS_THEME, ThemesManager.CurrentTheme);
-        ed.putString(Settings_Activity.SETTINGS_VESION, Settings_Activity.SETTINGS_VESION_N);
+        ed.putString(Settings.SETTINGS_VESION, Settings.SETTINGS_VESION_N);
 
         ed.commit();
 
@@ -742,10 +741,10 @@ public class Forum {
 
     public void showWhatsNew(SharedPreferences sPref, Topics_Activity topics_Activity) {
 
-        if (!sPref.getString(Settings_Activity.SETTINGS_VESION, "").equals(Settings_Activity.SETTINGS_VESION_N)) {
+        if (!sPref.getString(Settings.SETTINGS_VESION, "").equals(Settings.SETTINGS_VESION_N)) {
 
             Editor ed = sPref.edit();
-            ed.putString(Settings_Activity.SETTINGS_VESION, Settings_Activity.SETTINGS_VESION_N);
+            ed.putString(Settings.SETTINGS_VESION, Settings.SETTINGS_VESION_N);
             ed.commit();
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(topics_Activity);

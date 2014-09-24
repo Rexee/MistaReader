@@ -17,7 +17,6 @@ public class S {
 		
 		Log.d("mylog", "" + object);
 	}
-	
 
     public static void L(String string, Exception e) {
         Log.d("mylog", "" + string + " " + Log.getStackTraceString(e));

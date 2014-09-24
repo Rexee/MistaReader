@@ -15,16 +15,17 @@ import com.mistareader.ThemesManager;
 
 public class NavDrawer_Main {
 
-    final String                        MENU_1C       = "1C";
-    final String                        MENU_IT       = "IT";
-    final String                        MENU_LIFE     = "LIFE";
+    final String                        MENU_1C            = "1C";
+    final String                        MENU_IT            = "IT";
+    final String                        MENU_LIFE          = "LIFE";
 
-    public final static String          MENU_SETTINGS = "SETTINGS";
-    public final static String          MENU_ACCOUNT  = "ACCOUNT";
-    public final static String          MENU_THEMES   = "THEMES";
+    public final static String          MENU_SETTINGS      = "SETTINGS";
+    public final static String          MENU_ACCOUNT       = "ACCOUNT";
+    public final static String          MENU_THEMES        = "THEMES";
+    public final static String          MENU_SUBSCRIPTIONS = "SUBSCRIPTIONS";
 
-    public final static String          MENU_ABOUT    = "ABOUT";
-    public final static String          MENU_LOGOFF   = "LOGOFF";
+    public final static String          MENU_ABOUT         = "ABOUT";
+    public final static String          MENU_LOGOFF        = "LOGOFF";
 
     public DrawerLayout                 mDrawerLayout;
 
@@ -38,7 +39,7 @@ public class NavDrawer_Main {
     public ArrayList<NavDrawerMenuItem> mSubMenu;
 
     public String                       mCurrentAccout;
-    public boolean      mIsLoggedIn;
+    public boolean                      mIsLoggedIn;
 
     public NavDrawer_Main(Activity mainActivity, String accountName, int selectedMenuPosition, boolean isLoggedIn) {
 
@@ -54,7 +55,7 @@ public class NavDrawer_Main {
         mDrawerList = (ListView) mainActivity.findViewById(R.id.left_drawer);
         mListAdapter = new NavDrawer_Adapter(mainActivity, R.layout.navdrawer_item, mMenu);
         mDrawerList.setAdapter(mListAdapter);
-        
+
         mDrawerList.setItemChecked(mSelectedPosition, true);
 
         mDrawerToggle = new ActionBarDrawerToggle(mainActivity, mDrawerLayout, R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
@@ -74,7 +75,7 @@ public class NavDrawer_Main {
 
         mainActivity.getActionBar().setDisplayHomeAsUpEnabled(true);
         mainActivity.getActionBar().setHomeButtonEnabled(true);
-        
+
     }
 
     public void buildSubmenu(Activity mainActivity, String forum, int mResNames, int mResIDs) {
@@ -108,28 +109,31 @@ public class NavDrawer_Main {
         mMenu.add(NavMenuItem.createMenuItem(mainActivity, "", mainActivity.getString(R.string.sNavDrawerAll), ThemesManager.iconForum));
         mMenu.add(NavMenuItem.createMenuItem(mainActivity, MENU_1C, MENU_1C, ThemesManager.iconForum));
         mMenu.add(NavMenuItem.createMenuItem(mainActivity, MENU_IT, MENU_IT, ThemesManager.iconForum));
-//         buildSubmenu(mainActivity, "1c", R.array.sectionsName_IT, R.array.sections_IT);
+        // buildSubmenu(mainActivity, "1c", R.array.sectionsName_IT, R.array.sections_IT);
 
         mMenu.add(NavMenuItem.createMenuItem(mainActivity, MENU_LIFE, MENU_LIFE, ThemesManager.iconForum));
 
         if (mIsLoggedIn)
             mMenu.add(NavMenuItem.createMenuItem(mainActivity, API.TOPICS_WITH_ME, mainActivity.getString(R.string.sMyTopics2), ThemesManager.iconForum));
 
-        if (mIsLoggedIn)
-            mMenu.add(NavMenuItem.createMenuItem(mainActivity, API.MYTOPICS, mainActivity.getString(R.string.sMyTopics), ThemesManager.iconForum));
+//        if (mIsLoggedIn)
+//            mMenu.add(NavMenuItem.createMenuItem(mainActivity, API.MYTOPICS, mainActivity.getString(R.string.sMyTopics), ThemesManager.iconForum));
 
-//         buildSubmenu(mainActivity, "life", R.array.sectionsName_LIFE, R.array.sections_LIFE);
+        mMenu.add(NavMenuItem.createMenuItem(mainActivity, MENU_SUBSCRIPTIONS, mainActivity.getString(R.string.sSubscriptions), ThemesManager.iconForum));
+        
+        
+        // buildSubmenu(mainActivity, "life", R.array.sectionsName_LIFE, R.array.sections_LIFE);
 
         mMenu.add(NavMenuSection.create(mainActivity.getString(R.string.sNavDrawerSect2)));
 
         mMenu.add(NavMenuItem.createMenuItem(mainActivity, MENU_SETTINGS, mainActivity.getString(R.string.sSettings), ThemesManager.iconSettings));
-        
-//        if (mIsLoggedIn)
-//            mMenu.add(NavMenuItem.createMenuItem(mainActivity, MENU_ACCOUNT, mCurrentAccout, ThemesManager.iconAccount));
-//        else
-//            mMenu.add(NavMenuItem.createMenuItem(mainActivity, MENU_ACCOUNT, mainActivity.getString(R.string.sAccount), ThemesManager.iconAccount));
-//
-//        mMenu.add(NavMenuItem.createMenuItem(mainActivity, MENU_THEMES, mainActivity.getString(R.string.sTheme), ThemesManager.iconThemes));
+
+        // if (mIsLoggedIn)
+        // mMenu.add(NavMenuItem.createMenuItem(mainActivity, MENU_ACCOUNT, mCurrentAccout, ThemesManager.iconAccount));
+        // else
+        // mMenu.add(NavMenuItem.createMenuItem(mainActivity, MENU_ACCOUNT, mainActivity.getString(R.string.sAccount), ThemesManager.iconAccount));
+        //
+        // mMenu.add(NavMenuItem.createMenuItem(mainActivity, MENU_THEMES, mainActivity.getString(R.string.sTheme), ThemesManager.iconThemes));
         mMenu.add(NavMenuItem.createMenuItem(mainActivity, MENU_ABOUT, mainActivity.getString(R.string.sAbout), ThemesManager.iconAbout));
 
     }

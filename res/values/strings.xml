@@ -6,7 +6,8 @@
     <string name="app_name">Mista Reader</string>
     <string name="sSettings">Настройки</string>
     <string name="sTheme">Тема оформления</string>
-    
+    <string name="sSubscriptions">Подписки</string>
+        
     <string name="sThemeGray">Серая</string>
     <string name="sThemeLight">Светлая</string>
     <string name="sThemePureBlack">Черная</string>
@@ -25,6 +26,7 @@
     
     <string name="sAuthorization">Авторизация</string>
     <string name="sAccount">Аккаунт</string>
+    <string name="sNotAuthorized">&lt;Не авторизован&gt;</string>
     <string name="sLogin">Логин</string>
     <string name="sPassword">Пароль</string>
     <string name="sAuthorizationError">Ошибка авторизации</string>
@@ -38,7 +40,7 @@
     <string name="sCancel">Отмена</string>
     
     <string name="sMyTopics">Мои темы</string>
-    <string name="sMyTopics2">Темы с моим участием</string>
+    <string name="sMyTopics2">Темы с участием</string>
     
     <string name="sNewTopic">Новая тема</string>
     <string name="sSubject">Тема</string>
@@ -52,6 +54,8 @@
 	
 	<string name="sMenuGoToFirstMessage">К первому сообщению</string>
 	<string name="sMenuGoToLastMessage">К последнему сообщению</string>
+	<string name="sAddToSubscription">Пописаться на тему</string>
+	<string name="sRemoveFromSubscriptions">Удалить из подписок</string>
 	
 	<string name="sPopupMenyHeaderMessage">Действия с сообщением</string>
 	<string name="sMenuRelyToThis">Ответить</string>
@@ -78,11 +82,11 @@
 	<string name="sAboutDetails">Разработка: vhl</string>
 	<string name="sAboutDetails2">При поддержке: Asmody</string>
 
-	<string name="sNotifications">Уведомления</string>
-	<string name="sNotificationsUse">Уведомления</string>
-	<string name="sNotificationsUseD">Включить уведомления</string>
-	<string name="sNotificationsShowInBar">Всплывающие</string>
-	<string name="sNotificationsShowInBarD">Выводить в панели уведомлений</string>
+	<string name="sNotifications">Подписки</string>
+	<string name="sNotificationsUse">Подписки</string>
+	<string name="sNotificationsUseD">Проверять новые сообщения</string>
+	<string name="sNotificationsShowInBar">Уведомления</string>
+	<string name="sNotificationsShowInBarD">Выводить всплывающие уведомления</string>
 	<string name="sNotificationsInterval">Интервал</string>
 	
 	<string name="sWHatsNew">Что нового</string>

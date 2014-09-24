@@ -5,7 +5,10 @@ import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,6 +96,36 @@ public class Topics_Fragment extends Fragment {
     }
 
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        if (v.getId() == R.id.lvMain) {
+            MenuInflater inflater = getActivity().getMenuInflater();
+            inflater.inflate(R.menu.topic_dropdown, menu);
+            menu.setHeaderTitle(R.string.sPopupMenyHeader);
+
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+
+            int position = info.position;
+
+            Topic selTopic = topics_sAdapter.getItem(position);
+            if (!forum.mainDB.isTopicInSubscriptions(selTopic.id)) {
+                menu.removeItem(R.id.menu_removeFromSubscriptions);
+                
+                if (forum.mainDB.getTotalSubscriptionsCount() >= Settings.SUBSCRIPTIONS_MAX_COUNT) {
+                    menu.removeItem(R.id.menu_addToSubscription);
+                    
+                }
+
+            }
+            else {
+                menu.removeItem(R.id.menu_addToSubscription);
+            }
+
+        }
+    }
+
+    @Override
     public boolean onContextItemSelected(MenuItem item) {
 
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
@@ -102,11 +135,20 @@ public class Topics_Fragment extends Fragment {
             mOntopicSelectedCallback.onTopicSelected(topics_sAdapter.getItem(info.position), true, false);
             return true;
         }
-        else if (itemId == R.id.menu_GoToFirstMessage)
-        {
+        else if (itemId == R.id.menu_GoToFirstMessage) {
             mOntopicSelectedCallback.onTopicSelected(topics_sAdapter.getItem(info.position), false, true);
             return true;
-       }
+        }
+        else if (itemId == R.id.menu_addToSubscription) {
+            Topic selTopic = topics_sAdapter.getItem(info.position);
+            forum.mainDB.addTopicToSubscriptions(selTopic.id, selTopic.answ);
+            return true;
+        }
+        else if (itemId == R.id.menu_removeFromSubscriptions) {
+            Topic selTopic = topics_sAdapter.getItem(info.position);
+            forum.mainDB.removeTopicFromSubscriptions(selTopic.id);
+            return true;
+        }
         else {
             return super.onContextItemSelected(item);
         }
@@ -259,6 +301,11 @@ public class Topics_Fragment extends Fragment {
             sSection = args.getString("sSection", "");
             sForum = args.getString("sForum", "");
 
+            if (sForum.equals(API.TOPICS_WITH_ME) && !sSection.isEmpty()) {
+                sForum = sSection;
+                sSection = "";
+            }
+
         }
 
         if (sSection == null) {
@@ -278,7 +325,7 @@ public class Topics_Fragment extends Fragment {
 
         forum = Forum.getInstance();
         isInternetConnection = forum.isInternetConnection;
-        
+
         if (isInternetConnection) {
             forum.deleteTopics();
             loadTopics(0);
@@ -290,7 +337,7 @@ public class Topics_Fragment extends Fragment {
     public void reLoad() {
 
         isInternetConnection = forum.isInternetConnection;
-        
+
         if (!isInternetConnection) {
             return;
         }

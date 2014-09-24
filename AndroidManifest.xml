@@ -45,11 +45,11 @@
             android:parentActivityName="com.mistareader.Topics_Activity" >
         </activity>
 
-        <service android:name="Forum_Background" >
+        <service android:name="Subscriptions_Service" >
         </service>
 
         <receiver
-            android:name="Forum_BroadcastReciever"
+            android:name="BroadcastReciever"
             android:enabled="false" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
