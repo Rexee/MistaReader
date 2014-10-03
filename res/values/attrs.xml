@@ -8,7 +8,8 @@
     
     <attr name="text_main" format="reference|color" />
     <attr name="text_hyperlink" format="reference|color" />
-    
+    <attr name="text_subscription" format="reference|color" />
+        
     <attr name="text_user" format="reference|color" />
     <attr name="text_author" format="reference|color" />
     <attr name="text_account" format="reference|color" />
@@ -37,4 +38,5 @@
     <attr name="iconReplies" format="reference" />
     <attr name="iconSend" format="reference" />
     <attr name="iconSettings" format="reference" /> 
+        <attr name="iconMarkAll" format="reference" /> 
 </resources>

@@ -1,5 +1,6 @@
 package com.mistareader;
 
+
 public class Settings {
 
     final static String        SETTINGS_ACCOUNT_NAME       = "accName";
@@ -13,9 +14,9 @@ public class Settings {
     public final static String SUBSCRIPTIONS_INTERVAL      = "settingsNotificationsInterval";
     public final static String SUBSCRIPTIONS_USE           = "settingsNotificationsUse";
     public final static String SUBSCRIPTIONS_NOTIFICATIONS = "settingsNotificationsShowInBar";
-    public static final int    SUBSCRIPTIONS_MAX_COUNT     = 20;
-    
+    public static final int    SUBSCRIPTIONS_MAX_COUNT     = 10;
 
     final static String        SETTINGS_VESION_N           = "1.3";
+    public static final String SUBSCRIPTIONS_UPDATED_BROADCAST            = "com.mistareader.BROADCAST";
 
 }

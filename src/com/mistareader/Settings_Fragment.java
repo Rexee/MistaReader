@@ -6,10 +6,22 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 public class Settings_Fragment extends PreferenceFragment {
 
     Forum forum;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        view.setBackgroundColor(ThemesManager.colorBg_message_body);
+       
+        return view; 
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -22,7 +34,10 @@ public class Settings_Fragment extends PreferenceFragment {
 
         Preference settingsAccont = findPreference("settingsAccont");
 
-        settingsAccont.setSummary(R.string.sNotAuthorized);
+        if (forum.sessionID.isEmpty()) 
+            settingsAccont.setSummary(R.string.sNotAuthorized);
+        else
+            settingsAccont.setSummary(forum.accountName);
         
         final Activity activity = getActivity();
 
@@ -68,6 +83,15 @@ public class Settings_Fragment extends PreferenceFragment {
 //                return true;
 //            }
 //        });
+        
+        Preference settingsReloadSections = (Preference) findPreference("settingsReloadSections");
+        settingsReloadSections.setOnPreferenceClickListener(new OnPreferenceClickListener() { 
+            public boolean onPreferenceClick(Preference preference) {
+                forum.reloadSections(getActivity());
+                return false;
+            }
+        });
+
       
     }
 
@@ -76,7 +100,6 @@ public class Settings_Fragment extends PreferenceFragment {
         backgroundTimeout.setSummary(backgroundTimeout.getEntries()[index]);
     }
 
-    
     public void updateAccountDescription(boolean isLoggedIn) {
 
         Preference settingsAccont = findPreference("settingsAccont");

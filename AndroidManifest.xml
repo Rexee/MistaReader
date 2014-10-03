@@ -42,19 +42,19 @@
         <activity
             android:name="Settings_Activity"
             android:enabled="true"
+            android:label="@string/sSettings"
             android:parentActivityName="com.mistareader.Topics_Activity" >
         </activity>
 
-        <service android:name="Subscriptions_Service" >
-        </service>
 
         <receiver
-            android:name="BroadcastReciever"
+            android:name="OnBootBroadcastReciever"
             android:enabled="false" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        <service android:name="Subscriptions"></service>
     </application>
 
 </manifest>

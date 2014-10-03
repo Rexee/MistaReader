@@ -82,12 +82,15 @@
 	<string name="sAboutDetails">Разработка: vhl</string>
 	<string name="sAboutDetails2">При поддержке: Asmody</string>
 
+	<string name="sOther">Прочее</string>
 	<string name="sNotifications">Подписки</string>
-	<string name="sNotificationsUse">Подписки</string>
+	<string name="sNotificationsUse">Использовать</string>
 	<string name="sNotificationsUseD">Проверять новые сообщения</string>
 	<string name="sNotificationsShowInBar">Уведомления</string>
 	<string name="sNotificationsShowInBarD">Выводить всплывающие уведомления</string>
 	<string name="sNotificationsInterval">Интервал</string>
+	<string name="sReloadSections">Обновить секции</string>
+	<string name="sReloadSectionsD">Загрузить названия секций с сервера</string>
 	
 	<string name="sWHatsNew">Что нового</string>
 	<string name="sWHatsNewDetal1">Список изменений:</string>

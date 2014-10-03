@@ -34,8 +34,8 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.mistareader.TextProcessors.JSONProcessor;
 import com.mistareader.TextProcessors.S;
-import com.mistareader.TextProcessors.S.ResultContainer;
 import com.mistareader.TextProcessors.StringProcessor;
+import com.mistareader.TextProcessors.S.ResultContainer;
 
 public class Forum {
 
@@ -56,7 +56,7 @@ public class Forum {
     public ArrayList<String>  forums;
 
     static long               mm;
- 
+
     public static void Trace(String inStr) {
 
         long mm1 = System.currentTimeMillis();
@@ -81,12 +81,18 @@ public class Forum {
         isInternetConnection = inIsInternetConnection;
 
         if (sections == null || sections.isEmpty()) {
-
             new asyncGetSectionsList().execute(API.getSectionsList());
         }
 
         mainDB = new DB(activity);
+        
+//        mainDB.ShowL();
+//        mainDB.ClearL();
 
+    }
+
+    public void reloadSections(Activity activity) {
+        new asyncGetSectionsList(activity).execute(API.getSectionsList());
     }
 
     public String                   accountName, accountPass;
@@ -105,13 +111,36 @@ public class Forum {
 
     public final static int         ACTIVITY_RESULT_NEWTOPIC = 1;
     public final static int         ACTIVITY_RESULT_SETTINGS = 2;
-    
-    public final static String COMMAND_CREATE_NEW_TOPIC = "createnewtopic";
-    
+
+    public final static String      COMMAND_CREATE_NEW_TOPIC = "createnewtopic";
+
     @SuppressLint("SimpleDateFormat")
     private static SimpleDateFormat sdf                      = new SimpleDateFormat("d MMM H:mm");
 
     private class asyncGetSectionsList extends AsyncTask<String, Integer, String> {
+
+        private boolean        mSilentMode;
+        private Activity       mActivity;
+        private ProgressDialog progress;
+
+        public asyncGetSectionsList() {
+            mSilentMode = true;
+        }
+
+        public asyncGetSectionsList(Activity activity) {
+            mActivity = activity;
+            mSilentMode = false;
+            progress = new ProgressDialog(mActivity);
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            if (!mSilentMode) {
+                this.progress.setMessage(mActivity.getString(R.string.sLoading));
+                this.progress.show();
+            }
+        }
 
         protected String doInBackground(String... urls) {
             return WebIteraction.getServerResponse(urls[0]);
@@ -121,6 +150,10 @@ public class Forum {
             sections = JSONProcessor.parseSectionsList(result);
             forums = Section.getUniqueForums(sections);
             updateSectionsWithIndex();
+            if (!mSilentMode) {
+                progress.dismiss();
+            }
+
         }
 
     }
@@ -646,7 +679,9 @@ public class Forum {
                         int vote = 0;
                         if (curTopic.is_voting == 1) {
                             vote = spinVote.getSelectedItemPosition() + 1;
-                            S.L("vote: " + vote);
+                            if (vote >= spinVote.getCount()) {
+                                vote = 0;
+                            }
                         }
 
                         createNewMessage(activity, curTopicId, message, vote);
@@ -786,23 +821,6 @@ public class Forum {
         };
 
         loginHandler.postDelayed(loginProcedure, DEFAUTL_DELAY);
-
-    }
-
-    public void delayedStartNotifications() {
-        final int DEFAUTL_DELAY = 700;
-
-        final Handler backgroundHandler = new Handler();
-        final Runnable backgroundProcedure = new Runnable() {
-            @Override
-            public void run() {
-
-                // startService(intent.putExtra("time", 3).putExtra("label", "Call 1"));
-
-            }
-        };
-
-        backgroundHandler.postDelayed(backgroundProcedure, DEFAUTL_DELAY);
 
     }
 

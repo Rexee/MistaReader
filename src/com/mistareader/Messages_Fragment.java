@@ -494,7 +494,10 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
     public void onDestroy() {
 
         Forum forum = Forum.getInstance();
-        forum.mainDB.addLastPositionToMessage(currentTopicId, lvMain.getLastVisiblePosition());
+        if (forum.mainDB!=null && lvMain!=null) {
+            forum.mainDB.addLastPositionToMessage(currentTopicId, lvMain.getLastVisiblePosition());            
+        }
+        
         super.onDestroy();
     }
 

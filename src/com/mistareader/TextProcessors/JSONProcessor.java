@@ -12,9 +12,9 @@ import android.util.Log;
 
 import com.mistareader.API;
 import com.mistareader.Message;
-import com.mistareader.Message.Reply;
 import com.mistareader.Section;
 import com.mistareader.Topic;
+import com.mistareader.Message.Reply;
 import com.mistareader.TextProcessors.S.ResultContainer;
 
 @SuppressLint("SimpleDateFormat")
@@ -33,6 +33,7 @@ public class JSONProcessor {
             SimpleDateFormat sdf = new SimpleDateFormat("d MMM H:mm");
 
             JSONArray jArray = new JSONArray(inputString);
+            
 
             for (int i = 0; i < jArray.length(); i++) {
 
@@ -221,9 +222,9 @@ public class JSONProcessor {
         return newTopic;
     }
 
-    public static int getTopicAnsw(String inputString) {
+    public static Topic getTopicAnsw(String inputString) {
 
-        int res = -1;
+        Topic res = new Topic();
         try {
 
             if (inputString.equals("{}") || inputString.isEmpty()) {
@@ -232,12 +233,17 @@ public class JSONProcessor {
 
             JSONObject mainObj = new JSONObject(inputString);
 
-            res = mainObj.getInt("answers_count");
+            res.answ = mainObj.getInt("answers_count");
+            res.user = mainObj.getString("updated_name");
+            res.utime = mainObj.getLong("updated");
 
-        }
+            SimpleDateFormat sdf = new SimpleDateFormat("d MMM H:mm");
+            Date date = new Date(res.utime * 1000L);
+            res.time_text = sdf.format(date).toString();
+
+      }
         catch (Exception e) {
 
-            res = -1;
             S.L("Forum.getTopicAnsw: " + Log.getStackTraceString(e));
         }
 

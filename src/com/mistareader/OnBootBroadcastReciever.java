@@ -1,12 +1,12 @@
 package com.mistareader;
 
+import com.mistareader.TextProcessors.S;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.mistareader.TextProcessors.S;
-
-public class BroadcastReciever extends BroadcastReceiver {
+public class OnBootBroadcastReciever extends BroadcastReceiver {
 
     public void onReceive(Context context, Intent intent) {
 
@@ -16,7 +16,7 @@ public class BroadcastReciever extends BroadcastReceiver {
             
             S.L("Forum_BroadcastReciever.BOOT_COMPLETED");
             
-            Subscriptions_Service.refreshNotificationsShedule(context);
+            Subscriptions.refreshNotificationsShedule(context);
  
         }
 

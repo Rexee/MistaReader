@@ -22,7 +22,8 @@ public class Topic {
     public int                is_voting;
     public String             time_text;
     public int                deleted;
-
+    public int                newAnsw;
+    
     public ArrayList<Votes>   votes;
 
     public ArrayList<Message> messages;

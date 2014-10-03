@@ -11,8 +11,8 @@ import android.widget.ArrayAdapter;
 import com.mistareader.API;
 import com.mistareader.Forum;
 import com.mistareader.R;
-import com.mistareader.R.string;
 import com.mistareader.Section;
+import com.mistareader.R.string;
 
 public class DropDownNav {
 

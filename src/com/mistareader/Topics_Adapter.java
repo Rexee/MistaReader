@@ -17,7 +17,6 @@ import android.widget.TextView;
 public class Topics_Adapter extends BaseAdapter {
 
     private ArrayList<Topic> mTopics;
-    private int              mResource;
     private LayoutInflater   mInflater;
     private boolean          mShowSections;
 
@@ -26,15 +25,20 @@ public class Topics_Adapter extends BaseAdapter {
     private static int       mAccountColor  = -1;
 
     private String           mAccount;
-
-    public Topics_Adapter(Context context, Forum forum, String selectedSection, int resource) {
+    private boolean mMode_Subscription;
+    
+    public Topics_Adapter(Context context, Forum forum, String selectedSection, boolean mode_Subscription) {
         mTopics = forum.topics;
         mAccount = forum.accountName;
-        mResource = resource;
+        
+        mMode_Subscription = mode_Subscription;
 
         mShowSections = selectedSection.isEmpty();
 
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        if (!mode_Subscription) {
+            
+        }
 
         Resources locRes = context.getResources();
 
@@ -61,6 +65,7 @@ public class Topics_Adapter extends BaseAdapter {
         public TextView topic_Text;
         public TextView topic_Replies;
         public TextView topic_Section;
+        public TextView topic_Replies_new;
     }
 
     @Override
@@ -85,7 +90,7 @@ public class Topics_Adapter extends BaseAdapter {
         View v;
 
         if (convertView == null) {
-            v = mInflater.inflate(mResource, parent, false);
+            v = mInflater.inflate(R.layout.topic_row, parent, false);
 
             holder = new ViewHolder();
 
@@ -95,6 +100,12 @@ public class Topics_Adapter extends BaseAdapter {
             holder.topic_Text = (TextView) v.findViewById(R.id.topic_text);
             holder.topic_Replies = (TextView) v.findViewById(R.id.topic_replies);
             holder.topic_Section = (TextView) v.findViewById(R.id.topic_section);
+            holder.topic_Replies_new = (TextView) v.findViewById(R.id.topic_replies_new);
+            
+            if (mMode_Subscription) {
+                holder.topic_Replies_new.setVisibility(View.VISIBLE);        
+            }
+               
 
             v.setTag(holder);
 
@@ -105,12 +116,16 @@ public class Topics_Adapter extends BaseAdapter {
         }
 
         Topic currentTopic = mTopics.get(position);
-
+      
         holder.topic_Replies.setText("" + currentTopic.answ);
         holder.topic_Text.setText(Html.fromHtml(currentTopic.text));
         holder.topic_Time.setText(currentTopic.time_text);
         holder.topic_User0.setText(currentTopic.user0);
         holder.topic_User.setText(currentTopic.user);
+        
+        if (mMode_Subscription) {
+            holder.topic_Replies_new.setText("+" + currentTopic.newAnsw);
+        }
 
         if (mShowSections)
             holder.topic_Section.setText(currentTopic.sect1);

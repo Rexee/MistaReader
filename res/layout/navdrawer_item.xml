@@ -1,26 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:paddingRight="10dp" 
-    android:background="?android:attr/activatedBackgroundIndicator">
+    android:layout_height="40dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:background="?android:attr/activatedBackgroundIndicator" >
 
      <ImageView
-        android:id="@+id/navmenuitem_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_centerVertical="true"
-        android:paddingLeft="15dp"/>
+         android:id="@+id/navmenuitem_icon"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_centerVertical="true"
+         android:layout_marginLeft="12dp" />
 
      <TextView
          android:id="@+id/navmenuitem_label"
          android:layout_width="match_parent"
-         android:layout_height="40dp"
+         android:layout_height="wrap_content"
+         android:layout_centerVertical="true"
          android:layout_toRightOf="@+id/navmenuitem_icon"
-         android:gravity="center_vertical"
-         android:text="TextView"
-         android:textColor="?text_drawer"
-         android:textSize="12sp" />
+         android:text="Секция"
+         android:textColor="?text_drawer" />
+     
+        <TextView
+            android:id="@+id/navmenuitem_counter"
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/textwiev_roundcorners"
+            android:gravity="center"
+            android:minWidth="26dp"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:text="1"
+            android:textColor="?text_subscription" >
+
+</TextView>
 
 </RelativeLayout>

@@ -1,5 +1,7 @@
 package com.mistareader;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.AsyncTask;
@@ -17,40 +19,39 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
+import com.mistareader.NavigationDrawer.NavDrawer_Main;
 import com.mistareader.TextProcessors.S;
 
 public class Topics_Fragment extends Fragment {
 
     OnTopicSelectedListener mOntopicSelectedCallback;
+    OnUnsubscribeListener mOnUnsubscribe;
 
     public interface OnTopicSelectedListener {
-
         public void onTopicSelected(Topic selectedTopic, boolean focusLast, boolean forceFirst);
-
     }
 
-    public String          sSection;
-    public String          sForum;
+    public interface OnUnsubscribeListener {
+        public void onUnsubscribe();
+    }
 
-    private Forum          forum;
+    public String         sSection;
+    public String         sForum;
 
-    private Topics_Adapter topics_sAdapter;
-    ListView               lvMain;
-    View                   rootView;
-    boolean                isInternetConnection;
+    private Forum         forum;
 
-    private String         URL;
+    public Topics_Adapter topics_sAdapter;
+    ListView              lvMain;
+    View                  rootView;
+    boolean               isInternetConnection;
 
-    private boolean        topics_isLoading = false;
+    private String        URL;
 
-    TextView               textReloading;
-    ProgressBar            progress;
-    Button                 bReload;
+    private boolean       topics_isLoading  = false;
+
+    private boolean       mode_Subscription = false;
 
     class TopicsOnItemClickListener implements OnItemClickListener {
 
@@ -63,7 +64,7 @@ public class Topics_Fragment extends Fragment {
             }
             catch (Exception e) {
 
-                S.L("TopicsOnItemClickListener: " + Log.getStackTraceString(e));
+                S.L("TopicsOnItemClickListener: ",e);
 
             }
 
@@ -78,7 +79,7 @@ public class Topics_Fragment extends Fragment {
         @Override
         public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemsInList) {
 
-            if (topics_isLoading || visibleItemCount == 0 || !isInternetConnection)
+            if (mode_Subscription || topics_isLoading || visibleItemCount == 0 || !isInternetConnection)
                 return;
 
             if ((totalItemsInList - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
@@ -111,10 +112,10 @@ public class Topics_Fragment extends Fragment {
             Topic selTopic = topics_sAdapter.getItem(position);
             if (!forum.mainDB.isTopicInSubscriptions(selTopic.id)) {
                 menu.removeItem(R.id.menu_removeFromSubscriptions);
-                
+
                 if (forum.mainDB.getTotalSubscriptionsCount() >= Settings.SUBSCRIPTIONS_MAX_COUNT) {
                     menu.removeItem(R.id.menu_addToSubscription);
-                    
+
                 }
 
             }
@@ -141,12 +142,22 @@ public class Topics_Fragment extends Fragment {
         }
         else if (itemId == R.id.menu_addToSubscription) {
             Topic selTopic = topics_sAdapter.getItem(info.position);
-            forum.mainDB.addTopicToSubscriptions(selTopic.id, selTopic.answ);
+            forum.mainDB.addTopicToSubscriptions(selTopic);
             return true;
         }
         else if (itemId == R.id.menu_removeFromSubscriptions) {
             Topic selTopic = topics_sAdapter.getItem(info.position);
             forum.mainDB.removeTopicFromSubscriptions(selTopic.id);
+            if (mode_Subscription) {
+                reLoad();                
+            }
+            try {
+                mOnUnsubscribe.onUnsubscribe();
+                }
+            catch (Exception e) {
+                S.L("TopicsOnItemClickListener: ",e);
+            }
+            
             return true;
         }
         else {
@@ -164,7 +175,7 @@ public class Topics_Fragment extends Fragment {
                 if (activity == null) {
                     return;
                 }
-                topics_sAdapter = new Topics_Adapter(activity, forum, sSection, R.layout.topic_row);
+                topics_sAdapter = new Topics_Adapter(activity, forum, sSection, mode_Subscription);
 
                 lvMain = (ListView) rootView.findViewById(R.id.lvMain);
                 lvMain.setAdapter(topics_sAdapter);
@@ -233,20 +244,38 @@ public class Topics_Fragment extends Fragment {
 
         switch (sForum) {
             case API.TOPICS_WITH_ME:
+
                 URL = API.getTopicsWithMe(forum.accountUserID, beforeUTime);
                 new RequestAsyncTopics().execute(URL);
                 break;
 
             case API.MYTOPICS:
+
                 URL = API.getMyTopics(beforeUTime);
                 new RequestAsyncTopics().execute(URL, forum.sessionID, forum.accountUserID);
-
                 break;
+
+            case NavDrawer_Main.MENU_SUBSCRIPTIONS:
+
+                fillTopicsWithSubscriptions();
+                drawTopicsList();
+                break;
+
             default:
 
                 URL = API.getTopics(sForum, sSection, beforeUTime);
                 new RequestAsyncTopics().execute(URL);
                 break;
+        }
+
+    }
+
+    private void fillTopicsWithSubscriptions() {
+
+        ArrayList<Topic> subs = forum.mainDB.getSubscriptions();
+
+        for (int i = 0; i < subs.size(); i++) {
+            forum.topics.add(subs.get(i));
         }
 
     }
@@ -279,6 +308,7 @@ public class Topics_Fragment extends Fragment {
 
         try {
             mOntopicSelectedCallback = (OnTopicSelectedListener) activity;
+            mOnUnsubscribe = (OnUnsubscribeListener) activity;
         }
         catch (ClassCastException e) {
 
@@ -298,12 +328,19 @@ public class Topics_Fragment extends Fragment {
         Bundle args = getArguments();
         if (args != null) {
 
-            sSection = args.getString("sSection", "");
             sForum = args.getString("sForum", "");
 
-            if (sForum.equals(API.TOPICS_WITH_ME) && !sSection.isEmpty()) {
-                sForum = sSection;
-                sSection = "";
+            if (sForum.equals(NavDrawer_Main.MENU_SUBSCRIPTIONS)) {
+                mode_Subscription = true;
+            }
+            else {
+
+                sSection = args.getString("sSection", "");
+
+                if (sForum.equals(API.TOPICS_WITH_ME) && !sSection.isEmpty()) {
+                    sForum = sSection;
+                    sSection = "";
+                }
             }
 
         }
@@ -347,6 +384,7 @@ public class Topics_Fragment extends Fragment {
         }
 
         forum.deleteTopics();
+
         loadTopics(0);
 
     }

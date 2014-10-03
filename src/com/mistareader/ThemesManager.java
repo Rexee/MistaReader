@@ -25,6 +25,8 @@ public class ThemesManager {
     public static int          iconSend;
     public static int          iconSettings;
 
+    public static int          colorBg_message_body;
+
     public static void changeTheme(Activity activity, int theme) {
 
         CurrentTheme = theme;
@@ -70,6 +72,9 @@ public class ThemesManager {
 
         TypedValue typedValue = new TypedValue();
         Theme theme = activity.getTheme();
+
+        theme.resolveAttribute(R.attr.bg_message_body, typedValue, true);
+        colorBg_message_body = typedValue.data;
 
         theme.resolveAttribute(R.attr.iconArrowUp, typedValue, true);
         iconArrowUp = typedValue.resourceId;

@@ -7,115 +7,118 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.mistareader.R;
 
 import java.util.ArrayList;
 
-public class NavDrawer_Adapter extends ArrayAdapter<NavDrawerMenuItem> {
+public class NavDrawer_Adapter extends ArrayAdapter<NavDrawer_MenuItem> {
 
-	private LayoutInflater inflater;
+    private LayoutInflater inflater;
 
-	public NavDrawer_Adapter(Context context, int textViewResourceId, ArrayList<NavDrawerMenuItem> objects) {
-		super(context, textViewResourceId, objects);
-		this.inflater = LayoutInflater.from(context);
-	}
+    public NavDrawer_Adapter(Context context, int textViewResourceId, ArrayList<NavDrawer_MenuItem> objects) {
+        super(context, textViewResourceId, objects);
+        this.inflater = LayoutInflater.from(context);
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		View view = null;
-		NavDrawerMenuItem menuItem = this.getItem(position);
-		if (menuItem.getType() == NavMenuItem.ITEM_TYPE) {
-			view = getItemView(convertView, parent, menuItem);
-		} else {
-			view = getSectionView(convertView, parent, menuItem);
-		}
-		return view;
-	}
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = null;
+        NavDrawer_MenuItem menuItem = this.getItem(position);
+        if (menuItem.isSection) {
+            view = getSectionView(convertView, parent, menuItem);
+        }
+        else {
+            view = getItemView(convertView, parent, menuItem);
+        }
+        return view;
+    }
 
-	public View getItemView(View convertView, ViewGroup parentView, NavDrawerMenuItem navDrawerItem) {
+    public View getItemView(View convertView, ViewGroup parentView, NavDrawer_MenuItem navDrawerItem) {
 
-		NavMenuItem menuItem = (NavMenuItem) navDrawerItem;
-		ImageView iconView;
-		TextView labelView;
+        NavMenuItemHolder holder;
+        View v;
 
-		if (convertView == null) {
-			convertView = inflater.inflate(R.layout.navdrawer_item, parentView, false);
-			labelView = (TextView) convertView.findViewById(R.id.navmenuitem_label);
-			iconView = (ImageView) convertView.findViewById(R.id.navmenuitem_icon);
+        if (convertView == null) {
+            v = inflater.inflate(R.layout.navdrawer_item, parentView, false);
 
-			NavMenuItemHolder navMenuItemHolder = new NavMenuItemHolder();
-			navMenuItemHolder.labelView = labelView;
-			navMenuItemHolder.iconView = iconView;
+            holder = new NavMenuItemHolder();
 
-			convertView.setTag(navMenuItemHolder);
-		}
-		else
-		{
-			NavMenuItemHolder navMenuItemHolder = (NavMenuItemHolder) convertView.getTag();
-			labelView = navMenuItemHolder.labelView;
-			iconView = navMenuItemHolder.iconView;
-		}
+            holder.labelView = (TextView) v.findViewById(R.id.navmenuitem_label);
+            holder.iconView = (ImageView) v.findViewById(R.id.navmenuitem_icon);
+            holder.counterView = (TextView) v.findViewById(R.id.navmenuitem_counter);
 
-		labelView.setText(menuItem.getLabel());
-		iconView.setImageResource(menuItem.getIcon());
-		
-//		if (menuItem.isExpandable()) {
-//			labelView.setTextColor(convertView.getResources().getColor(R.color.LightGray));
-//		} else {
-//			labelView.setTextColor(convertView.getResources().getColor(R.color.White));
-//
-//		}
+            v.setTag(holder);
+        }
+        else {
+            v = convertView;
+            holder = (NavMenuItemHolder) v.getTag();
+        }
 
-		return convertView;
-	}
+        holder.labelView.setText(navDrawerItem.label);
+        holder.iconView.setImageResource(navDrawerItem.icon);
+        if (navDrawerItem.newSubs == 0) {
+            holder.counterView.setVisibility(View.GONE);
+        }
 
-	public View getSectionView(View convertView, ViewGroup parentView, NavDrawerMenuItem navDrawerItem) {
+        else {
+            holder.counterView.setVisibility(View.VISIBLE);
+            holder.counterView.setText(""+navDrawerItem.newSubs);
+        }
 
-		NavMenuSection menuSection = (NavMenuSection) navDrawerItem;
-		TextView labelView;
-		  
-		if (convertView == null) {
-			convertView = inflater.inflate(R.layout.navdrawer_section, parentView, false);
-			labelView = (TextView) convertView.findViewById(R.id.navmenusection_label);
+        // if (menuItem.isExpandable()) {
+        // labelView.setTextColor(convertView.getResources().getColor(R.color.LightGray));
+        // } else {
+        // labelView.setTextColor(convertView.getResources().getColor(R.color.White));
+        //
+        // }
 
-			NavMenuSectionHolder navMenuItemHolder = new NavMenuSectionHolder();
-			navMenuItemHolder.labelView = labelView;
-			
-			convertView.setTag(navMenuItemHolder);
-		}
-		else
-		{
-			NavMenuSectionHolder navMenuItemHolder = (NavMenuSectionHolder) convertView.getTag();
-			labelView = navMenuItemHolder.labelView;
-		}
+        return v;
+    }
 
-		labelView.setText(menuSection.getLabel());
+    public View getSectionView(View convertView, ViewGroup parentView, NavDrawer_MenuItem navDrawerItem) {
 
-		return convertView;
-	}
+        NavMenuSectionHolder holder;
+        View v;
 
-	@Override
-	public int getViewTypeCount() {
-		return 2;
-	}
+        if (convertView == null) {
+            v = inflater.inflate(R.layout.navdrawer_section, parentView, false);
+            holder = new NavMenuSectionHolder();
+            holder.labelView = (TextView) v.findViewById(R.id.navmenusection_label);
+            v.setTag(holder);
 
-	@Override
-	public int getItemViewType(int position) {
-		return this.getItem(position).getType();
-	}
+        }
+        else {
+            v = convertView;
+            holder = (NavMenuSectionHolder) v.getTag();
+        }
+        
+        holder.labelView.setText(navDrawerItem.label);
 
-	@Override
-	public boolean isEnabled(int position) {
-		return getItem(position).isEnabled();
-	}
+        return v;
+    }
 
-	private static class NavMenuItemHolder {
-		private TextView labelView;
-		private ImageView iconView;
-	}
+    @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
 
-	private class NavMenuSectionHolder {
-		private TextView labelView;
-	}
+    @Override
+    public int getItemViewType(int position) {
+        if (this.getItem(position).isSection) 
+            return 1;
+        else
+            return 0;
+    }
+
+    private static class NavMenuItemHolder {
+        public TextView  counterView;
+        public TextView  labelView;
+        public ImageView iconView;
+    }
+
+    private class NavMenuSectionHolder {
+        private TextView labelView;
+    }
 
 }

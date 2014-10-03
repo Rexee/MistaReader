@@ -40,5 +40,13 @@
             android:summary="@string/sNotificationsShowInBarD"
             android:title="@string/sNotificationsShowInBar" />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:key="settingsOther"
+        android:title="@string/sOther" >
+        <Preference
+            android:key="settingsReloadSections"
+            android:summary="@string/sReloadSectionsD"
+            android:title="@string/sReloadSections" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

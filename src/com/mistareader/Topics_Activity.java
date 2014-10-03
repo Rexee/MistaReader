@@ -1,10 +1,15 @@
 package com.mistareader;
 
+import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -14,10 +19,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.mistareader.NavigationDrawer.DropDownNav;
-import com.mistareader.NavigationDrawer.NavDrawerMenuItem;
 import com.mistareader.NavigationDrawer.NavDrawer_Main;
+import com.mistareader.NavigationDrawer.NavDrawer_MenuItem;
+import com.mistareader.TextProcessors.S;
 
-public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnTopicSelectedListener, OnNavigationListener, Forum.iOnPOSTRequestExecuted,
+public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnTopicSelectedListener, Topics_Fragment.OnUnsubscribeListener, OnNavigationListener, Forum.iOnPOSTRequestExecuted,
         Forum.iOnLoggedIn {
 
     NavDrawer_Main        mND;
@@ -33,6 +39,8 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
     String                selectedForumName       = "";
     String                selectedSectionName     = "";
     boolean               isInternetConnection;
+
+    BroadcastReceiver     subscriptionsBroadcastReciever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +68,9 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         else {
             forum.showWhatsNew(sPref, this);
             forum.delayedLogin(this);
-            forum.delayedStartNotifications();
         }
+
+        registerBroadcastReciever();
 
         topics_Fragment = (Topics_Fragment) getFragmentManager().findFragmentByTag("TOPICS");
         if (topics_Fragment == null)
@@ -113,21 +122,6 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-
-        MenuItem mi = menu.findItem(R.id.menu_add);
-        if (forum.sessionID == null || forum.sessionID.isEmpty()) {
-            mi.setVisible(false);
-        }
-        else {
-            mi.setVisible(true);
-        }
-
-        return true;
-    }
-
     private void createTopicsFragment(boolean createNewFragment) {
 
         topics_Fragment = new Topics_Fragment();
@@ -149,6 +143,28 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        MenuItem mi_addNew = menu.findItem(R.id.menu_add);
+        MenuItem mi_mark = menu.findItem(R.id.menu_markAll);
+        if (forum.sessionID == null || forum.sessionID.isEmpty() || selectedForumName == NavDrawer_Main.MENU_SUBSCRIPTIONS) {
+            mi_addNew.setVisible(false);
+        }
+        else {
+            mi_addNew.setVisible(true);
+        }
+        if (selectedForumName == NavDrawer_Main.MENU_SUBSCRIPTIONS) {
+            mi_mark.setVisible(true);
+        }
+        else {
+            mi_mark.setVisible(false);
+        }
+
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
@@ -158,17 +174,36 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
             return true;
         }
         else if (id == R.id.menu_reload) {
-            if (topics_Fragment != null) {
-                isInternetConnection = WebIteraction.isInternetAvailable(Topics_Activity.this);
-                forum.isInternetConnection = isInternetConnection;
-                topics_Fragment.reLoad();
+            isInternetConnection = WebIteraction.isInternetAvailable(Topics_Activity.this);
+            forum.isInternetConnection = isInternetConnection;
+
+            if (isInternetConnection && topics_Fragment != null) {
+                if (selectedForumName.equals(NavDrawer_Main.MENU_SUBSCRIPTIONS))
+                    startService(new Intent(Topics_Activity.this, Subscriptions.class));
+                else
+                    topics_Fragment.reLoad();
             }
+
             return true;
         }
         else if (id == R.id.menu_add) {
             forum.addNewTopic(Topics_Activity.this);
             return true;
         }
+        else if (id == R.id.menu_markAll) {
+            forum.mainDB.markAllSubscriptionsAsReaded();
+            
+            rebuildNavDrawer();
+            
+            isInternetConnection = WebIteraction.isInternetAvailable(Topics_Activity.this);
+            forum.isInternetConnection = isInternetConnection;
+
+            if (isInternetConnection && topics_Fragment != null) {
+                topics_Fragment.reLoad();
+            }
+            
+            return true;
+      }
         else {
             return super.onOptionsItemSelected(item);
         }
@@ -223,6 +258,8 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
     @Override
     protected void onDestroy() {
 
+        LocalBroadcastManager.getInstance(Topics_Activity.this).unregisterReceiver(subscriptionsBroadcastReciever);
+
         forum = Forum.getInstance();
         if (forum != null) {
             SharedPreferences sPref = getPreferences(MODE_PRIVATE);
@@ -275,34 +312,23 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
             mND.mDrawerLayout.closeDrawer(mND.mDrawerList);
 
-            NavDrawerMenuItem selectedMenu = mND.getMenuItem(position);
+            NavDrawer_MenuItem selectedMenu = mND.getMenuItem(position);
 
-            if (!selectedMenu.isExpandable()) {
+            if (!selectedMenu.isExpandable) {
 
-                String menuId = selectedMenu.getId();
+                String menuId = selectedMenu.id;
 
                 switch (menuId) {
                     case NavDrawer_Main.MENU_SETTINGS:
                         startActivity(new Intent(Topics_Activity.this, Settings_Activity.class));
                         break;
 
-                    case NavDrawer_Main.MENU_ACCOUNT:
-
-                        forum.setupAccount(Topics_Activity.this);
-                        break;
-
-                    case NavDrawer_Main.MENU_THEMES:
-
-                        forum.selectTheme(Topics_Activity.this);
-                        break;
-
                     case NavDrawer_Main.MENU_LOGOFF:
 
                         forum.sessionID = "";
                         invalidateOptionsMenu();
-                        mND.buildMenu(Topics_Activity.this);
-                        mND.mListAdapter.notifyDataSetInvalidated();
-                        mND.mListAdapter.notifyDataSetChanged();
+                        rebuildNavDrawer();
+
                         break;
 
                     case NavDrawer_Main.MENU_ABOUT:
@@ -312,7 +338,17 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
                     case NavDrawer_Main.MENU_SUBSCRIPTIONS:
 
-//                        forum.showAbout(Topics_Activity.this);
+                        selectedForumName = NavDrawer_Main.MENU_SUBSCRIPTIONS;
+                        selectedForumPosition = position;
+                        mND.mSelectedPosition = selectedForumPosition;
+                        
+                        final ActionBar actionBar = getActionBar();
+                        actionBar.setDisplayShowTitleEnabled(true);;
+                        actionBar.setTitle(R.string.sSubscriptions);
+                        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+                        
+                        invalidateOptionsMenu();
+                        createTopicsFragment(false);
                         break;
 
                     default:
@@ -321,6 +357,7 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
                         mND.mSelectedPosition = selectedForumPosition;
                         selectedForumName = mND.getSelectedItemID();
 
+                        invalidateOptionsMenu();
                         openSelectedForum();
                         break;
                 }
@@ -330,22 +367,22 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
                 // mND.setItemChecked(mND.mSelectedPosition);
 
-                if (selectedMenu.isExpanded()) {
+                if (selectedMenu.isExpandable) {
 
-                    selectedMenu.setIsExpanded(false);
-                    selectedMenu.setIcon(R.drawable.ic_action_expand);
-                    selectedMenu.setLabel(getString(R.string.sNavDrawerLess));
+                    selectedMenu.isExpandable = false;
+                    selectedMenu.icon = R.drawable.ic_action_expand;
+                    selectedMenu.label = getString(R.string.sNavDrawerLess);
 
-                    mND.collapseMenu(position, selectedMenu.getForum());
+                    mND.collapseMenu(position, selectedMenu.forum);
                     mND.mListAdapter.notifyDataSetChanged();
                 }
                 else {
 
                     selectedMenu.setIsExpanded(true);
-                    selectedMenu.setIcon(R.drawable.ic_action_collapse);
-                    selectedMenu.setLabel(getString(R.string.sNavDrawerLess));
+                    selectedMenu.icon = R.drawable.ic_action_collapse;
+                    selectedMenu.label = getString(R.string.sNavDrawerLess);
 
-                    mND.expandMenu(position, selectedMenu.getForum());
+                    mND.expandMenu(position, selectedMenu.forum);
                     mND.mListAdapter.notifyDataSetChanged();
                 }
 
@@ -391,6 +428,38 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         return true;
 
     }
+    
+    @Override
+    public void onUnsubscribe() {
+        rebuildNavDrawer();
+        
+    }
+    private void rebuildNavDrawer() {
+        mND.mListAdapter.notifyDataSetInvalidated();
+        mND.buildMenu(Topics_Activity.this);
+        mND.mListAdapter.notifyDataSetChanged();        
+    }
+
+    private void registerBroadcastReciever() {
+        IntentFilter intFilt = new IntentFilter(Settings.SUBSCRIPTIONS_UPDATED_BROADCAST);
+        subscriptionsBroadcastReciever = new subscriptionsResponseReceiver();
+        LocalBroadcastManager.getInstance(Topics_Activity.this).registerReceiver(subscriptionsBroadcastReciever, intFilt);
+    }
+
+    private class subscriptionsResponseReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            
+            S.L("Recieve broadcast");
+            rebuildNavDrawer();
+            
+            if (selectedForumName == NavDrawer_Main.MENU_SUBSCRIPTIONS) {
+                if (topics_Fragment != null) {
+                    topics_Fragment.reLoad();
+                }
+            }
+        }
+    }
 
     @Override
     public void onPOSTRequestExecuted(String result) {
@@ -409,9 +478,7 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         invalidateOptionsMenu();
         mND.mCurrentAccout = forum.accountName;
         mND.mIsLoggedIn = isLoggedIn;
-        mND.buildMenu(this);
-        mND.mListAdapter.notifyDataSetInvalidated();
-        mND.mListAdapter.notifyDataSetChanged();
+        rebuildNavDrawer();
 
     }
 

@@ -15,12 +15,16 @@ public class Messages_Activity extends BaseActivity implements Forum.iOnPOSTRequ
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-
+        
+        MenuItem mi;
+        
         Forum forum = Forum.getInstance();
         if (forum.sessionID == null || forum.sessionID.isEmpty()) {
-            MenuItem mi = menu.findItem(R.id.menu_add);
+            mi = menu.findItem(R.id.menu_add);
             mi.setVisible(false);
         }
+        mi = menu.findItem(R.id.menu_markAll);
+        mi.setVisible(false);  
 
         return true;
     }

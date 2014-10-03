@@ -8,12 +8,12 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import com.mistareader.TextProcessors.S;
+
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
-
-import com.mistareader.TextProcessors.S;
 
 public class WebIteraction {
 
@@ -34,8 +34,8 @@ public class WebIteraction {
     }
 
     public static class hashResult {
-        String sessionID;
-        String result;
+        public String sessionID;
+        public String result;
 
         public hashResult() {
             sessionID = "";
@@ -45,7 +45,7 @@ public class WebIteraction {
     }
 
     public static class PostResult {
-        String result;
+        public String result;
 
         public PostResult() {
             result = "";
@@ -55,10 +55,10 @@ public class WebIteraction {
 
     public static class POST {
 
-        String url;
+        public String url;
 
-        String cookie;
-        String POSTString;
+        public String cookie;
+        public String POSTString;
 
     }
 

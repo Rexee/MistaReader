@@ -28,7 +28,7 @@ public class BaseActivity extends ActionBarActivity {
 
         super.onResume();
 
-        Subscriptions_Service.refreshNotificationsShedule(this);
+        Subscriptions.refreshNotificationsShedule(this);
 
     }
 

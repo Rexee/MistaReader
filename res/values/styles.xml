@@ -14,12 +14,15 @@
         <item name="text_hyperlink">#28BEFF</item>
         <item name="text_vote">#001BA3</item>
         <item name="text_account">#0fc7a4</item>
+        
+        <item name="text_subscription">#FFFFFF</item>
+        
         <item name="bg_topic_header">#F4F4F4</item>
         <item name="bg_topic_footer">#F4F4F4</item>
         <item name="bg_topic_body">#FFFFFF</item>
         <item name="bg_message_header">#F4F4F4</item>
         <item name="bg_message_footer">#F4F4F4</item>
-        <item name="bg_message_body">#FFFFFF</item>
+        <item name="bg_message_body">#FFFFFFFF</item>
         <item name="iconAbout">@drawable/ic_action_about_lt</item>
         <item name="iconRefresh">@drawable/ic_action_refresh_lt</item>
         <item name="iconForum">@drawable/ic_action_view_as_grid_lt</item>
@@ -31,10 +34,12 @@
         <item name="iconReplies">@drawable/ic_action_chat_lt</item>
         <item name="iconSend">@drawable/ic_action_send_now_lt</item>
         <item name="iconSettings">@drawable/ic_action_settings_lt</item>
+        <item name="iconMarkAll">@drawable/ic_action_accept_lt</item>
     </style>
 
     <style name="Theme_Gray" parent="android:Theme.Holo">
         <item name="bg_main">#1D1D1D</item>
+        
         <item name="bg_drawer">#1D1D1D</item>
         <item name="bg_license">#2D2D2D</item>
         <item name="text_inactive">#AAAAAA</item>
@@ -45,12 +50,16 @@
         <item name="text_hyperlink">#28BEFF</item>
         <item name="text_vote">#4782d1</item>
         <item name="text_account">#0FFF80</item>
+        
+        <item name="text_subscription">#FFFFFF</item>
+        
+        
         <item name="bg_topic_header">#2F2F2F</item>
         <item name="bg_topic_footer">#2F2F2F</item>
         <item name="bg_topic_body">#333333</item>
         <item name="bg_message_header">#2F2F2F</item>
         <item name="bg_message_footer">#2F2F2F</item>
-        <item name="bg_message_body">#333333</item>
+        <item name="bg_message_body">#FF333333</item>
         <item name="iconAbout">@drawable/ic_action_about</item>
         <item name="iconRefresh">@drawable/ic_action_refresh</item>
         <item name="iconNewItem">@drawable/ic_action_new_event</item>
@@ -62,7 +71,8 @@
         <item name="iconReplies">@drawable/ic_action_chat</item>
         <item name="iconSend">@drawable/ic_action_send_now</item>
         <item name="iconSettings">@drawable/ic_action_settings</item>
-    </style>
+         <item name="iconMarkAll">@drawable/ic_action_accept</item>
+          </style>
 
     <style name="Theme_Black" parent="android:Theme.Holo">
         <item name="bg_main">#0D0D0D</item>
@@ -76,12 +86,15 @@
         <item name="text_hyperlink">#28BEFF</item>
         <item name="text_vote">#4782d1</item>
         <item name="text_account">#0FFF80</item>
+        
+        <item name="text_subscription">#FFFFFF</item>
+        
         <item name="bg_topic_header">#000000</item>
         <item name="bg_topic_footer">#000000</item>
         <item name="bg_topic_body">#000000</item>
         <item name="bg_message_header">#000000</item>
         <item name="bg_message_footer">#000000</item>
-        <item name="bg_message_body">#000000</item>
+        <item name="bg_message_body">#FF000000</item>
         <item name="iconAbout">@drawable/ic_action_about</item>
         <item name="iconRefresh">@drawable/ic_action_refresh</item>
         <item name="iconNewItem">@drawable/ic_action_new_event</item>
@@ -93,6 +106,8 @@
         <item name="iconReplies">@drawable/ic_action_chat</item>
         <item name="iconSend">@drawable/ic_action_send_now</item>
         <item name="iconSettings">@drawable/ic_action_settings</item>
-    </style>
+        <item name="iconMarkAll">@drawable/ic_action_accept</item>
+        
+        </style>
 
 </resources>
