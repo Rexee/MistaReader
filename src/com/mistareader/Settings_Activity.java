@@ -1,13 +1,17 @@
 package com.mistareader;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
-public class Settings_Activity extends PreferenceActivity implements Forum.iOnLoggedIn, Forum.iOnThemeChanged {
+public class Settings_Activity extends PreferenceActivity implements Forum.iOnLoggedIn, Forum.iOnThemeChanged, Settings_Fragment.iOnSubsChange {
 
     Settings_Fragment settingsFragment;
-    
+    boolean           isLoginChanged                = false;
+    boolean           isThemeChanged                = false;
+    boolean           isSubscriptionChanged = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -24,9 +28,10 @@ public class Settings_Activity extends PreferenceActivity implements Forum.iOnLo
     @Override
     public void onLoggedIn(boolean isLoggedIn) {
 
-        Topics_Activity.isLoginChanged = true;
+        isLoginChanged = true;
         settingsFragment.updateAccountDescription(isLoggedIn);
 
+        updateResult();
     }
 
     @Override
@@ -39,10 +44,26 @@ public class Settings_Activity extends PreferenceActivity implements Forum.iOnLo
         Forum forum = Forum.getInstance();
         forum.saveSettings(sPref);
 
-        ThemesManager.changeTheme(Settings_Activity.this, newTheme);
+        settingsFragment.updateThemeDescription();
 
-        Topics_Activity.isThemeChanged = true;
+        isThemeChanged = true;
 
+        updateResult();
+
+    }
+
+    private void updateResult() {
+        Intent intent = new Intent();
+        intent.putExtra("isLoginChanged", isLoginChanged);
+        intent.putExtra("isThemeChanged", isThemeChanged);
+        intent.putExtra("isSubscriptionChanged", isSubscriptionChanged);
+        setResult(RESULT_OK, intent);
+    }
+
+    @Override
+    public void onSubscriptionsSettingsChanged() {
+        isSubscriptionChanged = true;
+        updateResult();        
     }
 
 }

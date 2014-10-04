@@ -320,7 +320,7 @@ public class Topics_Fragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        // setRetainInstance(true);
+        //  setRetainInstance(true);
         // setHasOptionsMenu(true);
 
         super.onCreate(savedInstanceState);

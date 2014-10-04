@@ -23,24 +23,21 @@ import com.mistareader.NavigationDrawer.NavDrawer_Main;
 import com.mistareader.NavigationDrawer.NavDrawer_MenuItem;
 import com.mistareader.TextProcessors.S;
 
-public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnTopicSelectedListener, Topics_Fragment.OnUnsubscribeListener, OnNavigationListener, Forum.iOnPOSTRequestExecuted,
-        Forum.iOnLoggedIn {
+public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnTopicSelectedListener, Topics_Fragment.OnUnsubscribeListener,
+        OnNavigationListener, Forum.iOnPOSTRequestExecuted, Forum.iOnLoggedIn {
 
-    NavDrawer_Main        mND;
-    DropDownNav           ddN;
-    Forum                 forum;
-    Topics_Fragment       topics_Fragment;
+    NavDrawer_Main    mND;
+    DropDownNav       ddN;
+    Forum             forum;
+    Topics_Fragment   topics_Fragment;
 
-    public static boolean isLoginChanged          = false;
-    public static boolean isThemeChanged          = false;
+    int               selectedForumPosition   = 1;
+    int               selectedSectionPosition = 0;
+    String            selectedForumName       = "";
+    String            selectedSectionName     = "";
+    boolean           isInternetConnection;
 
-    int                   selectedForumPosition   = 1;
-    int                   selectedSectionPosition = 0;
-    String                selectedForumName       = "";
-    String                selectedSectionName     = "";
-    boolean               isInternetConnection;
-
-    BroadcastReceiver     subscriptionsBroadcastReciever;
+    BroadcastReceiver subscriptionsBroadcastReciever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,20 +90,9 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         super.onResume();
 
         // После recreate() открывает Drawer. Не знаю почему.
-        mND.mDrawerLayout.closeDrawer(mND.mDrawerList);
-        mND.mDrawerToggle.syncState();
-
-        if (isLoginChanged) {
-            isLoginChanged = false;
-
-            onLoggedIn(!forum.sessionID.isEmpty());
-        }
-
-        if (isThemeChanged) {
-            isThemeChanged = false;
-
-            recreate();
-
+        if (mND.mDrawerLayout.isDrawerOpen(mND.mDrawerList)) {
+            mND.mDrawerLayout.closeDrawer(mND.mDrawerList);
+            mND.mDrawerToggle.syncState();
         }
 
     }
@@ -192,18 +178,18 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         }
         else if (id == R.id.menu_markAll) {
             forum.mainDB.markAllSubscriptionsAsReaded();
-            
+
             rebuildNavDrawer();
-            
+
             isInternetConnection = WebIteraction.isInternetAvailable(Topics_Activity.this);
             forum.isInternetConnection = isInternetConnection;
 
             if (isInternetConnection && topics_Fragment != null) {
                 topics_Fragment.reLoad();
             }
-            
+
             return true;
-      }
+        }
         else {
             return super.onOptionsItemSelected(item);
         }
@@ -215,15 +201,15 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (data == null || resultCode != RESULT_OK) {
-            return;
-        }
+        switch (requestCode) {
+            case Forum.ACTIVITY_RESULT_NEWTOPIC:
 
-        Bundle args = data.getExtras();
-        if (args != null) {
+                if (data == null || resultCode != RESULT_OK) {
+                    return;
+                }
 
-            switch (requestCode) {
-                case Forum.ACTIVITY_RESULT_NEWTOPIC:
+                Bundle args = data.getExtras();
+                if (args != null) {
 
                     String commandName = args.getString("commandName", null);
                     if (commandName == null) {
@@ -236,12 +222,31 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
                     break;
 
-                case Forum.ACTIVITY_RESULT_SETTINGS:
-                    break;
-                default:
-                    break;
-            }
+                }
 
+            case Forum.ACTIVITY_RESULT_SETTINGS:
+                if (data == null)
+                    return;
+
+                boolean isLoginChanged = data.getBooleanExtra("isLoginChanged", false);
+                boolean isThemeChanged = data.getBooleanExtra("isThemeChanged", false);
+                boolean isSubscriptionChanged = data.getBooleanExtra("isSubscriptionChanged", false);
+
+                if (isSubscriptionChanged) {
+                    Subscriptions.updateNotifications(Topics_Activity.this);
+                }
+
+                if (isLoginChanged) {
+                    onLoggedIn(!forum.sessionID.isEmpty());
+                }
+
+                if (isThemeChanged) {
+                    recreate();
+                }
+
+                break;
+            default:
+                break;
         }
 
     }
@@ -320,7 +325,7 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
                 switch (menuId) {
                     case NavDrawer_Main.MENU_SETTINGS:
-                        startActivity(new Intent(Topics_Activity.this, Settings_Activity.class));
+                        startActivityForResult(new Intent(Topics_Activity.this, Settings_Activity.class), Forum.ACTIVITY_RESULT_SETTINGS);
                         break;
 
                     case NavDrawer_Main.MENU_LOGOFF:
@@ -341,12 +346,13 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
                         selectedForumName = NavDrawer_Main.MENU_SUBSCRIPTIONS;
                         selectedForumPosition = position;
                         mND.mSelectedPosition = selectedForumPosition;
-                        
+
                         final ActionBar actionBar = getActionBar();
-                        actionBar.setDisplayShowTitleEnabled(true);;
+                        actionBar.setDisplayShowTitleEnabled(true);
+                        ;
                         actionBar.setTitle(R.string.sSubscriptions);
                         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-                        
+
                         invalidateOptionsMenu();
                         createTopicsFragment(false);
                         break;
@@ -428,16 +434,17 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         return true;
 
     }
-    
+
     @Override
     public void onUnsubscribe() {
         rebuildNavDrawer();
-        
+
     }
+
     private void rebuildNavDrawer() {
         mND.mListAdapter.notifyDataSetInvalidated();
         mND.buildMenu(Topics_Activity.this);
-        mND.mListAdapter.notifyDataSetChanged();        
+        mND.mListAdapter.notifyDataSetChanged();
     }
 
     private void registerBroadcastReciever() {
@@ -449,10 +456,10 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
     private class subscriptionsResponseReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            
+
             S.L("Recieve broadcast");
             rebuildNavDrawer();
-            
+
             if (selectedForumName == NavDrawer_Main.MENU_SUBSCRIPTIONS) {
                 if (topics_Fragment != null) {
                     topics_Fragment.reLoad();

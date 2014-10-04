@@ -183,8 +183,8 @@ public class JSONProcessor {
 
         try {
 
-            if (inputString.equals("{}") || inputString.isEmpty()) {
-                return newTopic;
+            if (inputString.equals("{}") || inputString.isEmpty() || inputString.equals("[\"Topic not found\"]")) {
+               return newTopic;
             }
 
             JSONObject mainObj = new JSONObject(inputString);
@@ -224,15 +224,15 @@ public class JSONProcessor {
 
     public static Topic getTopicAnsw(String inputString) {
 
-        Topic res = new Topic();
         try {
 
-            if (inputString.equals("{}") || inputString.isEmpty()) {
-                return res;
+            if (inputString.equals("{}") || inputString.isEmpty() || inputString.equals("[\"Topic not found\"]")) {
+                return null;
             }
 
             JSONObject mainObj = new JSONObject(inputString);
 
+            Topic res = new Topic();
             res.answ = mainObj.getInt("answers_count");
             res.user = mainObj.getString("updated_name");
             res.utime = mainObj.getLong("updated");
@@ -240,14 +240,16 @@ public class JSONProcessor {
             SimpleDateFormat sdf = new SimpleDateFormat("d MMM H:mm");
             Date date = new Date(res.utime * 1000L);
             res.time_text = sdf.format(date).toString();
+            
+            return res;
 
       }
         catch (Exception e) {
 
             S.L("Forum.getTopicAnsw: " + Log.getStackTraceString(e));
+            return null;
         }
 
-        return res;
     }
 
     public static ArrayList<Section> parseSectionsList(String inputString) {

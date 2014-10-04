@@ -2,8 +2,10 @@ package com.mistareader;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.view.LayoutInflater;
@@ -12,8 +14,17 @@ import android.view.ViewGroup;
 
 public class Settings_Fragment extends PreferenceFragment {
 
+    private static final String SETTINGS_RELOAD_SECTIONS = "settingsReloadSections";
+    private static final String SETTINGS_THEMES = "settingsThemes";
+    private static final String SETTINGS_ACCONT = "settingsAccont";
+    
     Forum forum;
 
+    public interface iOnSubsChange
+    {
+        void onSubscriptionsSettingsChanged();
+    }
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         
@@ -32,7 +43,7 @@ public class Settings_Fragment extends PreferenceFragment {
 
         forum = Forum.getInstance();
 
-        Preference settingsAccont = findPreference("settingsAccont");
+        Preference settingsAccont = findPreference(SETTINGS_ACCONT);
 
         if (forum.sessionID.isEmpty()) 
             settingsAccont.setSummary(R.string.sNotAuthorized);
@@ -48,7 +59,7 @@ public class Settings_Fragment extends PreferenceFragment {
             }
         });
 
-        Preference settingsTheme = findPreference("settingsThemes");
+        Preference settingsTheme = findPreference(SETTINGS_THEMES);
         settingsTheme.setSummary(ThemesManager.getCurrentThemeName(activity));
         settingsTheme.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
@@ -57,6 +68,23 @@ public class Settings_Fragment extends PreferenceFragment {
             }
         });
 
+        
+        //SUBSCRIPTIONS***********************
+        final iOnSubsChange mCallbackOnIntervalChanged;
+        mCallbackOnIntervalChanged = (iOnSubsChange) activity;
+       
+        CheckBoxPreference settingsSubsUse = (CheckBoxPreference) findPreference(Settings.SUBSCRIPTIONS_USE);
+        settingsSubsUse.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mCallbackOnIntervalChanged.onSubscriptionsSettingsChanged();
+                return true;
+            }
+        });
+
+        
+        
         final ListPreference settingsNotifInterval = (ListPreference) findPreference(Settings.SUBSCRIPTIONS_INTERVAL);
         String currentValue = settingsNotifInterval.getValue();
         if (currentValue == null) {
@@ -66,9 +94,11 @@ public class Settings_Fragment extends PreferenceFragment {
 
         updateDescription(settingsNotifInterval, currentValue);
 
+        
         settingsNotifInterval.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mCallbackOnIntervalChanged.onSubscriptionsSettingsChanged();
                 updateDescription(settingsNotifInterval, newValue.toString());
                 return true;
             }
@@ -84,7 +114,7 @@ public class Settings_Fragment extends PreferenceFragment {
 //            }
 //        });
         
-        Preference settingsReloadSections = (Preference) findPreference("settingsReloadSections");
+        Preference settingsReloadSections = (Preference) findPreference(SETTINGS_RELOAD_SECTIONS);
         settingsReloadSections.setOnPreferenceClickListener(new OnPreferenceClickListener() { 
             public boolean onPreferenceClick(Preference preference) {
                 forum.reloadSections(getActivity());
@@ -102,7 +132,7 @@ public class Settings_Fragment extends PreferenceFragment {
 
     public void updateAccountDescription(boolean isLoggedIn) {
 
-        Preference settingsAccont = findPreference("settingsAccont");
+        Preference settingsAccont = findPreference(SETTINGS_ACCONT);
         if (isLoggedIn) {
             settingsAccont.setSummary(forum.accountName);
         }
@@ -111,6 +141,12 @@ public class Settings_Fragment extends PreferenceFragment {
             settingsAccont.setSummary(R.string.sNotAuthorized);
         }
         
+    }
+    
+
+    public void updateThemeDescription() {
+        Preference settingsTheme = findPreference(SETTINGS_THEMES);
+        settingsTheme.setSummary(ThemesManager.getCurrentThemeName(getActivity()));        
     }
 
 }

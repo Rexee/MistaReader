@@ -121,4 +121,8 @@ public class NavDrawer_Adapter extends ArrayAdapter<NavDrawer_MenuItem> {
         private TextView labelView;
     }
 
+    @Override
+    public boolean isEnabled(int position) {
+        return !getItem(position).isSection;
+    }
 }
