@@ -49,6 +49,7 @@
     <string name="sSection">Секция</string>
   
 	<string name="sNewMessage">Новое сообщение</string>
+	<string name="sNewMessages">Новые сообщения</string>
 	
 	<string name="sPopupMenyHeader">Действия с темой</string>
 	

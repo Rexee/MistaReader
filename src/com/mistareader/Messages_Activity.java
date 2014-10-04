@@ -30,7 +30,7 @@ public class Messages_Activity extends BaseActivity implements Forum.iOnPOSTRequ
     }
 
     @Override
-     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         
         if (v.getId()==R.id.lvMain) {
@@ -61,8 +61,8 @@ public class Messages_Activity extends BaseActivity implements Forum.iOnPOSTRequ
             setTitle(title);
 
             messages_Fragment.setArguments(args);
-
             getFragmentManager().beginTransaction().add(android.R.id.content, messages_Fragment).commit();
+            
         }
 
     }

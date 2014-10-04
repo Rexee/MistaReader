@@ -18,14 +18,19 @@ public class DropDownNav {
 
     public ArrayList<String> shortSectionsNamesList;
 
+    
     public void reBuildSubmenu(Activity mainActivity, String selectedForumName, int selectedSectionPosition) {
 
         final ActionBar actionBar = mainActivity.getActionBar();
 
         if (selectedForumName.isEmpty()) {
-            actionBar.setDisplayShowTitleEnabled(true);
+            setDefaultActionBarMode(actionBar);
             actionBar.setTitle(R.string.sAllSections);
-            actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+            return;
+        }
+        else if (selectedForumName.equals(NavDrawer_Main.MENU_SUBSCRIPTIONS)) {
+            setDefaultActionBarMode(actionBar);
+            actionBar.setTitle(R.string.sSubscriptions);
             return;
         }
 
@@ -69,6 +74,12 @@ public class DropDownNav {
 
         actionBar.setSelectedNavigationItem(selectedSectionPosition);
 
+    }
+
+
+    private void setDefaultActionBarMode(final ActionBar actionBar) {
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
     }
 
 }

@@ -9,6 +9,7 @@ import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -44,28 +45,30 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
     private String          mAccount;
     private final int       prefetchMessagesFactor = 10;
 
+    public boolean          modeMovePositionToLastMessage;
+    public boolean          modeMovePositionToFirstMessage;
+    public int              movePositionToMessage;
+
+    private String          URL;
+
+    private boolean         messages_isLoading     = false;
+
+    ImageView               imgFastScrollDown;
+    ImageView               imgFastScrollUp;
+
+    boolean                 up                     = false;
+    boolean                 allowArrowChange       = true;
+    boolean                 allowArrowShow;
+    boolean                 focusLast;
+    int                     focusOn;
+
+    boolean                 topicMarkedAsReaded    = false;
+
+    int                     answ;
+
     public long getCurrentTopicId() {
         return currentTopicId;
     }
-
-    public boolean  modeMovePositionToLastMessage;
-    public boolean  modeMovePositionToFirstMessage;
-    public int      movePositionToMessage;
-
-    private String  URL;
-
-    private boolean messages_isLoading = false;
-
-    ImageView       imgFastScrollDown;
-    ImageView       imgFastScrollUp;
-
-    boolean         up                 = false;
-    boolean         allowArrowChange   = true;
-    boolean         allowArrowShow;
-    boolean         focusLast;
-    int             focusOn;
-
-    int             answ;
 
     @Override
     public void onAttach(Activity activity) {
@@ -97,7 +100,9 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
         imgFastScrollDown.setOnClickListener(onArrowClick);
         imgFastScrollUp.setOnClickListener(onArrowClick);
 
+        // в ответе сервера "темы с моим участием" нет этого флага.
         // if (currentTopic.is_voting == 1) {
+
         getTopicInfo();
         // }
 
@@ -361,8 +366,8 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
             return;
         }
 
-        ((TextView) message_Header.findViewById(R.id.mess_headerText)).setText(currentTopic.text);
-
+        ((TextView) message_Header.findViewById(R.id.mess_headerText)).setText(Html.fromHtml(currentTopic.text));
+        
         if (currentTopic.votes != null) {
 
             RelativeLayout RL = (RelativeLayout) message_Header.findViewById(R.id.RL1);
@@ -469,8 +474,6 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
         public RequestAsyncMessages(int messages_from, int messages_to) {
             mMessages_from = Math.max(messages_from, 0);
             mMessages_to = Math.min(messages_to, answ);
-
-            S.L(mMessages_from + "-" + messages_to);
         }
 
         @Override
@@ -494,10 +497,10 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
     public void onDestroy() {
 
         Forum forum = Forum.getInstance();
-        if (forum.mainDB!=null && lvMain!=null) {
-            forum.mainDB.addLastPositionToMessage(currentTopicId, lvMain.getLastVisiblePosition());            
+        if (forum.mainDB != null && lvMain != null) {
+            forum.mainDB.addLastPositionToMessage(currentTopicId, lvMain.getLastVisiblePosition());
         }
-        
+
         super.onDestroy();
     }
 

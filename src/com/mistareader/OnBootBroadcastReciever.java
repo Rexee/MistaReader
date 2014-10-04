@@ -16,7 +16,7 @@ public class OnBootBroadcastReciever extends BroadcastReceiver {
             
             S.L("Forum_BroadcastReciever.BOOT_COMPLETED");
             
-            Subscriptions.refreshNotificationsShedule(context);
+            Subscriptions.updateNotifications(context);
  
         }
 

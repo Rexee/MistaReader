@@ -25,19 +25,19 @@ public class Topics_Adapter extends BaseAdapter {
     private static int       mAccountColor  = -1;
 
     private String           mAccount;
-    private boolean mMode_Subscription;
-    
+    private boolean          mMode_Subscription;
+
     public Topics_Adapter(Context context, Forum forum, String selectedSection, boolean mode_Subscription) {
         mTopics = forum.topics;
         mAccount = forum.accountName;
-        
+
         mMode_Subscription = mode_Subscription;
 
         mShowSections = selectedSection.isEmpty();
 
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (!mode_Subscription) {
-            
+
         }
 
         Resources locRes = context.getResources();
@@ -101,11 +101,10 @@ public class Topics_Adapter extends BaseAdapter {
             holder.topic_Replies = (TextView) v.findViewById(R.id.topic_replies);
             holder.topic_Section = (TextView) v.findViewById(R.id.topic_section);
             holder.topic_Replies_new = (TextView) v.findViewById(R.id.topic_replies_new);
-            
+
             if (mMode_Subscription) {
-                holder.topic_Replies_new.setVisibility(View.VISIBLE);        
+                holder.topic_Replies_new.setVisibility(View.VISIBLE);
             }
-               
 
             v.setTag(holder);
 
@@ -116,15 +115,21 @@ public class Topics_Adapter extends BaseAdapter {
         }
 
         Topic currentTopic = mTopics.get(position);
-      
+
         holder.topic_Replies.setText("" + currentTopic.answ);
         holder.topic_Text.setText(Html.fromHtml(currentTopic.text));
         holder.topic_Time.setText(currentTopic.time_text);
         holder.topic_User0.setText(currentTopic.user0);
         holder.topic_User.setText(currentTopic.user);
-        
+
         if (mMode_Subscription) {
-            holder.topic_Replies_new.setText("+" + currentTopic.newAnsw);
+            if (currentTopic.newAnsw == 0) {
+                holder.topic_Replies_new.setVisibility(View.GONE);
+            }
+            else {
+                holder.topic_Replies_new.setVisibility(View.VISIBLE);
+                holder.topic_Replies_new.setText("+" + currentTopic.newAnsw);
+            }
         }
 
         if (mShowSections)

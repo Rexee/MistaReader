@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Gravity;
@@ -56,6 +57,11 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
             forum.initialize(isInternetConnection, this);
         }
 
+        Bundle extras = getIntent().getExtras();
+        if(extras != null){
+            S.L(extras.get("topicId"));
+        }
+        
         if (savedInstanceState != null) {
             selectedForumName = savedInstanceState.getString("forum", "");
             selectedSectionName = savedInstanceState.getString("section", "");
@@ -259,6 +265,22 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         }
         return super.onKeyDown(keyCode, event);
     }
+    
+    @Override
+    public void onBackPressed() {
+        
+        if (selectedForumName == NavDrawer_Main.MENU_SUBSCRIPTIONS) {
+            
+            selectedForumPosition = 1;
+            mND.mSelectedPosition = selectedForumPosition;
+            selectedForumName = mND.getSelectedItemID();
+
+            invalidateOptionsMenu();
+            openSelectedForum();
+            return;
+        }
+        super.onBackPressed();
+    }
 
     @Override
     protected void onDestroy() {
@@ -295,9 +317,47 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         }
 
         startActivity(intent);
+        
+        new markAsReadedAsync().execute(selectedTopic.id);
 
     }
 
+    public class markAsReadedAsync extends AsyncTask<Long, Void, Boolean> {
+        boolean mIsSubscriptionPage;
+        
+        @Override
+        protected void onPostExecute(Boolean isTopicMarked) {
+            
+            if (!isTopicMarked) {
+                return;
+            }
+            
+            rebuildNavDrawer();
+            if (mIsSubscriptionPage) {
+                if (topics_Fragment != null) {
+                    topics_Fragment.reLoad();
+                }
+            }
+
+        }
+
+        @Override
+        protected Boolean doInBackground(Long... arg0) {
+            
+            Long topicId = arg0[0];
+            
+            mIsSubscriptionPage = selectedForumName.equals(NavDrawer_Main.MENU_SUBSCRIPTIONS); 
+            
+            if (mIsSubscriptionPage || forum.mainDB.isTopicInSubscriptions(topicId)) {
+                forum.mainDB.markTopicAsReaded(topicId);
+                return true;
+            }
+                    
+            return false;
+        }
+
+    }
+    
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -349,10 +409,10 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
                         final ActionBar actionBar = getActionBar();
                         actionBar.setDisplayShowTitleEnabled(true);
-                        ;
+                        
                         actionBar.setTitle(R.string.sSubscriptions);
                         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-
+                        
                         invalidateOptionsMenu();
                         createTopicsFragment(false);
                         break;
@@ -457,7 +517,6 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            S.L("Recieve broadcast");
             rebuildNavDrawer();
 
             if (selectedForumName == NavDrawer_Main.MENU_SUBSCRIPTIONS) {

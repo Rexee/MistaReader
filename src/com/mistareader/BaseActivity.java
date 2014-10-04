@@ -23,13 +23,4 @@ public class BaseActivity extends ActionBarActivity {
 
     }
 
-    @Override
-    protected void onResume() {
-
-        super.onResume();
-
-        Subscriptions.refreshNotificationsShedule(this);
-
-    }
-
 }

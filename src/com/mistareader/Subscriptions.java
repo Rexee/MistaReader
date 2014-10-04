@@ -4,18 +4,22 @@ import java.util.ArrayList;
 
 import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.mistareader.TextProcessors.JSONProcessor;
-import com.mistareader.TextProcessors.S;
 
 public class Subscriptions extends IntentService {
 
@@ -31,12 +35,13 @@ public class Subscriptions extends IntentService {
     @Override
     protected void onHandleIntent(Intent workIntent) {
 
-        S.L("SERV");
-
         if (!WebIteraction.isInternetAvailable(this)) {
             stopSelf();
             return;
         }
+        
+        showNotification("sample text",0);
+        showNotification("second text",0);
 
         mainDB = new DB(this);
 
@@ -68,59 +73,49 @@ public class Subscriptions extends IntentService {
 
                 Intent intent = new Intent(Settings.SUBSCRIPTIONS_UPDATED_BROADCAST);
                 BMG.sendBroadcast(intent);
+
+                showNotification(curTopic.text, curTopic.id);
             }
 
         }
 
         mainDB.close();
 
-        // Notification notification = new Notification(R.drawable.ic_action_expand, getText(R.string.sSubscriptions), System.currentTimeMillis());
-        // Intent notificationIntent = new Intent(this, ExampleActivity.class);
-        // PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-        // notification.setLatestEventInfo(this, getText(R.string.notification_title), getText(R.string.notification_message), pendingIntent);
-        // startForeground(ONGOING_NOTIFICATION_ID, notification);
+    }
+
+    private void showNotification(String text, long curTopicId) {
+
+        int mId = 0;
+//
+//        Bundle inpBundle = new Bundle();
+//        inpBundle.putLong("topicId", curTopicId);
+//        
+//        Intent mapIntent = new Intent(Intent.ACTION_VIEW);
+//        Uri geoUri = Uri.parse("geo:0,0?q=");
+//        mapIntent.setData(geoUri);
+//        PendingIntent mapPendingIntent =
+//                PendingIntent.getActivity(this, 0, mapIntent, 0);
+        
+        Intent resultIntent = new Intent(this, Topics_Activity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(Topics_Activity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        resultIntent.putExtra("topicId", curTopicId);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setSmallIcon(R.drawable.mr);
+        mBuilder.setContentTitle(getText(R.string.sNewMessages));
+        mBuilder.setContentIntent(resultPendingIntent);
+        mBuilder.setContentText("text").setNumber(5);
+        mBuilder.setAutoCancel(true);
+//        mBuilder.addAction(R.drawable.ic_action_about, "title", mapPendingIntent);
+        
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(mId, mBuilder.build());
     }
 
     // ******************************************************************************
-    public static void refreshNotificationsShedule(Context context) {
-
-        SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean notificationsUse = sPref.getBoolean(Settings.SUBSCRIPTIONS_USE, false);
-
-        if (notificationsUse) {
-
-            enableOnBootHandler(context);
-
-            Intent checkIntent = new Intent(context, Subscriptions.class);
-            PendingIntent pi = PendingIntent.getService(context, 0, checkIntent, PendingIntent.FLAG_NO_CREATE);
-            if (pi == null) {
-
-                String sNotificationsIntervalMinutes = sPref.getString(Settings.SUBSCRIPTIONS_INTERVAL, "0");
-                int notificationsIntervalMinutes = Integer.parseInt(sNotificationsIntervalMinutes);
-                long millis = notificationsIntervalMinutes * NOTIFICATION_INTERVAL_MULTIPLER;
-
-                if (notificationsIntervalMinutes > 0) {
-                    AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                    Intent i = new Intent(context, Subscriptions.class);
-                    pi = PendingIntent.getService(context, 0, i, 0);
-
-                    am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + millis, millis, pi);
-                }
-
-            }
-
-        }
-        else {
-            disableOnBootHandler(context);
-
-            AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            Intent i = new Intent(context, Subscriptions.class);
-            PendingIntent pi = PendingIntent.getService(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
-            am.cancel(pi);
-        }
-
-    }
-
     public static void updateNotifications(Context context) {
 
         SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(context);

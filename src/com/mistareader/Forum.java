@@ -33,9 +33,8 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.mistareader.TextProcessors.JSONProcessor;
-import com.mistareader.TextProcessors.S;
-import com.mistareader.TextProcessors.StringProcessor;
 import com.mistareader.TextProcessors.S.ResultContainer;
+import com.mistareader.TextProcessors.StringProcessor;
 
 public class Forum {
 
@@ -283,8 +282,6 @@ public class Forum {
                 section.sectionId = Integer.toString(i);
 
             }
-            // else
-            // S.L(section_codes[i]);
         }
     }
 
@@ -535,8 +532,6 @@ public class Forum {
             select5 = args.getString("select5");
         }
 
-        S.L(forumName + " posting message:" + sectionIndex + " s:" + subject + " m:" + message);
-
         String URL = API.addNewTopic();
 
         final WebIteraction.POST newMessagePOST = new WebIteraction.POST();
@@ -749,7 +744,6 @@ public class Forum {
 
         protected void onPostExecute(WebIteraction.PostResult result) {
 
-            // S.L(result.result);
             progress.dismiss();
 
             listener.onPOSTRequestExecuted(result.result);

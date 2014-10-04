@@ -68,8 +68,6 @@ public class DB extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-        S.L("DB. onUpgrade: oldVersion:" + oldVersion + " newVersion:" + newVersion);
-
         if (oldVersion != newVersion) {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_VIEW_HISTORY);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_SUBSCRIPTIONS);
@@ -93,8 +91,6 @@ public class DB extends SQLiteOpenHelper {
         if (result < 0) {
             S.L("DB insert failed. topicID: " + currentTopicId + " messageID:" + messageID);
         }
-        else
-            S.L("addLastPositionToMessage " + currentTopicId + " " + messageID);
 
     }
 
@@ -111,8 +107,6 @@ public class DB extends SQLiteOpenHelper {
         }
 
         cursor.close();
-
-        S.L("getLastPositionForMessage " + id + " " + res);
 
         return res;
 
@@ -139,8 +133,6 @@ public class DB extends SQLiteOpenHelper {
         if (result < 0) {
             S.L("DB insert failed. topicID: " + curTopic.id);
         }
-        else
-            S.L("addTopicToSubscriptions " + curTopic.id);
 
     }
 
@@ -162,8 +154,6 @@ public class DB extends SQLiteOpenHelper {
         if (result < 0) {
             S.L("DB update failed. topicID: " + topicID);
         }
-        else
-            S.L("updateTopicInSubscriptions " + topicID);
 
     }
 
@@ -197,8 +187,6 @@ public class DB extends SQLiteOpenHelper {
 
         cursor.close();
 
-        S.L("getSubscriptions " + res.size());
-
         return res;
 
     }
@@ -215,8 +203,6 @@ public class DB extends SQLiteOpenHelper {
             res = true;
         }
         cursor.close();
-
-        S.L("isTopicInSubscriptions " + res);
 
         return res;
     }
@@ -241,7 +227,16 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("UPDATE " + TABLE_SUBSCRIPTIONS + " SET " + FIELD_TOPIC_ADDED_MESS_COUNT + " = 0");
 
     }
-    
+
+    public void markTopicAsReaded(long id) {
+
+        final SQLiteDatabase db = this.getWritableDatabase();
+
+        db.execSQL("UPDATE " + TABLE_SUBSCRIPTIONS + " SET " + FIELD_TOPIC_ADDED_MESS_COUNT + " = 0 WHERE " + FIELD_TOPIC_ID + " = ?",
+                new String[] { Long.toString(id) });
+
+    }
+
     public void printAllSubscriptions() {
 
         final SQLiteDatabase db = this.getWritableDatabase();
@@ -264,8 +259,6 @@ public class DB extends SQLiteOpenHelper {
         }
         cursor.close();
 
-        S.L("getTotalSubscriptionsCount " + res);
-
         return res;
     }
 
@@ -273,7 +266,7 @@ public class DB extends SQLiteOpenHelper {
 
         final SQLiteDatabase db = this.getReadableDatabase();
 
-        final Cursor cursor = db.rawQuery("SELECT SUM("+FIELD_TOPIC_ADDED_MESS_COUNT+") FROM " + TABLE_SUBSCRIPTIONS, null);
+        final Cursor cursor = db.rawQuery("SELECT SUM(" + FIELD_TOPIC_ADDED_MESS_COUNT + ") FROM " + TABLE_SUBSCRIPTIONS, null);
 
         int res = 0;
         while (cursor.moveToNext()) {
@@ -281,20 +274,16 @@ public class DB extends SQLiteOpenHelper {
         }
         cursor.close();
 
-        S.L("getTotalSubscriptionsCount " + res);
-
         return res;
     }
 
-    
     public void L(String text) {
         final SQLiteDatabase db = this.getWritableDatabase();
 
         final ContentValues row = new ContentValues();
 
         String time = DateFormat.getDateTimeInstance().format(new Date());
-        S.L(time+" "+text);
-        
+
         row.put(FIELD_TIME, time);
         row.put(FIELD_TEXT, text);
 
