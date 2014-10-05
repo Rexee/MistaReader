@@ -2,6 +2,7 @@ package com.mistareader;
 
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +23,6 @@ import android.widget.ListView;
 import com.mistareader.NavigationDrawer.DropDownNav;
 import com.mistareader.NavigationDrawer.NavDrawer_Main;
 import com.mistareader.NavigationDrawer.NavDrawer_MenuItem;
-import com.mistareader.TextProcessors.S;
 
 public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnTopicSelectedListener, Topics_Fragment.OnUnsubscribeListener,
         OnNavigationListener, Forum.iOnPOSTRequestExecuted, Forum.iOnLoggedIn {
@@ -32,11 +32,12 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
     Forum             forum;
     Topics_Fragment   topics_Fragment;
 
-    int               selectedForumPosition   = 1;
-    int               selectedSectionPosition = 0;
-    String            selectedForumName       = "";
-    String            selectedSectionName     = "";
+    int               selectedForumPosition     = 1;
+    int               selectedSectionPosition   = 0;
+    String            selectedForumName         = "";
+    String            selectedSectionName       = "";
     boolean           isInternetConnection;
+    boolean           isOpenedFromNotifications = false;
 
     BroadcastReceiver subscriptionsBroadcastReciever;
 
@@ -49,19 +50,100 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
         setContentView(R.layout.activity_main);
 
-        isInternetConnection = WebIteraction.isInternetAvailable(this);
+        init_CreateForum(sPref);
+        init_RegisterBroadcastReciever();
+        init_ProcessNotifications();
 
+        if (isOpenedFromNotifications) {
+            init_CreateNavigationDrawer();
+        }
+        else {
+            init_LoadSavedInstaces(savedInstanceState, sPref);
+            init_CreateNavigationDrawer();
+            init_CreateTopicsFragment();
+            init_CreateActionBarNavigation();
+
+//            startService(new Intent(Topics_Activity.this, Subscriptions.class));
+
+        }
+
+    }
+
+    private void init_ProcessNotifications() {
+
+        Intent inpIntent = getIntent();
+        if (inpIntent.hasExtra(Subscriptions.NOTIFICATIONS_EXTRA_ID)) {
+
+            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.cancel(Subscriptions.NOTIFICATIONS_UNIQUE_ID);
+
+            Bundle extras = inpIntent.getExtras();
+            if (extras != null) {
+
+                boolean isMultipleSubs = extras.getBoolean(Subscriptions.NOTIFICATIONS_EXTRA_IS_MULTIPLE, false);
+                long curTopicId = extras.getLong(Subscriptions.NOTIFICATIONS_EXTRA_TOPIC_ID);
+                int curTopicAnsw = extras.getInt(Subscriptions.NOTIFICATIONS_EXTRA_TOPIC_ANSW);
+                inpIntent.removeExtra(Subscriptions.NOTIFICATIONS_EXTRA_ID);
+
+                if (isMultipleSubs) {
+                    selectedForumName = NavDrawer_Main.MENU_SUBSCRIPTIONS;
+                }
+                else {
+
+                    isOpenedFromNotifications = true;
+                    Topic currentTopic = Forum.getInstance().getTopicByid(curTopicId);
+                    if (currentTopic == null) {
+                        currentTopic = new Topic();
+                        currentTopic.id = curTopicId;
+                        currentTopic.answ = curTopicAnsw;
+                        forum.topics.add(currentTopic);
+                    }
+                    else
+                        currentTopic.answ = curTopicAnsw;
+
+                    Intent intent = new Intent();
+                    intent.setClass(this, Messages_Activity.class);
+                    intent.putExtra("topicId", curTopicId);
+                    intent.putExtra("section", getString(R.string.sSubscriptions));
+
+                    startActivity(intent);
+
+                    new markAsReadedAsync().execute(curTopicId);
+
+                    return;
+
+                }
+            }
+        }
+    }
+
+    private void init_CreateActionBarNavigation() {
+        ddN = new DropDownNav();
+        ddN.reBuildSubmenu(this, selectedForumName, selectedSectionPosition);
+    }
+
+    private void init_CreateNavigationDrawer() {
+        mND = new NavDrawer_Main(Topics_Activity.this, forum.accountName, selectedForumPosition, !forum.sessionID.isEmpty());
+        mND.mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+    }
+
+    private void init_CreateTopicsFragment() {
+        topics_Fragment = (Topics_Fragment) getFragmentManager().findFragmentByTag("TOPICS");
+        if (topics_Fragment == null)
+            createTopicsFragment(true);
+    }
+
+    private void init_CreateForum(SharedPreferences sPref) {
+        isInternetConnection = WebIteraction.isInternetAvailable(this);
         if (forum == null) {
             forum = Forum.getInstance();
             forum.loadSettings(sPref);
             forum.initialize(isInternetConnection, this);
         }
+    }
 
-        Bundle extras = getIntent().getExtras();
-        if(extras != null){
-            S.L(extras.get("topicId"));
-        }
-        
+    private void init_LoadSavedInstaces(Bundle savedInstanceState, SharedPreferences sPref) {
+
         if (savedInstanceState != null) {
             selectedForumName = savedInstanceState.getString("forum", "");
             selectedSectionName = savedInstanceState.getString("section", "");
@@ -72,27 +154,10 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
             forum.showWhatsNew(sPref, this);
             forum.delayedLogin(this);
         }
-
-        registerBroadcastReciever();
-
-        topics_Fragment = (Topics_Fragment) getFragmentManager().findFragmentByTag("TOPICS");
-        if (topics_Fragment == null)
-            createTopicsFragment(true);
-
-        mND = new NavDrawer_Main(Topics_Activity.this, forum.accountName, selectedForumPosition, !forum.sessionID.isEmpty());
-        mND.mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-        if (selectedForumName.isEmpty())
-            setTitle(mND.getSelectedMenuTitle());
-        else {
-            ddN = new DropDownNav();
-            ddN.reBuildSubmenu(this, selectedForumName, selectedSectionPosition);
-        }
     }
 
     @Override
     protected void onResume() {
-
         super.onResume();
 
         // После recreate() открывает Drawer. Не знаю почему.
@@ -101,6 +166,17 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
             mND.mDrawerToggle.syncState();
         }
 
+        if (!isOpenedFromNotifications && topics_Fragment == null) {
+            init_CreateTopicsFragment();
+            init_CreateActionBarNavigation();
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        isOpenedFromNotifications = false;
+        super.onPause();
     }
 
     @Override
@@ -122,6 +198,7 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
         args.putString("sForum", selectedForumName);
         args.putString("sSection", selectedSectionName);
+        args.putBoolean("isOpenedFromNotifications", isOpenedFromNotifications);
 
         topics_Fragment.setArguments(args);
 
@@ -265,12 +342,12 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         }
         return super.onKeyDown(keyCode, event);
     }
-    
+
     @Override
     public void onBackPressed() {
-        
+
         if (selectedForumName == NavDrawer_Main.MENU_SUBSCRIPTIONS) {
-            
+
             selectedForumPosition = 1;
             mND.mSelectedPosition = selectedForumPosition;
             selectedForumName = mND.getSelectedItemID();
@@ -308,7 +385,6 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         Intent intent = new Intent();
         intent.setClass(this, Messages_Activity.class);
         intent.putExtra("topicId", selectedTopic.id);
-        intent.putExtra("account", forum.accountName);
         intent.putExtra("section", selectedTopic.sect1);
         intent.putExtra("forum", selectedTopic.forum);
         intent.putExtra("focusLast", focusLast);
@@ -317,21 +393,21 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         }
 
         startActivity(intent);
-        
+
         new markAsReadedAsync().execute(selectedTopic.id);
 
     }
 
     public class markAsReadedAsync extends AsyncTask<Long, Void, Boolean> {
         boolean mIsSubscriptionPage;
-        
+
         @Override
         protected void onPostExecute(Boolean isTopicMarked) {
-            
+
             if (!isTopicMarked) {
                 return;
             }
-            
+
             rebuildNavDrawer();
             if (mIsSubscriptionPage) {
                 if (topics_Fragment != null) {
@@ -343,21 +419,21 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
         @Override
         protected Boolean doInBackground(Long... arg0) {
-            
+
             Long topicId = arg0[0];
-            
-            mIsSubscriptionPage = selectedForumName.equals(NavDrawer_Main.MENU_SUBSCRIPTIONS); 
-            
+
+            mIsSubscriptionPage = selectedForumName.equals(NavDrawer_Main.MENU_SUBSCRIPTIONS);
+
             if (mIsSubscriptionPage || forum.mainDB.isTopicInSubscriptions(topicId)) {
                 forum.mainDB.markTopicAsReaded(topicId);
                 return true;
             }
-                    
+
             return false;
         }
 
     }
-    
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -409,10 +485,10 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
                         final ActionBar actionBar = getActionBar();
                         actionBar.setDisplayShowTitleEnabled(true);
-                        
+
                         actionBar.setTitle(R.string.sSubscriptions);
                         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-                        
+
                         invalidateOptionsMenu();
                         createTopicsFragment(false);
                         break;
@@ -507,7 +583,7 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
         mND.mListAdapter.notifyDataSetChanged();
     }
 
-    private void registerBroadcastReciever() {
+    private void init_RegisterBroadcastReciever() {
         IntentFilter intFilt = new IntentFilter(Settings.SUBSCRIPTIONS_UPDATED_BROADCAST);
         subscriptionsBroadcastReciever = new subscriptionsResponseReceiver();
         LocalBroadcastManager.getInstance(Topics_Activity.this).registerReceiver(subscriptionsBroadcastReciever, intFilt);

@@ -15,31 +15,48 @@
     </PreferenceScreen>
 
     <PreferenceCategory
-        android:key="settingsNotifications"
-        android:title="@string/sNotifications" >
+        android:key="settingsSubscriptions"
+        android:title="@string/sSubscriptions" >
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="settingsNotificationsUse"
-            android:summary="@string/sNotificationsUseD"
-            android:title="@string/sNotificationsUse" />
+            android:key="settingsSubscriptionsUse"
+            android:summary="@string/sSubscriptionsUseD"
+            android:title="@string/sSubscriptionsUse" />
 
         <ListPreference
             android:defaultValue="15"
-            android:dependency="settingsNotificationsUse"
+            android:dependency="settingsSubscriptionsUse"
             android:entries="@array/notifications_interval"
             android:entryValues="@array/notifications_interval_values"
-            android:key="settingsNotificationsInterval"
+            android:key="settingsSubscriptionsInterval"
             android:summary="summary"
-            android:title="@string/sNotificationsInterval" >
+            android:title="@string/sSubscriptionsInterval" >
         </ListPreference>
-        
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="settingsSubscriptionsUse"
+            android:key="settingsNotificationsUse"
+            android:summary="@string/sNotificationsShowInBarD"
+            android:title="@string/sNotificationsShowInBar" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="settingsNotificationsUse"
-            android:key="settingsNotificationsShowInBar"
-            android:summary="@string/sNotificationsShowInBarD"
-            android:title="@string/sNotificationsShowInBar" />
-                
+            android:key="settingsNotificationsVibrate"
+            android:summary="@string/sNotificationsVibrateD"
+            android:title="@string/sNotificationsVibrate" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="settingsNotificationsUse"
+            android:key="settingsNotificationsSound"
+            android:summary="@string/sNotificationsSoundD"
+            android:title="@string/sNotificationsSound" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="settingsNotificationsUse"
+            android:key="settingsNotificationsLED"
+            android:summary="@string/sNotificationsLEDD"
+            android:title="@string/sNotificationsLED" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="settingsOther"

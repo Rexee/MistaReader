@@ -15,23 +15,22 @@ import android.view.ViewGroup;
 public class Settings_Fragment extends PreferenceFragment {
 
     private static final String SETTINGS_RELOAD_SECTIONS = "settingsReloadSections";
-    private static final String SETTINGS_THEMES = "settingsThemes";
-    private static final String SETTINGS_ACCONT = "settingsAccont";
-    
-    Forum forum;
+    private static final String SETTINGS_THEMES          = "settingsThemes";
+    private static final String SETTINGS_ACCOUNT         = "settingsAccont";
 
-    public interface iOnSubsChange
-    {
+    Forum                       forum;
+
+    public interface iOnSubsChange {
         void onSubscriptionsSettingsChanged();
     }
-    
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        
+
         View view = super.onCreateView(inflater, container, savedInstanceState);
         view.setBackgroundColor(ThemesManager.colorBg_message_body);
-       
-        return view; 
+
+        return view;
     }
 
     @Override
@@ -43,13 +42,13 @@ public class Settings_Fragment extends PreferenceFragment {
 
         forum = Forum.getInstance();
 
-        Preference settingsAccont = findPreference(SETTINGS_ACCONT);
+        Preference settingsAccont = findPreference(SETTINGS_ACCOUNT);
 
-        if (forum.sessionID.isEmpty()) 
+        if (forum.sessionID.isEmpty())
             settingsAccont.setSummary(R.string.sNotAuthorized);
         else
             settingsAccont.setSummary(forum.accountName);
-        
+
         final Activity activity = getActivity();
 
         settingsAccont.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -68,14 +67,13 @@ public class Settings_Fragment extends PreferenceFragment {
             }
         });
 
-        
-        //SUBSCRIPTIONS***********************
+        // SUBSCRIPTIONS***********************
         final iOnSubsChange mCallbackOnIntervalChanged;
         mCallbackOnIntervalChanged = (iOnSubsChange) activity;
-       
+
         CheckBoxPreference settingsSubsUse = (CheckBoxPreference) findPreference(Settings.SUBSCRIPTIONS_USE);
         settingsSubsUse.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-            
+
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 mCallbackOnIntervalChanged.onSubscriptionsSettingsChanged();
@@ -83,8 +81,6 @@ public class Settings_Fragment extends PreferenceFragment {
             }
         });
 
-        
-        
         final ListPreference settingsNotifInterval = (ListPreference) findPreference(Settings.SUBSCRIPTIONS_INTERVAL);
         String currentValue = settingsNotifInterval.getValue();
         if (currentValue == null) {
@@ -94,7 +90,6 @@ public class Settings_Fragment extends PreferenceFragment {
 
         updateDescription(settingsNotifInterval, currentValue);
 
-        
         settingsNotifInterval.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -103,26 +98,25 @@ public class Settings_Fragment extends PreferenceFragment {
                 return true;
             }
         });
-        
-//        ((CheckBoxPreference) findPreference(Settings.NOTIFICATIONS_USE)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-//            @Override
-//            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-//
-//                Notifications.refreshNotificationsShedule((boolean) newValue, getActivity());
-//
-//                return true;
-//            }
-//        });
-        
+
+        // ((CheckBoxPreference) findPreference(Settings.NOTIFICATIONS_USE)).setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+        // @Override
+        // public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+        //
+        // Notifications.refreshNotificationsShedule((boolean) newValue, getActivity());
+        //
+        // return true;
+        // }
+        // });
+
         Preference settingsReloadSections = (Preference) findPreference(SETTINGS_RELOAD_SECTIONS);
-        settingsReloadSections.setOnPreferenceClickListener(new OnPreferenceClickListener() { 
+        settingsReloadSections.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
                 forum.reloadSections(getActivity());
                 return false;
             }
         });
 
-      
     }
 
     private void updateDescription(ListPreference backgroundTimeout, String value) {
@@ -132,21 +126,19 @@ public class Settings_Fragment extends PreferenceFragment {
 
     public void updateAccountDescription(boolean isLoggedIn) {
 
-        Preference settingsAccont = findPreference(SETTINGS_ACCONT);
+        Preference settingsAccont = findPreference(SETTINGS_ACCOUNT);
         if (isLoggedIn) {
             settingsAccont.setSummary(forum.accountName);
         }
-        else
-        {
+        else {
             settingsAccont.setSummary(R.string.sNotAuthorized);
         }
-        
+
     }
-    
 
     public void updateThemeDescription() {
         Preference settingsTheme = findPreference(SETTINGS_THEMES);
-        settingsTheme.setSummary(ThemesManager.getCurrentThemeName(getActivity()));        
+        settingsTheme.setSummary(ThemesManager.getCurrentThemeName(getActivity()));
     }
 
 }

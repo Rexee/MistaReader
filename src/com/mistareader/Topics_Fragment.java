@@ -27,7 +27,7 @@ import com.mistareader.TextProcessors.S;
 public class Topics_Fragment extends Fragment {
 
     OnTopicSelectedListener mOntopicSelectedCallback;
-    OnUnsubscribeListener mOnUnsubscribe;
+    OnUnsubscribeListener   mOnUnsubscribe;
 
     public interface OnTopicSelectedListener {
         public void onTopicSelected(Topic selectedTopic, boolean focusLast, boolean forceFirst);
@@ -49,9 +49,10 @@ public class Topics_Fragment extends Fragment {
 
     private String        URL;
 
-    private boolean       topics_isLoading  = false;
+    private boolean       topics_isLoading          = false;
 
-    private boolean       mode_Subscription = false;
+    private boolean       mode_Subscription         = false;
+    boolean               isOpenedFromNotifications = false;
 
     class TopicsOnItemClickListener implements OnItemClickListener {
 
@@ -64,7 +65,7 @@ public class Topics_Fragment extends Fragment {
             }
             catch (Exception e) {
 
-                S.L("TopicsOnItemClickListener: ",e);
+                S.L("TopicsOnItemClickListener: ", e);
 
             }
 
@@ -102,7 +103,7 @@ public class Topics_Fragment extends Fragment {
 
         if (v.getId() == R.id.lvMain) {
             MenuInflater inflater = getActivity().getMenuInflater();
-            inflater.inflate(R.menu.topic_dropdown, menu);
+            inflater.inflate(R.menu.topics_context, menu);
             menu.setHeaderTitle(R.string.sPopupMenyHeader);
 
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
@@ -149,15 +150,15 @@ public class Topics_Fragment extends Fragment {
             Topic selTopic = topics_sAdapter.getItem(info.position);
             forum.mainDB.removeTopicFromSubscriptions(selTopic.id);
             if (mode_Subscription) {
-                reLoad();                
+                reLoad();
             }
             try {
                 mOnUnsubscribe.onUnsubscribe();
-                }
-            catch (Exception e) {
-                S.L("TopicsOnItemClickListener: ",e);
             }
-            
+            catch (Exception e) {
+                S.L("TopicsOnItemClickListener: ", e);
+            }
+
             return true;
         }
         else {
@@ -320,14 +321,14 @@ public class Topics_Fragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        //  setRetainInstance(true);
+        // setRetainInstance(true);
         // setHasOptionsMenu(true);
 
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
         if (args != null) {
-
+            
             sForum = args.getString("sForum", "");
 
             if (sForum.equals(NavDrawer_Main.MENU_SUBSCRIPTIONS)) {
@@ -359,7 +360,7 @@ public class Topics_Fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
+        
         forum = Forum.getInstance();
         isInternetConnection = forum.isInternetConnection;
 

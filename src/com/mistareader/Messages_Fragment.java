@@ -273,10 +273,12 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
         messages_from = nextMessageN;
         messages_to = nextMessageN + 20;
 
+        int mathMin = 0;
         if (answ > 20 && ((answ - messages_from) < 20)) {
-            messages_from = Math.max(answ - 20, 0);
+            mathMin = answ - 20;
         }
-
+        messages_from = Math.max(mathMin, 0);
+        
         URL = API.getMessages(currentTopicId, messages_from, messages_to);
 
         new RequestAsyncMessages(messages_from, messages_to).execute(URL);
@@ -367,7 +369,7 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
         }
 
         ((TextView) message_Header.findViewById(R.id.mess_headerText)).setText(Html.fromHtml(currentTopic.text));
-        
+
         if (currentTopic.votes != null) {
 
             RelativeLayout RL = (RelativeLayout) message_Header.findViewById(R.id.RL1);
@@ -424,6 +426,9 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
 
                 Activity activity = getActivity();
 
+                if (activity == null) {
+                    return;
+                }
                 messages_sAdapter = new Messages_Adapter(activity, currentTopic, mAccount, R.layout.message_row);
                 message_Header = activity.getLayoutInflater().inflate(R.layout.message_header, null);
                 drawHeader();
@@ -507,8 +512,6 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        Forum.mm = System.currentTimeMillis();
-
         modeMovePositionToLastMessage = false;
         modeMovePositionToFirstMessage = false;
 
@@ -518,10 +521,12 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
 
             currentTopicId = args.getLong("topicId");
 
+            Forum forum = Forum.getInstance();
             currentTopic = Forum.getInstance().getTopicByid(currentTopicId);
+
             answ = currentTopic.answ;
-            mAccount = args.getString("account");
-            focusLast = args.getBoolean("focusLast");
+            mAccount = forum.accountName;
+            focusLast = args.getBoolean("focusLast", false);
             focusOn = args.getInt("focusOn", 0);
 
         }
@@ -543,13 +548,14 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
 
         protected void onPostExecute(String result) {
             updateTopicInfo(JSONProcessor.ParseTopicInfo(result));
+
             if (mCallBack != null) {
                 mCallBack.onLoadTopicInfoFinished();
             }
         }
 
     }
-
+ 
     private void updateTopicInfo(Topic refreshedTopic) {
 
         if (refreshedTopic.id == currentTopicId) {
@@ -642,5 +648,7 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
     public void onPOSTRequestExecuted(String result) {
 
     }
+
+
 
 }

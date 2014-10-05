@@ -35,7 +35,7 @@ public class Messages_Activity extends BaseActivity implements Forum.iOnPOSTRequ
         
         if (v.getId()==R.id.lvMain) {
             MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.messages_dropdown, menu);
+            inflater.inflate(R.menu.messages_context, menu);
             menu.setHeaderTitle(R.string.sPopupMenyHeaderMessage);
         }
     }  
@@ -49,22 +49,32 @@ public class Messages_Activity extends BaseActivity implements Forum.iOnPOSTRequ
             messages_Fragment = new Messages_Fragment();
 
             Bundle args = getIntent().getExtras();
-
-            String title = args.getString("section");
-            if (title == null || title.isEmpty()) {
-                String topicForum = args.getString("forum");
-                if (topicForum == null || topicForum.isEmpty())
-                    title = getString(R.string.sAllSections);
-                else
-                    title = topicForum.toUpperCase();
-            }
-            setTitle(title);
-
             messages_Fragment.setArguments(args);
+            
+            String sSection = args.getString("section","");
+            String sForum = args.getString("forum","");
+            
+            setTitle(sSection, sForum);
+            
             getFragmentManager().beginTransaction().add(android.R.id.content, messages_Fragment).commit();
             
         }
 
+    }
+    
+    public void setTitle(String sect1, String forum) {
+        
+        String title = sect1;
+        
+        if (title.isEmpty()) {
+            title = forum; 
+            if (title.isEmpty()) 
+                title  = getString(R.string.sAllSections);
+            else
+                title = title.toUpperCase();
+        }
+        
+        setTitle(title);
     }
 
     @Override

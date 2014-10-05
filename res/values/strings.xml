@@ -6,7 +6,6 @@
     <string name="app_name">Mista Reader</string>
     <string name="sSettings">Настройки</string>
     <string name="sTheme">Тема оформления</string>
-    <string name="sSubscriptions">Подписки</string>
         
     <string name="sThemeGray">Серая</string>
     <string name="sThemeLight">Светлая</string>
@@ -49,7 +48,7 @@
     <string name="sSection">Секция</string>
   
 	<string name="sNewMessage">Новое сообщение</string>
-	<string name="sNewMessages">Новые сообщения</string>
+	<string name="sNewMessages">Новые сообщения:</string>
 	
 	<string name="sPopupMenyHeader">Действия с темой</string>
 	
@@ -83,13 +82,24 @@
 	<string name="sAboutDetails">Разработка: vhl</string>
 	<string name="sAboutDetails2">При поддержке: Asmody</string>
 
+	<string name="sTotalNew">Всего новых:</string>
+	
 	<string name="sOther">Прочее</string>
-	<string name="sNotifications">Подписки</string>
-	<string name="sNotificationsUse">Использовать</string>
-	<string name="sNotificationsUseD">Проверять новые сообщения</string>
+	<string name="sSubscriptions">Подписки</string>
+	<string name="sSubscriptionsUse">Использовать подписки</string>
+	<string name="sSubscriptionsNew">Новые сообщения в подписках</string>
+	<string name="sSubscriptionsUseD">Проверять наличие новых сообщений в темах</string>
+	<string name="sSubscriptionsInterval">Периодичность опросов</string>
+	
 	<string name="sNotificationsShowInBar">Уведомления</string>
-	<string name="sNotificationsShowInBarD">Выводить всплывающие уведомления</string>
-	<string name="sNotificationsInterval">Интервал</string>
+	<string name="sNotificationsShowInBarD">Выводить всплывающие уведомления в строке статуса</string>
+	<string name="sNotificationsVibrate">Вибрация</string>
+	<string name="sNotificationsVibrateD">Вибрировать при уведомлениях</string>
+	<string name="sNotificationsSound">Звук</string>
+	<string name="sNotificationsSoundD">Звук при уведомлениях</string>
+	<string name="sNotificationsLED">Световой индикатор</string>
+	<string name="sNotificationsLEDD">Использовать световую индикацию при уведомлениях</string>
+	
 	<string name="sReloadSections">Обновить секции</string>
 	<string name="sReloadSectionsD">Загрузить названия секций с сервера</string>
 	

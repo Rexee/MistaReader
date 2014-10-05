@@ -188,7 +188,7 @@ public class JSONProcessor {
             }
 
             JSONObject mainObj = new JSONObject(inputString);
-
+            
             newTopic.id = mainObj.getLong("id");
             newTopic.text = mainObj.getString("text");
             newTopic.closed = mainObj.getInt("closed");
