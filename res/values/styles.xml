@@ -34,7 +34,7 @@
         <item name="iconReplies">@drawable/ic_action_chat_lt</item>
         <item name="iconSend">@drawable/ic_action_send_now_lt</item>
         <item name="iconSettings">@drawable/ic_action_settings_lt</item>
-        <item name="iconMarkAll">@drawable/ic_action_accept_lt</item>
+        <item name="iconMarkAll">@drawable/ic_action_select_all_lt</item>
     </style>
 
     <style name="Theme_Gray" parent="android:Theme.Holo">
@@ -71,7 +71,7 @@
         <item name="iconReplies">@drawable/ic_action_chat</item>
         <item name="iconSend">@drawable/ic_action_send_now</item>
         <item name="iconSettings">@drawable/ic_action_settings</item>
-         <item name="iconMarkAll">@drawable/ic_action_accept</item>
+         <item name="iconMarkAll">@drawable/ic_action_select_all</item>
           </style>
 
     <style name="Theme_Black" parent="android:Theme.Holo">
@@ -106,7 +106,7 @@
         <item name="iconReplies">@drawable/ic_action_chat</item>
         <item name="iconSend">@drawable/ic_action_send_now</item>
         <item name="iconSettings">@drawable/ic_action_settings</item>
-        <item name="iconMarkAll">@drawable/ic_action_accept</item>
+        <item name="iconMarkAll">@drawable/ic_action_select_all</item>
         
         </style>
 

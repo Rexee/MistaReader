@@ -44,6 +44,7 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
     private long            currentTopicId;
     private String          mAccount;
     private final int       prefetchMessagesFactor = 10;
+    Forum                   forum;
 
     public boolean          modeMovePositionToLastMessage;
     public boolean          modeMovePositionToFirstMessage;
@@ -278,7 +279,7 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
             mathMin = answ - 20;
         }
         messages_from = Math.max(mathMin, 0);
-        
+
         URL = API.getMessages(currentTopicId, messages_from, messages_to);
 
         new RequestAsyncMessages(messages_from, messages_to).execute(URL);
@@ -501,7 +502,6 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
     @Override
     public void onDestroy() {
 
-        Forum forum = Forum.getInstance();
         if (forum.mainDB != null && lvMain != null) {
             forum.mainDB.addLastPositionToMessage(currentTopicId, lvMain.getLastVisiblePosition());
         }
@@ -515,14 +515,15 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
         modeMovePositionToLastMessage = false;
         modeMovePositionToFirstMessage = false;
 
+        forum = Forum.getInstance();
+
         Bundle args = getArguments();
 
         if (args != null) {
 
             currentTopicId = args.getLong("topicId");
 
-            Forum forum = Forum.getInstance();
-            currentTopic = Forum.getInstance().getTopicByid(currentTopicId);
+            currentTopic = forum.getTopicByid(currentTopicId);
 
             answ = currentTopic.answ;
             mAccount = forum.accountName;
@@ -555,7 +556,7 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
         }
 
     }
- 
+
     private void updateTopicInfo(Topic refreshedTopic) {
 
         if (refreshedTopic.id == currentTopicId) {
@@ -595,7 +596,11 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
         void onLoadTopicInfoFinished();
     }
 
-    public void reLoad() {
+    public void reLoad(final boolean newMessageMode) {
+
+        if (newMessageMode) {
+            movePositionToMessage = currentTopic.answ + 1;
+        }
 
         URL = API.getTopicInfo(currentTopicId);
 
@@ -608,13 +613,22 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
                     drawHeader();
                 }
 
-                int pos = lvMain.getLastVisiblePosition();
-                if (pos >= lvMain.getCount() - 1) {
-                    movePositionToMessage = pos + 1;
-                    loadMessagesFrom(pos);
+                if (newMessageMode) {
+                    if (forum.mainDB.isTopicInSubscriptions(currentTopicId))
+                        forum.mainDB.markTopicAsReaded(currentTopicId, currentTopic.answ);
+
+                    loadMessagesFrom(currentTopic.answ - 10);
                 }
                 else {
-                    focusFirstMessage();
+
+                    int pos = lvMain.getLastVisiblePosition();
+                    if (pos >= lvMain.getCount() - 1) {
+                        movePositionToMessage = pos + 1;
+                        loadMessagesFrom(pos);
+                    }
+                    else {
+                        focusFirstMessage();
+                    }
                 }
             }
         };
@@ -648,7 +662,5 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
     public void onPOSTRequestExecuted(String result) {
 
     }
-
-
 
 }

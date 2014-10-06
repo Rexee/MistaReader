@@ -84,7 +84,7 @@ public class Messages_Activity extends BaseActivity implements Forum.iOnPOSTRequ
 
         if (id == R.id.menu_reload) {
             if (messages_Fragment != null) {
-                messages_Fragment.reLoad();
+                messages_Fragment.reLoad(false);
             }
             return true;
         }
@@ -107,7 +107,7 @@ public class Messages_Activity extends BaseActivity implements Forum.iOnPOSTRequ
     @Override
     public void onPOSTRequestExecuted(String result) {
 
-        messages_Fragment.reLoad();
+        messages_Fragment.reLoad(true);
 
     }
 

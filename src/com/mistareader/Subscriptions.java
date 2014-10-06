@@ -23,15 +23,16 @@ import com.mistareader.TextProcessors.StringProcessor;
 
 public class Subscriptions extends IntentService {
 
-    DB                    mainDB;
-    LocalBroadcastManager BMG;
-    final static int      NOTIFICATION_INTERVAL_MULTIPLER = 1000 * 60;
+    DB                         mainDB;
+    LocalBroadcastManager      BMG;
+    final static int           NOTIFICATION_INTERVAL_MULTIPLER = 1000 * 60;
 
-    static final int      NOTIFICATIONS_UNIQUE_ID         = 0;
-    static final String   NOTIFICATIONS_EXTRA_ID          = "NOTIFICATIONS_EXTRA_ID";
-    static final String   NOTIFICATIONS_EXTRA_IS_MULTIPLE = "IS_MULTIPLE";
-    static final String   NOTIFICATIONS_EXTRA_TOPIC_ID    = "TOPIC_ID";
-    static final String   NOTIFICATIONS_EXTRA_TOPIC_ANSW  = "TOPIC_ANSW";
+    static final int           NOTIFICATIONS_UNIQUE_ID         = 0;
+    static final String        NOTIFICATIONS_EXTRA_ID          = "NOTIFICATIONS_EXTRA_ID";
+    static final String        NOTIFICATIONS_EXTRA_IS_MULTIPLE = "IS_MULTIPLE";
+    static final String        NOTIFICATIONS_EXTRA_TOPIC_ID    = "TOPIC_ID";
+    static final String        NOTIFICATIONS_EXTRA_TOPIC_ANSW  = "TOPIC_ANSW";
+    public static final String NOTIFICATIONS_EXTRA_RELOAD_MODE = "RELOAD_MODE";
 
     private class cNewSubscriptions {
         long       topicId;
@@ -48,29 +49,8 @@ public class Subscriptions extends IntentService {
     protected void onHandleIntent(Intent workIntent) {
 
         if (!WebIteraction.isInternetAvailable(this)) {
-            stopSelf();
             return;
         }
-
-        // ArrayList<cNewSubscriptions> newSubsList = new ArrayList<cNewSubscriptions>();
-        //
-        // mainDB = new DB(this);
-        //
-        // ArrayList<Topic> topicsList = mainDB.getSubscriptions();
-        //
-        // for (int i = 0; i < topicsList.size(); i++) {
-        // Topic curTopic = topicsList.get(i);
-        //
-        // cNewSubscriptions ns = new cNewSubscriptions();
-        // ns.text = curTopic.text;
-        // ns.newAnsw = 3;
-        // ns.topicId = curTopic.id;
-        // ns.answ = 5;
-        // newSubsList.add(ns);
-        //
-        // }
-        //
-        // showNotification(newSubsList);
 
         mainDB = new DB(this);
 
@@ -82,8 +62,8 @@ public class Subscriptions extends IntentService {
         }
 
         BMG = LocalBroadcastManager.getInstance(this);
-
         boolean isNewSubs = false;
+
         for (int i = 0; i < topicsList.size(); i++) {
             Topic curTopic = topicsList.get(i);
             String URL = API.getTopicInfo(curTopic.id);
@@ -113,6 +93,10 @@ public class Subscriptions extends IntentService {
         }
 
         mainDB.close();
+
+        if (workIntent.hasExtra(NOTIFICATIONS_EXTRA_RELOAD_MODE)) {
+            return;
+        }
 
         if (isNewSubs) {
 

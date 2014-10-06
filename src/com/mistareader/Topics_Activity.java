@@ -63,8 +63,6 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
             init_CreateTopicsFragment();
             init_CreateActionBarNavigation();
 
-//            startService(new Intent(Topics_Activity.this, Subscriptions.class));
-
         }
 
     }
@@ -105,12 +103,11 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
                     intent.setClass(this, Messages_Activity.class);
                     intent.putExtra("topicId", curTopicId);
                     intent.putExtra("section", getString(R.string.sSubscriptions));
+                    intent.putExtra("focusOn", forum.mainDB.getLastPositionForMessage(curTopicId));
 
                     startActivity(intent);
 
                     new markAsReadedAsync().execute(curTopicId);
-
-                    return;
 
                 }
             }
@@ -247,8 +244,12 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
             forum.isInternetConnection = isInternetConnection;
 
             if (isInternetConnection && topics_Fragment != null) {
-                if (selectedForumName.equals(NavDrawer_Main.MENU_SUBSCRIPTIONS))
-                    startService(new Intent(Topics_Activity.this, Subscriptions.class));
+                if (selectedForumName.equals(NavDrawer_Main.MENU_SUBSCRIPTIONS)) {
+                    Intent serviceIntent = new Intent(Topics_Activity.this, Subscriptions.class);
+                    serviceIntent.putExtra(Subscriptions.NOTIFICATIONS_EXTRA_RELOAD_MODE, true);
+
+                    startService(serviceIntent);
+                }
                 else
                     topics_Fragment.reLoad();
             }
@@ -425,7 +426,7 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
             mIsSubscriptionPage = selectedForumName.equals(NavDrawer_Main.MENU_SUBSCRIPTIONS);
 
             if (mIsSubscriptionPage || forum.mainDB.isTopicInSubscriptions(topicId)) {
-                forum.mainDB.markTopicAsReaded(topicId);
+                forum.mainDB.markTopicAsReaded(topicId, 0);
                 return true;
             }
 
@@ -450,8 +451,6 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            mND.mDrawerLayout.closeDrawer(mND.mDrawerList);
 
             NavDrawer_MenuItem selectedMenu = mND.getMenuItem(position);
 
@@ -529,6 +528,8 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
                 }
 
             }
+
+            mND.mDrawerLayout.closeDrawer(mND.mDrawerList);
         }
     }
 

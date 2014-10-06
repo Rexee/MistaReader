@@ -15,7 +15,7 @@ import com.mistareader.TextProcessors.S;
 public class DB extends SQLiteOpenHelper {
 
     private static final String DB_NAME                      = "main.db";
-    private static final int    DB_VERSION                   = 5;
+    private static final int    DB_VERSION                   = 1;
 
     private static final String TABLE_VIEW_HISTORY           = "topicviewhistory";
     private static final String TABLE_SUBSCRIPTIONS          = "topicsubscriptions";
@@ -228,12 +228,17 @@ public class DB extends SQLiteOpenHelper {
 
     }
 
-    public void markTopicAsReaded(long id) {
+    public void markTopicAsReaded(long id, int answ) {
 
         final SQLiteDatabase db = this.getWritableDatabase();
 
-        db.execSQL("UPDATE " + TABLE_SUBSCRIPTIONS + " SET " + FIELD_TOPIC_ADDED_MESS_COUNT + " = 0 WHERE " + FIELD_TOPIC_ID + " = ?",
-                new String[] { Long.toString(id) });
+        if (answ == 0) {
+            db.execSQL("UPDATE " + TABLE_SUBSCRIPTIONS + " SET " + FIELD_TOPIC_ADDED_MESS_COUNT + " = 0 WHERE " + FIELD_TOPIC_ID + " = ?",
+                    new String[] { Long.toString(id) });
+        }
+        else
+            db.execSQL("UPDATE " + TABLE_SUBSCRIPTIONS + " SET " + FIELD_TOPIC_ADDED_MESS_COUNT + " = 0, " + FIELD_TOPIC_CUR_MESS_COUNT + " = ? WHERE "
+                    + FIELD_TOPIC_ID + " = ?", new String[] { Long.toString(answ), Long.toString(id) });
 
     }
 

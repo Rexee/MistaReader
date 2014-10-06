@@ -104,7 +104,7 @@ public class Topics_Fragment extends Fragment {
         if (v.getId() == R.id.lvMain) {
             MenuInflater inflater = getActivity().getMenuInflater();
             inflater.inflate(R.menu.topics_context, menu);
-            menu.setHeaderTitle(R.string.sPopupMenyHeader);
+            menu.setHeaderTitle(R.string.sPopupMenuHeader);
 
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 
