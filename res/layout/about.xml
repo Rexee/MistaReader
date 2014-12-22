@@ -41,4 +41,12 @@
         android:text="@string/sAboutDetails2"
         android:textSize="@dimen/text_other_size" />
 
+    <Button
+        android:id="@+id/buttonMarket"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="@string/sAboutMarket"
+        android:textSize="@dimen/text_main_size" />
+
 </LinearLayout>

@@ -69,11 +69,11 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
     private void init_ProcessNotifications() {
 
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancel(Subscriptions.NOTIFICATIONS_UNIQUE_ID);
+
         Intent inpIntent = getIntent();
         if (inpIntent.hasExtra(Subscriptions.NOTIFICATIONS_EXTRA_ID)) {
-
-            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotificationManager.cancel(Subscriptions.NOTIFICATIONS_UNIQUE_ID);
 
             Bundle extras = inpIntent.getExtras();
             if (extras != null) {

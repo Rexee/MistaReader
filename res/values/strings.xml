@@ -54,7 +54,7 @@
 	
 	<string name="sMenuGoToFirstMessage">К первому сообщению</string>
 	<string name="sMenuGoToLastMessage">К последнему сообщению</string>
-	<string name="sAddToSubscription">Пописаться на тему</string>
+	<string name="sAddToSubscription">Подписаться на тему</string>
 	<string name="sRemoveFromSubscriptions">Удалить из подписок</string>
 	
 	<string name="sPopupMenyHeaderMessage">Действия с сообщением</string>
@@ -78,9 +78,10 @@
 	<string name="sLogoff">Выйти из аккаунта</string>
 	<string name="sAbout">О программе</string>
 	
-	<string name="sAboutDetailsVersion">Версия: 1.5</string>
+	<string name="sAboutDetailsVersion">Версия: 1.5.1</string>
 	<string name="sAboutDetails">Разработка: vhl</string>
 	<string name="sAboutDetails2">При поддержке: Asmody</string>
+	<string name="sAboutMarket">Оценить приложение</string>
 
 	<string name="sTotalNew">Всего новых:</string>
 	
@@ -106,6 +107,10 @@
 	<string name="sWHatsNew">Что нового</string>
 	<string name="sWHatsNewDetal1">Список изменений:</string>
 	<string name="sWHatsNewDetal2"><Data><![CDATA[
+	    <b>Версия: 1.5.1:<br><br></b>
+	    * Теперь всплывающие уведомления очищаются при запуске программы
+	    * Багфиксы
+		<br><br>	    
 	    <b>Версия: 1.5:<br><br></b>
 	    + Реализованы подписки на новые сообщения в темах. Добавлено отдельное подменю \"Подписки\". При длинном тапе на тему можно подписываться/отписываться.
 	    В настройках добавлены параметры уведомлений на новые сообщения в подписках. Количество подписок ограничено - 10ю.<br>

@@ -14,14 +14,18 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
+import android.text.SpannableString;
 import android.text.method.ScrollingMovementMethod;
+import android.text.style.UnderlineSpan;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -753,11 +757,24 @@ public class Forum {
     }
 
     // ****************************ABOUT*****************************************
-    public void showAbout(Topics_Activity topics_Activity) {
+    public void showAbout(final Topics_Activity topics_Activity) {
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(topics_Activity);
 
         final View dialogView = topics_Activity.getLayoutInflater().inflate(R.layout.about, null);
+        
+        Button marketButton = (Button) dialogView.findViewById(R.id.buttonMarket);
+        marketButton.setOnClickListener(new OnClickListener() {
+            
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("market://details?id=com.mistareader"));
+                topics_Activity.startActivity(intent);
+            }
+            
+        });
+        
 
         builder.setView(dialogView);
         builder.setCancelable(true);

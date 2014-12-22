@@ -19,7 +19,7 @@ public class Settings {
 
     public static final int    SUBSCRIPTIONS_MAX_COUNT         = 10;
 
-    final static String        SETTINGS_VESION_N               = "1.5";
+    final static String        SETTINGS_VESION_N               = "1.5.1";
     public static final String SUBSCRIPTIONS_UPDATED_BROADCAST = "com.mistareader.BROADCAST";
 
 }
