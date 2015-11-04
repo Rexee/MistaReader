@@ -1,21 +1,21 @@
 package com.mistareader.TextProcessors;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.mistareader.API;
 import com.mistareader.Message;
-import com.mistareader.Section;
-import com.mistareader.Topic;
 import com.mistareader.Message.Reply;
+import com.mistareader.Section;
 import com.mistareader.TextProcessors.S.ResultContainer;
+import com.mistareader.Topic;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 @SuppressLint("SimpleDateFormat")
 public class JSONProcessor {
@@ -128,14 +128,13 @@ public class JSONProcessor {
     public static ResultContainer parseLogin(String inputString) {
 
         // {"error":"","userid":"11350","username":"vhl","hashkey":"00000000000000000000"}
-        // {"error":"Œ¯Ë·Í‡ ‡‚ÚÓËÁ‡ˆËË ","userid":0,"username":""}
+        // {"error":"–û—à–∏–±–∫–∞ –∞–≤—Ç–æ—Ä–∏–∑–∞—Ü–∏–∏ ","userid":0,"username":""}
 
         final ResultContainer err = new ResultContainer();
 
         if (inputString == null || inputString.equals("{}") || inputString.isEmpty()) {
-
             err.result = false;
-            err.errorString = "Empty result string...";
+            err.resultStr = "Empty result string...";
             return err;
         }
 
@@ -148,14 +147,14 @@ public class JSONProcessor {
             int userId = mainObj.getInt(API.LOGIN_RESULT_USERID);
             if (userId == 0) {
                 err.result = false;
-                err.errorString = errorText;
+                err.resultStr = errorText;
                 return err;
             }
 
             String cookieID = mainObj.getString(API.LOGIN_RESULT_SESSION_ID);
             if (cookieID.isEmpty()) {
                 err.result = false;
-                err.errorString = errorText;
+                err.resultStr = errorText;
                 return err;
             }
 
@@ -168,7 +167,7 @@ public class JSONProcessor {
 
             String res = Log.getStackTraceString(e);
             err.result = false;
-            err.errorString = res;
+            err.resultStr = res;
 
             S.L("Forum.parseLogin: " + res);
         }
@@ -258,8 +257,9 @@ public class JSONProcessor {
         String str = "";
 
         if (inputString == null || inputString.isEmpty() || inputString.equals("{}")) {
-            String errorString = "Empty result string...";
+            String errorString = "Sections list empty...";
             S.L(errorString);
+            return locSections;
         }
 
         try {

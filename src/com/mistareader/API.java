@@ -7,7 +7,7 @@ public class API {
     // 718342
     // URL = "http://www.forum.mista.ru/ajax_topic.php?id=710089";
     // URL = "http://www.forum.mista.ru/ajax_topic.php?id=708776"; 0xFFFFFFF
-    // http://www.forum.mista.ru/ajax_topic.php?id=719832 - html в заголовке
+    // http://www.forum.mista.ru/ajax_topic.php?id=719832 - html РІ Р·Р°РіРѕР»РѕРІРєРµ
 
     final static String        MAIN_URL                = "http://www.forum.mista.ru/";
 //    final static String MAIN_URL = "http://192.168.1.100/";

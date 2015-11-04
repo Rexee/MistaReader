@@ -1,7 +1,5 @@
 package com.mistareader;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.AsyncTask;
@@ -23,6 +21,9 @@ import android.widget.ListView;
 
 import com.mistareader.NavigationDrawer.NavDrawer_Main;
 import com.mistareader.TextProcessors.S;
+import com.mistareader.WebIteraction.RequestResult;
+
+import java.util.ArrayList;
 
 public class Topics_Fragment extends Fragment {
 
@@ -198,24 +199,27 @@ public class Topics_Fragment extends Fragment {
         }
     }
 
-    public class RequestAsyncTopics extends AsyncTask<String, Integer, String> {
+    public class RequestAsyncTopics extends AsyncTask<String, Integer, RequestResult> {
 
         @Override
         protected void onPreExecute() {
             topics_isLoading = true;
         }
 
-        protected String doInBackground(String... urls) {
-            if (urls.length == 1) {
-                return WebIteraction.getServerResponse(urls[0]);
+        protected RequestResult doInBackground(String... urls) {
+            if (urls.length == 2) {
+                return WebIteraction.doServerRequest(urls[0], urls[1]);
             }
             else
-                return WebIteraction.getServerResponseWithAuth(urls[0], urls[1], urls[2]);
+                return WebIteraction.doServerRequest(urls[0], urls[1], urls[2], urls[3]);
         }
 
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(RequestResult result) {
+            if (!result.cookie.isEmpty()) {
+                forum.sessionCookies = result.cookie;
+            }
 
-            forum.addNewTopics(result);
+            forum.addNewTopics(result.result);
             drawTopicsList();
 
             topics_isLoading = false;
@@ -247,13 +251,13 @@ public class Topics_Fragment extends Fragment {
             case API.TOPICS_WITH_ME:
 
                 URL = API.getTopicsWithMe(forum.accountUserID, beforeUTime);
-                new RequestAsyncTopics().execute(URL);
+                new RequestAsyncTopics().execute(URL, forum.sessionCookies);
                 break;
 
             case API.MYTOPICS:
 
                 URL = API.getMyTopics(beforeUTime);
-                new RequestAsyncTopics().execute(URL, forum.sessionID, forum.accountUserID);
+                new RequestAsyncTopics().execute(URL, forum.sessionCookies, forum.sessionID, forum.accountUserID);
                 break;
 
             case NavDrawer_Main.MENU_SUBSCRIPTIONS:
@@ -265,7 +269,7 @@ public class Topics_Fragment extends Fragment {
             default:
 
                 URL = API.getTopics(sForum, sSection, beforeUTime);
-                new RequestAsyncTopics().execute(URL);
+                new RequestAsyncTopics().execute(URL, forum.sessionCookies);
                 break;
         }
 
@@ -296,7 +300,7 @@ public class Topics_Fragment extends Fragment {
             default:
 
                 URL = API.getLastTopics(sForum, sSection, forum.getFirstTopicTime());
-                new RequestAsyncTopics().execute(URL);
+                new RequestAsyncTopics().execute(URL, forum.sessionCookies);
                 break;
         }
 

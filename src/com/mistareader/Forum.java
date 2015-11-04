@@ -1,10 +1,5 @@
 package com.mistareader;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Random;
-
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -37,6 +32,10 @@ import android.widget.TextView.OnEditorActionListener;
 import com.mistareader.TextProcessors.JSONProcessor;
 import com.mistareader.TextProcessors.S.ResultContainer;
 import com.mistareader.TextProcessors.StringProcessor;
+import com.mistareader.WebIteraction.RequestResult;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 public class Forum {
 
@@ -49,22 +48,12 @@ public class Forum {
         return mInstance;
     }
 
-    public ArrayList<Topic>   topics;
+    public ArrayList<Topic> topics;
 
-    public Random             rand;
+    public Random rand;
 
     public ArrayList<Section> sections;
     public ArrayList<String>  forums;
-
-    static long               mm;
-
-    public static void Trace(String inStr) {
-
-        long mm1 = System.currentTimeMillis();
-        // S.L(inStr + " - " + (mm1 - mm));
-        mm = mm1;
-
-    }
 
     public DB mainDB;
 
@@ -82,53 +71,48 @@ public class Forum {
         isInternetConnection = inIsInternetConnection;
 
         if (sections == null || sections.isEmpty()) {
-            new asyncGetSectionsList().execute(API.getSectionsList());
+            new asyncGetSectionsList(sessionCookies).execute(API.getSectionsList());
         }
 
         mainDB = new DB(activity);
-        
-//        mainDB.ShowL();
-//        mainDB.ClearL();
-
     }
 
     public void reloadSections(Activity activity) {
-        new asyncGetSectionsList(activity).execute(API.getSectionsList());
+        new asyncGetSectionsList(activity, sessionCookies).execute(API.getSectionsList());
     }
 
-    public String                   accountName, accountPass;
-    public String                   sessionID;
-    public String                   accountUserID;
-    public boolean                  reachedMaxTopics;
-    boolean                         isInternetConnection;
+    public String accountName, accountPass;
+    public String sessionID;
+    public String accountUserID;
+    public String sessionCookies;
 
-    final static String             TOPIC_ATTRIBUTE_id       = "id";
-    final static String             TOPIC_ATTRIBUTE_forum    = "forum";
-    final static String             TOPIC_ATTRIBUTE_text     = "text";
-    final static String             TOPIC_ATTRIBUTE_user0    = "user0";
-    final static String             TOPIC_ATTRIBUTE_utime    = "utime";
-    final static String             TOPIC_ATTRIBUTE_user     = "user";
-    final static String             TOPIC_ATTRIBUTE_answ     = "answ";
+    public boolean reachedMaxTopics;
+    boolean isInternetConnection;
 
-    public final static int         ACTIVITY_RESULT_NEWTOPIC = 1;
-    public final static int         ACTIVITY_RESULT_SETTINGS = 2;
+    final static String TOPIC_ATTRIBUTE_id    = "id";
+    final static String TOPIC_ATTRIBUTE_forum = "forum";
+    final static String TOPIC_ATTRIBUTE_text  = "text";
+    final static String TOPIC_ATTRIBUTE_user0 = "user0";
+    final static String TOPIC_ATTRIBUTE_utime = "utime";
+    final static String TOPIC_ATTRIBUTE_user  = "user";
+    final static String TOPIC_ATTRIBUTE_answ  = "answ";
 
-    public final static String      COMMAND_CREATE_NEW_TOPIC = "createnewtopic";
+    public final static int ACTIVITY_RESULT_NEWTOPIC = 1;
+    public final static int ACTIVITY_RESULT_SETTINGS = 2;
 
-    @SuppressLint("SimpleDateFormat")
-    private static SimpleDateFormat sdf                      = new SimpleDateFormat("d MMM H:mm");
+    public final static String COMMAND_CREATE_NEW_TOPIC = "createnewtopic";
 
-    private class asyncGetSectionsList extends AsyncTask<String, Integer, String> {
+    private class asyncGetSectionsList extends AsyncTask<String, Integer, RequestResult> {
 
         private boolean        mSilentMode;
         private Activity       mActivity;
         private ProgressDialog progress;
 
-        public asyncGetSectionsList() {
+        public asyncGetSectionsList(String sessionCookies) {
             mSilentMode = true;
         }
 
-        public asyncGetSectionsList(Activity activity) {
+        public asyncGetSectionsList(Activity activity, String sessionCookies) {
             mActivity = activity;
             mSilentMode = false;
             progress = new ProgressDialog(mActivity);
@@ -143,14 +127,20 @@ public class Forum {
             }
         }
 
-        protected String doInBackground(String... urls) {
-            return WebIteraction.getServerResponse(urls[0]);
+        protected RequestResult doInBackground(String... urls) {
+            return WebIteraction.doServerRequest(urls[0], sessionCookies);
         }
 
-        protected void onPostExecute(String result) {
-            sections = JSONProcessor.parseSectionsList(result);
+        protected void onPostExecute(RequestResult result) {
+            if (!result.cookie.isEmpty()) {
+                sessionCookies = result.cookie;
+            }
+            sections = JSONProcessor.parseSectionsList(result.result);
+            if (sections.isEmpty())
+                sections = Section.fillDefauiltSectionsList();
+
             forums = Section.getUniqueForums(sections);
-            updateSectionsWithIndex();
+
             if (!mSilentMode) {
                 progress.dismiss();
             }
@@ -219,10 +209,8 @@ public class Forum {
             Topic newTopic = newTopics.get(i);
             Topic existingTopic = getTopicByid(newTopic.id);
 
-            if (existingTopic == null)
-                topics.add(newTopic);
-            else
-                updateTopic(existingTopic, newTopic);
+            if (existingTopic == null) topics.add(newTopic);
+            else updateTopic(existingTopic, newTopic);
 
         }
 
@@ -230,61 +218,6 @@ public class Forum {
 
     public interface iOnThemeChanged {
         void onThemeChanged(int newTheme);
-    }
-
-    public Section getSectionByName(String name) {
-
-        for (Section locTopic : sections) {
-            if (locTopic.sectionShortName.equals(name)) {
-                return locTopic;
-            }
-        }
-        return null;
-    }
-
-    private void updateSectionsWithIndex() {
-        String[] section_codes = new String[45];
-
-        section_codes[1] = "it-news";
-        section_codes[10] = "math";
-        section_codes[13] = "politic";
-        section_codes[15] = "admin";
-        section_codes[18] = "digit-photo";
-        section_codes[19] = "nix";
-        section_codes[2] = "philosophy";
-        section_codes[20] = "sport";
-        section_codes[23] = "fear";
-        section_codes[24] = "mobile";
-        section_codes[25] = "car";
-        section_codes[26] = "love";
-        section_codes[27] = "food";
-        section_codes[28] = "culture";
-        section_codes[29] = "science";
-        section_codes[3] = "v7";
-        section_codes[31] = "good";
-        section_codes[32] = "games";
-        section_codes[33] = "spam";
-        section_codes[36] = "events";
-        section_codes[38] = "realty";
-        section_codes[39] = "chat";
-        section_codes[4] = "web";
-        section_codes[40] = "history";
-        section_codes[41] = "travel";
-        section_codes[42] = "english";
-        section_codes[43] = "dominikana";
-        section_codes[44] = "darom";
-        section_codes[5] = "job";
-        section_codes[6] = "forum";
-        section_codes[7] = "lol";
-        section_codes[8] = "v8";
-
-        for (int i = 1; i < section_codes.length; i++) {
-            Section section = getSectionByName(section_codes[i]);
-            if (section != null) {
-                section.sectionId = Integer.toString(i);
-
-            }
-        }
     }
 
     public void selectTheme(final Activity activity) {
@@ -315,10 +248,10 @@ public class Forum {
         accountPass = sPref.getString(Settings.SETTINGS_ACCOUNT_PASS, "");
         sessionID = sPref.getString(Settings.SETTINGS_SESSION_ID, "");
         accountUserID = sPref.getString(Settings.SETTINGS_ACCOUNT_USER_ID, "");
+        sessionCookies = sPref.getString(Settings.SETTINGS_COOKIES, "");
 
         String sSections = sPref.getString(Settings.SETTINGS_SECTIONS, "");
         sections = Section.getSectionsFromString(sSections);
-        updateSectionsWithIndex();
 
         forums = Section.getUniqueForums(sections);
 
@@ -333,6 +266,7 @@ public class Forum {
         ed.putString(Settings.SETTINGS_ACCOUNT_PASS, accountPass);
         ed.putString(Settings.SETTINGS_SESSION_ID, sessionID);
         ed.putString(Settings.SETTINGS_ACCOUNT_USER_ID, accountUserID);
+        ed.putString(Settings.SETTINGS_COOKIES, sessionCookies);
 
         String sSections = Section.getSectionsAsString(sections);
         ed.putString(Settings.SETTINGS_SECTIONS, sSections);
@@ -424,7 +358,7 @@ public class Forum {
         new requestAsyncLogin(activity, mCallback, username, password, silentMode).execute(URL);
     }
 
-    public class requestAsyncLogin extends AsyncTask<String, Integer, WebIteraction.hashResult> {
+    public class requestAsyncLogin extends AsyncTask<String, Integer, RequestResult> {
         private Activity       activity;
         private ProgressDialog progress;
         private Context        context;
@@ -454,11 +388,14 @@ public class Forum {
             }
         }
 
-        protected WebIteraction.hashResult doInBackground(String... urls) {
-            return WebIteraction.getServerResponseWithCookie(urls[0]);
+        protected RequestResult doInBackground(String... urls) {
+            return WebIteraction.doServerRequest(urls[0], sessionCookies);
         }
 
-        protected void onPostExecute(WebIteraction.hashResult result) {
+        protected void onPostExecute(RequestResult result) {
+            if (!result.cookie.isEmpty()) {
+                sessionCookies = result.cookie;
+            }
 
             ResultContainer res = JSONProcessor.parseLogin(result.result);
 
@@ -470,21 +407,20 @@ public class Forum {
 
                 accountName = mUsername;
                 accountPass = mPpassword;
-                sessionID = result.sessionID;
+                sessionID = res.resultSessionID;
                 accountUserID = res.userID;
 
                 saveSettings(activity);
 
                 listener.onLoggedIn(true);
 
-            }
-            else {
+            } else {
 
                 sessionID = "";
                 if (!mSilentMode) {
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(this.context);
 
-                    dlgAlert.setMessage(res.errorString);
+                    dlgAlert.setMessage(res.resultStr);
                     dlgAlert.setTitle(R.string.sAuthorizationError);
                     dlgAlert.setPositiveButton("OK", null);
                     dlgAlert.create().show();
@@ -507,10 +443,9 @@ public class Forum {
         Intent intent = new Intent();
         intent.setClass(activity, NewTopic_Activity.class);
 
-        // Intent intent = new Intent(activity, NewTopic_Activity.class);
         activity.startActivityForResult(intent, ACTIVITY_RESULT_NEWTOPIC);
 
-    };
+    }
 
     public void createNewTopic(Topics_Activity activity, Bundle args) {
 
@@ -539,14 +474,11 @@ public class Forum {
         final WebIteraction.POST newMessagePOST = new WebIteraction.POST();
 
         newMessagePOST.url = URL;
-        newMessagePOST.cookie = API.COOKIE_SESSION_ID + "=" + sessionID + "; " + API.COOKIE_USER_ID + "=" + accountUserID;
-        newMessagePOST.POSTString = API.POST_message_text + StringProcessor.mista_URL_Encode(message) + "&" + API.POST_action + API.action_New + "&"
-                + API.POST_topic_text + StringProcessor.mista_URL_Encode(subject) + "&" + API.POST_target_forum + forumName.toLowerCase() + "&"
-                + API.POST_target_section + sectionIndex + "&" + API.POST_rnd + "" + Math.abs(rand.nextLong());
+        newMessagePOST.cookie = buildCookie();
+        newMessagePOST.POSTString = API.POST_message_text + StringProcessor.mista_URL_Encode(message) + "&" + API.POST_action + API.action_New + "&" + API.POST_topic_text + StringProcessor.mista_URL_Encode(subject) + "&" + API.POST_target_forum + forumName.toLowerCase() + "&" + API.POST_target_section + sectionIndex + "&" + API.POST_rnd + "" + Math.abs(rand.nextLong());
 
         if (isVoting) {
-            newMessagePOST.POSTString = newMessagePOST.POSTString + "&" + API.POST_voting + "&" + API.POST_select1 + select1 + "&" + API.POST_select2 + select2
-                    + "&" + API.POST_select3 + select3 + "&" + API.POST_select4 + select4 + "&" + API.POST_select5 + select5;
+            newMessagePOST.POSTString = newMessagePOST.POSTString + "&" + API.POST_voting + "&" + API.POST_select1 + select1 + "&" + API.POST_select2 + select2 + "&" + API.POST_select3 + select3 + "&" + API.POST_select4 + select4 + "&" + API.POST_select5 + select5;
         }
 
         iOnPOSTRequestExecuted mCallback = (iOnPOSTRequestExecuted) activity;
@@ -599,7 +531,11 @@ public class Forum {
             return super.getCount() - 1; // Hint
         }
 
-    };
+    }
+
+    public String buildCookie() {
+        return sessionCookies + (!sessionCookies.isEmpty() ? ";" : "") + API.COOKIE_SESSION_ID + "=" + sessionID + "; " + API.COOKIE_USER_ID + "=" + accountUserID;
+    }
 
     public void addNewMessage(final long curTopicId, int replyTo, final Activity activity) {
 
@@ -634,9 +570,7 @@ public class Forum {
             spinVote.setSelection(votes.size() - 1);
 
             spinVote.setVisibility(View.VISIBLE);
-        }
-        else
-            spinVote = null;
+        } else spinVote = null;
 
         final EditText editSubject = ((EditText) dialogView.findViewById(R.id.editNewMessage));
         if (replyTo >= 0) {
@@ -647,7 +581,8 @@ public class Forum {
         editSubject.requestFocusFromTouch();
 
         builder.setPositiveButton(R.string.sCreate, new DialogInterface.OnClickListener() {
-            public void onClick(final DialogInterface dialogInterface, final int i) {}
+            public void onClick(final DialogInterface dialogInterface, final int i) {
+            }
 
         });
 
@@ -706,10 +641,8 @@ public class Forum {
         final WebIteraction.POST newMessagePOST = new WebIteraction.POST();
 
         newMessagePOST.url = URL;
-        newMessagePOST.cookie = API.COOKIE_SESSION_ID + "=" + sessionID + "; " + API.COOKIE_USER_ID + "=" + accountUserID;
-        newMessagePOST.POSTString = API.POST_message_text + StringProcessor.mista_URL_EncodePlus(message) + "&" + API.POST_action + API.action_New + "&"
-                + API.POST_topic_id + curTopicId + "&" + API.POST_user_name + StringProcessor.mista_URL_Encode(accountName) + "&" + API.POST_rnd + ""
-                + Math.abs(rand.nextLong());
+        newMessagePOST.cookie = buildCookie();
+        newMessagePOST.POSTString = API.POST_message_text + StringProcessor.mista_URL_EncodePlus(message) + "&" + API.POST_action + API.action_New + "&" + API.POST_topic_id + curTopicId + "&" + API.POST_user_name + StringProcessor.mista_URL_Encode(accountName) + "&" + API.POST_rnd + "" + Math.abs(rand.nextLong());
 
         if (vote > 0) {
             newMessagePOST.POSTString = newMessagePOST.POSTString + "&" + API.POST_vote + vote;
@@ -721,7 +654,7 @@ public class Forum {
 
     }
 
-    public class requestAsyncPOST extends AsyncTask<WebIteraction.POST, Integer, WebIteraction.PostResult> {
+    public class requestAsyncPOST extends AsyncTask<WebIteraction.POST, Integer, RequestResult> {
         private Activity               activity;
         private ProgressDialog         progress;
         private Context                context;
@@ -740,11 +673,11 @@ public class Forum {
             this.progress.show();
         }
 
-        protected WebIteraction.PostResult doInBackground(WebIteraction.POST... urls) {
+        protected RequestResult doInBackground(WebIteraction.POST... urls) {
             return WebIteraction.postWebRequest(urls[0]);
         }
 
-        protected void onPostExecute(WebIteraction.PostResult result) {
+        protected void onPostExecute(RequestResult result) {
 
             progress.dismiss();
 
@@ -760,7 +693,7 @@ public class Forum {
         final AlertDialog.Builder builder = new AlertDialog.Builder(topics_Activity);
 
         final View dialogView = topics_Activity.getLayoutInflater().inflate(R.layout.about, null);
-        
+
         Button marketButton = (Button) dialogView.findViewById(R.id.buttonMarket);
         marketButton.setOnClickListener(new OnClickListener() {
             
@@ -772,7 +705,6 @@ public class Forum {
             }
             
         });
-        
 
         builder.setView(dialogView);
         builder.setCancelable(true);

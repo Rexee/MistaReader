@@ -69,11 +69,11 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
 
     private void init_ProcessNotifications() {
 
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.cancel(Subscriptions.NOTIFICATIONS_UNIQUE_ID);
-
         Intent inpIntent = getIntent();
         if (inpIntent.hasExtra(Subscriptions.NOTIFICATIONS_EXTRA_ID)) {
+
+            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            mNotificationManager.cancel(Subscriptions.NOTIFICATIONS_UNIQUE_ID);
 
             Bundle extras = inpIntent.getExtras();
             if (extras != null) {
@@ -157,7 +157,7 @@ public class Topics_Activity extends BaseActivity implements Topics_Fragment.OnT
     protected void onResume() {
         super.onResume();
 
-        // После recreate() открывает Drawer. Не знаю почему.
+        // РџРѕСЃР»Рµ recreate() РѕС‚РєСЂС‹РІР°РµС‚ Drawer. РќРµ Р·РЅР°СЋ РїРѕС‡РµРјСѓ.
         if (mND.mDrawerLayout.isDrawerOpen(mND.mDrawerList)) {
             mND.mDrawerLayout.closeDrawer(mND.mDrawerList);
             mND.mDrawerToggle.syncState();

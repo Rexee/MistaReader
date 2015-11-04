@@ -1,9 +1,8 @@
 package com.mistareader;
 
-import java.util.ArrayList;
-
 import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -14,29 +13,34 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.BigTextStyle;
+import android.support.v4.app.NotificationCompat.Builder;
+import android.support.v4.app.NotificationCompat.InboxStyle;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.mistareader.TextProcessors.JSONProcessor;
 import com.mistareader.TextProcessors.StringProcessor;
+import com.mistareader.WebIteraction.RequestResult;
+
+import java.util.ArrayList;
 
 public class Subscriptions extends IntentService {
 
-    DB                         mainDB;
-    LocalBroadcastManager      BMG;
-    final static int           NOTIFICATION_INTERVAL_MULTIPLER = 1000 * 60;
+    DB                    mainDB;
+    LocalBroadcastManager BMG;
+    final static int NOTIFICATION_INTERVAL_MULTIPLER = 1000 * 60;
 
-    static final int           NOTIFICATIONS_UNIQUE_ID         = 0;
-    static final String        NOTIFICATIONS_EXTRA_ID          = "NOTIFICATIONS_EXTRA_ID";
-    static final String        NOTIFICATIONS_EXTRA_IS_MULTIPLE = "IS_MULTIPLE";
-    static final String        NOTIFICATIONS_EXTRA_TOPIC_ID    = "TOPIC_ID";
-    static final String        NOTIFICATIONS_EXTRA_TOPIC_ANSW  = "TOPIC_ANSW";
+    static final        int    NOTIFICATIONS_UNIQUE_ID         = 0;
+    static final        String NOTIFICATIONS_EXTRA_ID          = "NOTIFICATIONS_EXTRA_ID";
+    static final        String NOTIFICATIONS_EXTRA_IS_MULTIPLE = "IS_MULTIPLE";
+    static final        String NOTIFICATIONS_EXTRA_TOPIC_ID    = "TOPIC_ID";
+    static final        String NOTIFICATIONS_EXTRA_TOPIC_ANSW  = "TOPIC_ANSW";
     public static final String NOTIFICATIONS_EXTRA_RELOAD_MODE = "RELOAD_MODE";
 
     private class cNewSubscriptions {
-        long       topicId;
-        String     text;
+        long   topicId;
+        String text;
         public int newAnsw;
         public int answ;
     }
@@ -61,6 +65,9 @@ public class Subscriptions extends IntentService {
             return;
         }
 
+        SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String sessionCookies = sPref.getString(Settings.SETTINGS_COOKIES, "");
+
         BMG = LocalBroadcastManager.getInstance(this);
         boolean isNewSubs = false;
 
@@ -68,11 +75,10 @@ public class Subscriptions extends IntentService {
             Topic curTopic = topicsList.get(i);
             String URL = API.getTopicInfo(curTopic.id);
 
-            String result = WebIteraction.getServerResponse(URL);
+            RequestResult result = WebIteraction.doServerRequest(URL, sessionCookies);
 
-            Topic newSubscription = JSONProcessor.getTopicAnsw(result);
-            if (newSubscription == null)
-                continue;
+            Topic newSubscription = JSONProcessor.getTopicAnsw(result.result);
+            if (newSubscription == null) continue;
 
             int newAnsw = newSubscription.answ - curTopic.answ;
 
@@ -118,18 +124,17 @@ public class Subscriptions extends IntentService {
                 newSubsList.add(newSub);
             }
 
-            showNotification(newSubsList);
+            showNotification(newSubsList, sPref);
         }
 
     }
 
-    private void showNotification(ArrayList<cNewSubscriptions> newSubsList) {
+    private void showNotification(ArrayList<cNewSubscriptions> newSubsList, SharedPreferences sPref) {
 
         if (newSubsList.isEmpty()) {
             return;
         }
 
-        SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean notificationsUse = sPref.getBoolean(Settings.NOTIFICATIONS_USE, false);
         if (!notificationsUse) {
             return;
@@ -162,20 +167,20 @@ public class Subscriptions extends IntentService {
 
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        Builder mBuilder = new Builder(this);
         mBuilder.setContentIntent(resultPendingIntent);
         mBuilder.setAutoCancel(true);
         // mBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
 
         int defaults = 0;
         if (notificationsVibrate) {
-            defaults = defaults | NotificationCompat.DEFAULT_VIBRATE;
+            defaults = defaults | Notification.DEFAULT_VIBRATE;
         }
         if (notificationsSound) {
-            defaults = defaults | NotificationCompat.DEFAULT_SOUND;
+            defaults = defaults | Notification.DEFAULT_SOUND;
         }
         if (notificationsLED) {
-            defaults = defaults | NotificationCompat.DEFAULT_LIGHTS;
+            defaults = defaults | Notification.DEFAULT_LIGHTS;
         }
 
         mBuilder.setDefaults(defaults);
@@ -189,14 +194,13 @@ public class Subscriptions extends IntentService {
             mBuilder.setNumber(newSub.newAnsw);
 
             String unescapedText = StringProcessor.unescapeSimple(newSub.text);
-            mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(unescapedText));
+            mBuilder.setStyle(new BigTextStyle().bigText(unescapedText));
             mBuilder.setContentText(unescapedText);
 
-        }
-        else {
+        } else {
             mBuilder.setContentTitle(sNewMessages);
 
-            NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+            InboxStyle inboxStyle = new InboxStyle();
             inboxStyle.setBigContentTitle(sNewMessages);
             inboxStyle.setSummaryText(getString(R.string.sTotalNew));
 
@@ -208,8 +212,7 @@ public class Subscriptions extends IntentService {
                 String unescapedText = StringProcessor.unescapeSimple(newSub.text);
 
                 inboxStyle.addLine("* " + unescapedText + ": " + newSub.newAnsw);
-                if (i == 0)
-                    mBuilder.setContentText(unescapedText);
+                if (i == 0) mBuilder.setContentText(unescapedText);
             }
             mBuilder.setNumber(totalNewMess);
             mBuilder.setStyle(inboxStyle);
@@ -243,9 +246,7 @@ public class Subscriptions extends IntentService {
                 am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + millis, millis, pi);
             }
 
-        }
-        else
-            disableOnBootHandler(context);
+        } else disableOnBootHandler(context);
 
     }
 

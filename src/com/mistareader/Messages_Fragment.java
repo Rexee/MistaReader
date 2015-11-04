@@ -1,7 +1,5 @@
 package com.mistareader;
 
-import java.util.ArrayList;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
@@ -25,6 +23,9 @@ import android.widget.TextView;
 
 import com.mistareader.TextProcessors.JSONProcessor;
 import com.mistareader.TextProcessors.S;
+import com.mistareader.WebIteraction.RequestResult;
+
+import java.util.ArrayList;
 
 public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestExecuted {
 
@@ -101,7 +102,7 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
         imgFastScrollDown.setOnClickListener(onArrowClick);
         imgFastScrollUp.setOnClickListener(onArrowClick);
 
-        // в ответе сервера "темы с моим участием" нет этого флага.
+        // РІ РѕС‚РІРµС‚Рµ СЃРµСЂРІРµСЂР° "С‚РµРјС‹ СЃ РјРѕРёРј СѓС‡Р°СЃС‚РёРµРј" РЅРµС‚ СЌС‚РѕРіРѕ С„Р»Р°РіР°.
         // if (currentTopic.is_voting == 1) {
 
         getTopicInfo();
@@ -129,7 +130,7 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
 
     private void getTopicInfo() {
         URL = API.getTopicInfo(currentTopicId);
-        new RequestAsyncTopicInfo(null).execute(URL);
+        new RequestAsyncTopicInfo(null, forum.sessionCookies).execute(URL);
     }
 
     @Override
@@ -282,7 +283,7 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
 
         URL = API.getMessages(currentTopicId, messages_from, messages_to);
 
-        new RequestAsyncMessages(messages_from, messages_to).execute(URL);
+        new RequestAsyncMessages(messages_from, messages_to, forum.sessionCookies).execute(URL);
     }
 
     private void loadMessagesBefore(int firstMessageN) {
@@ -293,7 +294,7 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
         messages_to = firstMessageN;
         URL = API.getMessages(currentTopicId, messages_from, messages_to);
 
-        new RequestAsyncMessages(messages_from, messages_to).execute(URL);
+        new RequestAsyncMessages(messages_from, messages_to, forum.sessionCookies).execute(URL);
     }
 
     private void onDown(int firstVisibleItem, int visibleItemCount) {
@@ -473,13 +474,15 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
 
     }
 
-    public class RequestAsyncMessages extends AsyncTask<String, Integer, String> {
-        private int mMessages_from;
-        private int mMessages_to;
+    public class RequestAsyncMessages extends AsyncTask<String, Integer, RequestResult> {
+        private int    mMessages_from;
+        private int    mMessages_to;
+        private String mSessionCookies;
 
-        public RequestAsyncMessages(int messages_from, int messages_to) {
+        public RequestAsyncMessages(int messages_from, int messages_to, String sessionCookies) {
             mMessages_from = Math.max(messages_from, 0);
             mMessages_to = Math.min(messages_to, answ);
+            mSessionCookies = sessionCookies;
         }
 
         @Override
@@ -487,12 +490,16 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
             messages_isLoading = true;
         }
 
-        protected String doInBackground(String... urls) {
-            return WebIteraction.getServerResponse(urls[0]);
+        protected RequestResult doInBackground(String... urls) {
+            return WebIteraction.doServerRequest(urls[0], mSessionCookies);
         }
 
-        protected void onPostExecute(String result) {
-            currentTopic.addNewMessages(result, mMessages_from, mMessages_to);
+        protected void onPostExecute(RequestResult result) {
+            if (!result.cookie.isEmpty()) {
+                forum.sessionCookies = result.cookie;
+            }
+
+            currentTopic.addNewMessages(result.result, mMessages_from, mMessages_to);
             drawMessages();
             messages_isLoading = false;
         }
@@ -535,20 +542,26 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
         super.onCreate(savedInstanceState);
     }
 
-    public class RequestAsyncTopicInfo extends AsyncTask<String, Integer, String> {
+    public class RequestAsyncTopicInfo extends AsyncTask<String, Integer, RequestResult> {
 
         iOnLoadTopicInfoFinished mCallBack;
+        String mSessionCookies;
 
-        public RequestAsyncTopicInfo(iOnLoadTopicInfoFinished callBackOnLoadTopicInfoFinished) {
+        public RequestAsyncTopicInfo(iOnLoadTopicInfoFinished callBackOnLoadTopicInfoFinished, String sessionCookies) {
             mCallBack = callBackOnLoadTopicInfoFinished;
+            mSessionCookies = sessionCookies;
         }
 
-        protected String doInBackground(String... urls) {
-            return WebIteraction.getServerResponse(urls[0]);
+        protected RequestResult doInBackground(String... urls) {
+            return WebIteraction.doServerRequest(urls[0] , mSessionCookies);
         }
 
-        protected void onPostExecute(String result) {
-            updateTopicInfo(JSONProcessor.ParseTopicInfo(result));
+        protected void onPostExecute(RequestResult result) {
+            if (!result.cookie.isEmpty()) {
+                forum.sessionCookies = result.cookie;
+            }
+
+            updateTopicInfo(JSONProcessor.ParseTopicInfo(result.result));
 
             if (mCallBack != null) {
                 mCallBack.onLoadTopicInfoFinished();
@@ -568,10 +581,8 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
             currentTopic.is_voting = refreshedTopic.is_voting;
 
             if (refreshedTopic.votes != null) {
-                if (currentTopic.votes == null)
-                    currentTopic.votes = new ArrayList<Topic.Votes>(5);
-                else
-                    currentTopic.votes.clear();
+                if (currentTopic.votes == null) currentTopic.votes = new ArrayList<Topic.Votes>(5);
+                else currentTopic.votes.clear();
 
                 currentTopic.votes.addAll(refreshedTopic.votes);
             }
@@ -614,26 +625,23 @@ public class Messages_Fragment extends Fragment implements Forum.iOnPOSTRequestE
                 }
 
                 if (newMessageMode) {
-                    if (forum.mainDB.isTopicInSubscriptions(currentTopicId))
-                        forum.mainDB.markTopicAsReaded(currentTopicId, currentTopic.answ);
+                    if (forum.mainDB.isTopicInSubscriptions(currentTopicId)) forum.mainDB.markTopicAsReaded(currentTopicId, currentTopic.answ);
 
                     loadMessagesFrom(currentTopic.answ - 10);
-                }
-                else {
+                } else {
 
                     int pos = lvMain.getLastVisiblePosition();
                     if (pos >= lvMain.getCount() - 1) {
                         movePositionToMessage = pos + 1;
                         loadMessagesFrom(pos);
-                    }
-                    else {
+                    } else {
                         focusFirstMessage();
                     }
                 }
             }
         };
 
-        new RequestAsyncTopicInfo(callBackOnLoadTopicInfoFinished).execute(URL);
+        new RequestAsyncTopicInfo(callBackOnLoadTopicInfoFinished, forum.sessionCookies).execute(URL);
 
     }
 
