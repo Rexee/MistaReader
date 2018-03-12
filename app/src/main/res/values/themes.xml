@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:dropDownListViewStyle">@style/MistaSpinnerStyle</item>
+        <item name="android:divider">@drawable/divider_list</item>
+    </style>
+
+    <style name="AppTheme.FullScreen" parent="AppTheme">
+        <item name="android:windowBackground">@android:color/black</item>
+        <!--<item name="android:windowTranslucentNavigation">true</item>-->
+        <!--<item name="android:windowTranslucentStatus">true</item>-->
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <!--<item name="android:statusBarColor">@android:color/transparent</item>-->
+
+        <!--<item name="android:windowContentOverlay">@null</item>-->
+    </style>
+
+    <style name="AppTheme.Light" parent="AppTheme">
+        <!--ripple/nav drawer selected-->
+        <item name="userProfileBackground">@drawable/gradient_user_bg_light</item>
+        <item name="colorControlHighlight">@color/blue_grey_200</item>
+        <item name="android:windowBackground">@color/grey_50</item>
+        <item name="scrollIndicatorTint">@color/grey_700</item>
+        <item name="toolbarIconsTint">@color/grey_800</item>
+        <item name="dividerListTint">@color/grey_700</item>
+        <item name="dividerDropdownTint">@color/grey_50</item>
+        <item name="navDrawerBgColor">@color/grey_50</item>
+        <item name="navDrawerSelectedColor">@color/blue_grey_200</item>
+
+        <item name="colorPrimary">@color/blue_grey_50</item>
+        <item name="colorPrimaryDark">@color/blue_grey_100</item>
+        <item name="colorAccent">@color/cyan_600</item>
+        <item name="colorAccentSecondary">@color/cyan_700</item>
+        <item name="android:alertDialogTheme">@style/AppTheme.Light.Dialog</item>
+        <item name="alertDialogTheme">@style/AppTheme.Light.Dialog</item>
+        <item name="android:textColorPrimary">@color/grey_900</item>
+        <item name="android:textColorPrimaryInverse">@color/grey_50</item>
+        <item name="android:textColorSecondary">@color/light_bg_dark_secondary_text</item>
+        <item name="android:textColorTertiary">@color/light_bg_dark_disabled_text</item>
+
+        <item name="text_author">@color/blue_500</item>
+        <item name="text_account">@color/teal_A700</item>
+        <item name="text_vote">@color/light_blue_800</item>
+    </style>
+
+    <style name="AppTheme.Gray" parent="AppTheme">
+        <item name="userProfileBackground">@drawable/gradient_user_bg_gray</item>
+        <item name="android:windowBackground">@color/grey_900</item>
+        <item name="scrollIndicatorTint">@color/grey_300</item>
+        <item name="toolbarIconsTint">@color/grey_200</item>
+        <item name="dividerListTint">@color/grey_200</item>
+        <item name="dividerDropdownTint">@color/grey_600</item>
+        <item name="navDrawerBgColor">@color/grey_900</item>
+        <item name="navDrawerSelectedColor">@color/blue_grey_400</item>
+
+        <item name="colorPrimary">@color/blue_grey_800</item>
+        <item name="colorPrimaryDark">@color/blue_grey_900</item>
+        <item name="colorAccent">@color/cyan_500</item>
+        <item name="colorAccentSecondary">@color/cyan_700</item>
+        <item name="android:textColorPrimary">@color/dark_bg_light_primary_text</item>
+        <item name="android:textColorPrimaryInverse">@color/black_87</item>
+        <item name="android:textColorSecondary">@color/dark_bg_light_secondary_text</item>
+        <item name="android:textColorTertiary">@color/dark_bg_light_secondary_text</item>
+
+        <item name="text_author">@color/cyan_500</item>
+        <item name="text_account">@color/green_A400</item>
+        <item name="text_vote">@color/light_blue_700</item>
+    </style>
+
+    <style name="AppTheme.Black" parent="AppTheme">
+        <item name="userProfileBackground">@drawable/gradient_user_bg_black</item>
+        <item name="android:windowBackground">@color/black</item>
+        <item name="scrollIndicatorTint">@color/white</item>
+        <item name="toolbarIconsTint">@color/grey_300</item>
+        <item name="dividerListTint">@color/white</item>
+        <item name="dividerDropdownTint">@color/grey_700</item>
+        <item name="navDrawerBgColor">@color/grey_900</item>
+        <item name="navDrawerSelectedColor">@color/blue_grey_700</item>
+
+        <item name="colorPrimary">@color/grey_900</item>
+        <item name="colorPrimaryDark">@color/black_87</item>
+        <item name="colorAccent">@color/teal_300</item>
+        <item name="colorAccentSecondary">@color/teal_500</item>
+        <item name="android:alertDialogTheme">@style/AppTheme.Black.Dialog</item>
+        <item name="alertDialogTheme">@style/AppTheme.Black.Dialog</item>
+        <item name="android:textColorPrimary">@color/white_87</item>
+        <item name="android:textColorPrimaryInverse">@color/black</item>
+        <item name="android:textColorSecondary">@color/dark_bg_light_secondary_text</item>
+        <item name="android:textColorTertiary">@color/dark_bg_light_disabled_text</item>
+
+        <item name="text_author">@color/cyan_500</item>
+        <item name="text_account">@color/green_A700</item>
+        <item name="text_vote">@color/light_blue_700</item>
+    </style>
+
+    <style name="AppTheme.Black.Dialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:background">@color/grey_900</item>
+        <item name="colorAccent">@color/teal_300</item>
+    </style>
+
+    <style name="AppTheme.Light.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@color/grey_50</item>
+        <item name="colorAccent">@color/cyan_600</item>
+    </style>
+
+</resources>

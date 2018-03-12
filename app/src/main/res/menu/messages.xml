@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:mistareader="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_add"
+        android:icon="?iconNewItem"
+        android:title="@string/sCreate"
+        mistareader:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_reload"
+        android:icon="@drawable/reload_rotate"
+        android:title="@string/sReload"
+        mistareader:showAsAction="always" />
+
+</menu>

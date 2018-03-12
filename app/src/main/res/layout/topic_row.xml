@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/messageMainFrame"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:orientation="vertical"
+    android:paddingBottom="4dp"
+    android:paddingEnd="8dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingStart="8dp"
+    android:paddingTop="4dp">
+
+    <FrameLayout
+        android:id="@+id/topicHeader"
+        android:layout_width="match_parent"
+        android:layout_height="22dp">
+
+        <TextView
+            android:id="@+id/topic_user0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextDefault"
+            android:textStyle="bold"
+            tools:text="Автор" />
+
+        <TextView
+            android:id="@+id/topic_section"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|right"
+            android:textAppearance="@style/TextDefault"
+            android:textStyle="bold"
+            tools:text="Раздел" />
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/topic_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/topicHeader"
+        android:textAppearance="@style/TextDefault.Large"
+        tools:text="Тема Тема Тема Тема Тема Тема Тема Тема Тема Тема Тема Тема Тема Тема " />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="22dp"
+        android:layout_below="@id/topic_text"
+        android:layout_centerHorizontal="false"
+        android:layout_centerVertical="false">
+
+        <TextView
+            android:id="@+id/topic_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:textAppearance="@style/TextDefault"
+            android:textStyle="bold"
+            tools:text="послАвтор" />
+
+        <TextView
+            android:id="@+id/topic_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@id/topic_user"
+            android:layout_toRightOf="@id/topic_user"
+            android:textAppearance="@style/TextDefault.Secondary"
+            tools:text="Время" />
+
+        <TextView
+            android:id="@+id/topic_replies"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="Ответов"
+            android:textAppearance="@style/TextDefault.Secondary" />
+
+        <ImageView
+            android:id="@+id/imgAnsw"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_toLeftOf="@id/topic_replies"
+            android:layout_toStartOf="@id/topic_replies"
+            android:src="@drawable/ic_comment"
+            android:tint="?android:attr/textColorPrimary" />
+
+        <TextView
+            android:id="@+id/topic_replies_new"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/imgAnsw"
+            android:layout_toStartOf="@id/imgAnsw"
+            android:background="@drawable/textview_roundcorners"
+            android:gravity="center"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:textAppearance="@style/TextDefault.Small"
+            android:visibility="gone"
+            tools:text="+10"
+            tools:visibility="visible" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

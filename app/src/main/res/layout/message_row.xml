@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="4dp"
+    android:paddingEnd="8dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingStart="8dp"
+    android:paddingTop="4dp">
+
+    <LinearLayout
+        android:id="@+id/messageMainFrame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/frameL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/mess_n"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextDefault"
+                tools:text="N" />
+
+            <TextView
+                android:id="@+id/mess_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|end"
+                android:textAppearance="@style/TextDefault.Secondary"
+                tools:text="Время" />
+
+            <TextView
+                android:id="@+id/mess_user"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:layout_marginStart="40dp"
+                android:textAppearance="@style/TextDefault"
+                android:textStyle="bold"
+                tools:text="Автор" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/mess_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoLink="all"
+            android:linksClickable="true"
+            android:minHeight="25dp"
+            android:textAppearance="@style/TextDefault.Large"
+            tools:text="Текст" />
+
+        <TextView
+            android:id="@+id/mess_vote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextDefault.Vote"
+            tools:text="Голосование" />
+
+        <TextView
+            android:id="@+id/mess_replies"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right|end"
+            android:textAppearance="@style/TextDefault.Link"
+            tools:text="(0) (1) (25)" />
+
+    </LinearLayout>
+</FrameLayout>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="com.mistareader"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:versionCode="18"
+    android:versionName="2.0 beta">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <application
+        android:name=".MainApp"
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_new_round"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".ui.topics.TopicsActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.messages.MessagesActivity"
+            android:parentActivityName=".ui.topics.TopicsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.topics.TopicsActivity" />
+        </activity>
+        <activity
+            android:name=".ui.topics.NewTopicActivity"
+            android:parentActivityName=".ui.topics.TopicsActivity" />
+        <activity
+            android:name=".ui.user.UserActivity"
+            android:parentActivityName=".ui.messages.MessagesActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.messages.MessagesActivity" />
+        </activity>
+
+        <activity
+            android:name=".ui.user.UserAvatarFullScreen"
+            android:parentActivityName=".ui.user.UserActivity"
+            android:theme="@style/AppTheme.FullScreen">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.user.UserActivity" />
+        </activity>
+        <activity
+            android:name=".ui.settings.SettingsActivity"
+            android:label="@string/sSettings"
+            android:parentActivityName=".ui.topics.TopicsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.topics.TopicsActivity" />
+        </activity>
+
+        <receiver
+            android:name=".OnBootBroadcastReceiver"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".util.Subscriptions" />
+
+    </application>
+
+</manifest>

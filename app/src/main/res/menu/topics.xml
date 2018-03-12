@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.httpsampler.MainActivity">
+
+    <item
+        android:id="@+id/menu_add"
+        android:icon="?iconNewItem"
+        android:title="@string/sCreate"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_markAll"
+        android:title="@string/sMarkAll"
+        android:icon="?iconMarkAll"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_reload"
+        android:title="@string/sReload"
+        android:icon="@drawable/reload_rotate"
+        app:showAsAction="always" />
+
+</menu>

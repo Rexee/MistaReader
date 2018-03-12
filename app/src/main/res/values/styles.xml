@@ -1,0 +1,47 @@
+<resources>
+
+    <style name="MistaSpinnerStyle" parent="Widget.AppCompat.ListView.DropDown">
+        <item name="android:divider">@drawable/divider_dropdown</item>
+    </style>
+
+    <style name="TextDefault" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+
+    <style name="TextDefault.Vote">
+        <item name="android:textColor">?attr/text_vote</item>
+    </style>
+
+    <style name="TextDefault.Link">
+        <item name="android:textColor">?android:attr/textColorLink</item>
+    </style>
+
+    <style name="TextDefault.Secondary">
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
+    <style name="TextDefault.Title">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="TextDefault.Title.Secondary">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
+    <style name="TextDefault.Large">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextDefault.Small">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="RecyclerView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:scrollbarThumbVertical">@drawable/scroll_indicator</item>
+        <item name="android:scrollbars">vertical</item>
+    </style>
+
+</resources>
