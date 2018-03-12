@@ -78,7 +78,7 @@
 	<string name="sLogoff">Выйти из аккаунта</string>
 	<string name="sAbout">О программе</string>
 	
-	<string name="sAboutDetailsVersion">Версия: 1.5.2</string>
+	<string name="sAboutDetailsVersion">Версия: 1.5.4</string>
 	<string name="sAboutDetails">Разработка: vhl</string>
 	<string name="sAboutDetails2">При поддержке: Asmody</string>
 	<string name="sAboutMarket">Оценить приложение</string>
@@ -107,9 +107,8 @@
 	<string name="sWHatsNew">Что нового</string>
 	<string name="sWHatsNewDetal1">Список изменений:</string>
 	<string name="sWHatsNewDetal2"><Data><![CDATA[
-		<b>Версия: 1.5.2:<br><br></b>
-	    * Исправлены проблемы с авторизацией.<br>
-	    * Исправлены проблемы с названиями секций.<br><br>
+		<b>Версия: 1.5.4:<br><br></b>
+	    * Переход на работу через SSL соединение.<br>
 	    ]]></Data></string>
 	
 	

@@ -9,7 +9,7 @@ public class API {
     // URL = "http://www.forum.mista.ru/ajax_topic.php?id=708776"; 0xFFFFFFF
     // http://www.forum.mista.ru/ajax_topic.php?id=719832 - html в заголовке
 
-    final static String        MAIN_URL                = "http://www.forum.mista.ru/";
+    final static String        MAIN_URL                = "https://www.forum.mista.ru/";
 //    final static String MAIN_URL = "http://192.168.1.100/";
     
     final static int           DEFAULT_TOPICS          = 20;
