@@ -1,18 +1,20 @@
 package com.mistareader.model;
 
 import android.app.Activity;
-import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TextInputEditText;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -65,7 +67,7 @@ public class Forum {
 
     private Forum() {
 
-        topics = new ArrayList<Topic>(20);
+        topics = new ArrayList<>(20);
         reachedMaxTopics = false;
 
         rand = new Random();
@@ -261,26 +263,26 @@ public class Forum {
     }
 
     public void saveSettings(SharedPreferences sPref) {
-        //        Editor ed = sPref.edit();
-        //
-        //        ed.clear();
-        //        ed.putString(Settings.SETTINGS_ACCOUNT_NAME, accountName);
-        //        ed.putString(Settings.SETTINGS_ACCOUNT_PASS, accountPass);
-        //        ed.putString(Settings.SETTINGS_SESSION_ID, sessionID);
-        //        ed.putString(Settings.SETTINGS_ACCOUNT_USER_ID, accountUserID);
-        //        ed.putString(Settings.SETTINGS_COOKIES, sessionCookies);
-        //
-        //        String sSections = Section.getSectionsAsString(sections);
-        //        ed.putString(Settings.SETTINGS_SECTIONS, sSections);
-        //
-        //        ed.putInt(Settings.SETTINGS_THEME, ThemesManager.currentTheme);
-        //        ed.putString(Settings.SETTINGS_VERSION, Settings.SETTINGS_VERSION_N);
-        //
-        //        ed.apply();
+        Editor ed = sPref.edit();
+
+//        ed.clear();
+        ed.putString(Settings.SETTINGS_ACCOUNT_NAME, accountName);
+        ed.putString(Settings.SETTINGS_ACCOUNT_PASS, accountPass);
+        ed.putString(Settings.SETTINGS_SESSION_ID, sessionID);
+        ed.putString(Settings.SETTINGS_ACCOUNT_USER_ID, accountUserID);
+        ed.putString(Settings.SETTINGS_COOKIES, sessionCookies);
+
+        String sSections = Section.getSectionsAsString(sections);
+        ed.putString(Settings.SETTINGS_SECTIONS, sSections);
+
+//        ed.putInt(Settings.SETTINGS_THEME, ThemesManager.currentTheme);
+        ed.putString(Settings.SETTINGS_VERSION, Settings.SETTINGS_VERSION_N);
+
+        ed.apply();
     }
 
     public void saveSettings(Activity activity) {
-        SharedPreferences sPref = activity.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(activity);
         saveSettings(sPref);
     }
 
@@ -337,7 +339,10 @@ public class Forum {
         String URL;
         URL = API.login(username, password);
 
-        iOnLoggedIn mCallback = (iOnLoggedIn) activity;
+        iOnLoggedIn mCallback = null;
+        if (activity instanceof iOnLoggedIn) {
+            mCallback = (iOnLoggedIn) activity;
+        }
 
         new requestAsyncLogin(activity, mCallback, username, password, silentMode).execute(URL);
     }
@@ -396,7 +401,9 @@ public class Forum {
 
                 saveSettings(activity);
 
-                listener.onLoggedIn(true);
+                if (listener != null) {
+                    listener.onLoggedIn(true);
+                }
 
             } else {
 
@@ -409,8 +416,9 @@ public class Forum {
                     dlgAlert.setPositiveButton("OK", null);
                     dlgAlert.create().show();
                 }
-
-                listener.onLoggedIn(false);
+                if (listener != null) {
+                    listener.onLoggedIn(false);
+                }
             }
 
         }

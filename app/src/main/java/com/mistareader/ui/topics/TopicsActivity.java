@@ -421,7 +421,7 @@ public class TopicsActivity extends BaseActivity implements iOnPOSTRequestExecut
 
         forum = Forum.getInstance();
         if (forum != null) {
-            SharedPreferences sPref = getPreferences(MODE_PRIVATE);
+            SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(this);
             forum.saveSettings(sPref);
             forum.mainDB.close();
         }

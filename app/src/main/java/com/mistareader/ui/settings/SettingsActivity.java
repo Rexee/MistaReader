@@ -4,13 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.mistareader.R;
+import com.mistareader.model.Forum.iOnLoggedIn;
 import com.mistareader.ui.BaseActivity;
 import com.mistareader.ui.settings.SettingsFragment.SettingsCallbacks;
 
-public class SettingsActivity extends BaseActivity implements SettingsCallbacks {
+public class SettingsActivity extends BaseActivity implements SettingsCallbacks, iOnLoggedIn {
     private boolean isLoginChanged        = false;
     private boolean isThemeChanged        = false;
     private boolean isSubscriptionChanged = false;
+    private SettingsFragment settingsFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -18,22 +20,21 @@ public class SettingsActivity extends BaseActivity implements SettingsCallbacks 
         setContentView(R.layout.activity_settings);
         showArrowBack();
 
-        SettingsFragment settingsFragment = new SettingsFragment();
+        settingsFragment = new SettingsFragment();
         settingsFragment.setArguments(getIntent().getExtras());
 
         getFragmentManager().beginTransaction().replace(R.id.content, settingsFragment).commit();
     }
 
 
+    @Override
+    public void onLoggedIn(boolean isLoggedIn) {
+        isLoginChanged = true;
+        settingsFragment.updateAccountDescription(isLoggedIn);
 
-    //    @Override
-    //    public void onLoggedIn(boolean isLoggedIn) {
-    //        isLoginChanged = true;
-    //        settingsFragment.updateAccountDescription(isLoggedIn);
-    //
-    //        updateResult();
-    //    }
-    //
+        updateResult();
+    }
+
     //    @Override
     //    public void onThemeChanged(int newTheme) {
     //        ThemesManager.currentTheme = newTheme;
@@ -60,25 +61,25 @@ public class SettingsActivity extends BaseActivity implements SettingsCallbacks 
 
     @Override
     public void onThemeChanged() {
-//        Palette.Swatch swatch = new Swatch(Color.rgb());
-//        List<Swatch> list = new ArrayList<>();
-//        list.add(swatch);
-//        Palette.from(list).generate(new PaletteAsyncListener() {
-//            @SuppressLint("NewApi")
-//            @Override
-//            public void onGenerated(Palette palette) {
-//                Swatch vibrant = palette.getVibrantSwatch();
-//                if (vibrant == null) {
-//                    vibrant = palette.getDarkVibrantSwatch();
-//                }
-//                if (vibrant == null) return;
-//
-//                Window window = getWindow();
-//                window.addFlags(LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-//                window.setStatusBarColor(vibrant.getRgb());
-//                toolbar.setBackgroundColor(palette.getMutedColor(bgColor));
-//            }
-//        });
+        //        Palette.Swatch swatch = new Swatch(Color.rgb());
+        //        List<Swatch> list = new ArrayList<>();
+        //        list.add(swatch);
+        //        Palette.from(list).generate(new PaletteAsyncListener() {
+        //            @SuppressLint("NewApi")
+        //            @Override
+        //            public void onGenerated(Palette palette) {
+        //                Swatch vibrant = palette.getVibrantSwatch();
+        //                if (vibrant == null) {
+        //                    vibrant = palette.getDarkVibrantSwatch();
+        //                }
+        //                if (vibrant == null) return;
+        //
+        //                Window window = getWindow();
+        //                window.addFlags(LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        //                window.setStatusBarColor(vibrant.getRgb());
+        //                toolbar.setBackgroundColor(palette.getMutedColor(bgColor));
+        //            }
+        //        });
 
         recreate();
     }
