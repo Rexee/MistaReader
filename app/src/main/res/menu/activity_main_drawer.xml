@@ -5,7 +5,9 @@
 
     <item android:title="@string/sNavDrawerSect1">
         <menu>
-            <group android:checkableBehavior="single">
+            <group
+                android:id="@+id/general_items"
+                android:checkableBehavior="single">
                 <item
                     android:id="@+id/nav_all"
                     android:icon="@drawable/ic_list"
@@ -19,21 +21,27 @@
                     android:icon="@drawable/ic_list"
                     android:title="@string/sNavDrawerIT" />
                 <item
+                    android:id="@+id/nav_job"
+                    android:icon="@drawable/ic_list"
+                    android:title="@string/sNavDrawerJOB" />
+                <item
                     android:id="@+id/nav_life"
                     android:icon="@drawable/ic_list"
                     android:title="@string/sNavDrawerLIFE" />
-                <item
-                    android:id="@+id/nav_my_topics"
-                    android:icon="@drawable/ic_list"
-                    android:title="@string/sMyTopics2" />
-                <item
-                    android:id="@+id/nav_subscriptions"
-                    android:icon="@drawable/ic_list"
-                    android:title="@string/sSubscriptions" />
-
             </group>
         </menu>
     </item>
+    <group>
+        <item
+            android:id="@+id/nav_my_topics"
+            android:icon="@drawable/ic_list"
+            android:title="@string/sMyTopics2" />
+        <item
+            android:id="@+id/nav_subscriptions"
+            android:visible="false"
+            android:icon="@drawable/ic_list"
+            android:title="@string/sSubscriptions" />
+    </group>
     <item android:title="@string/sNavDrawerSect2">
         <menu>
             <group android:checkableBehavior="single">

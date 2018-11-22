@@ -16,20 +16,18 @@ import com.mistareader.R;
 import com.mistareader.util.ThemesManager;
 
 public class NavDrawer {
-    public final static String MENU_1C             = "1C";
-    public final static String MENU_IT             = "IT";
-    public final static String MENU_LIFE           = "LIFE";
-    public static final String MENU_MY_TOPICS      = "MY_TOPICS";
-    public static final String MENU_TOPICS_WITH_ME = "TOPICS_WITH_ME";
-    public final static String MENU_SUBSCRIPTIONS  = "SUBSCRIPTIONS";
-    public final static String MENU_SETTINGS       = "SETTINGS";
-    public final static String MENU_ABOUT          = "ABOUT";
-    private final MenuItem menuMyTopics;
-    private final MenuItem menuSubscriptions;
+    public final static String   MENU_1C             = "1C";
+    public final static String   MENU_IT             = "IT";
+    public final static String   MENU_JOB            = "JOB";
+    public final static String   MENU_LIFE           = "LIFE";
+    public static final String   MENU_MY_TOPICS      = "MY_TOPICS";
+    public static final String   MENU_TOPICS_WITH_ME = "TOPICS_WITH_ME";
+    public final static String   MENU_SUBSCRIPTIONS  = "SUBSCRIPTIONS";
+    private final       MenuItem menuMyTopics;
+    private final       MenuItem menuSubscriptions;
 
     private DrawerLayout          mDrawer;
     private ActionBarDrawerToggle mToggle;
-    private NavigationView        mNavigationView;
     public  boolean               mIsLoggedIn;
 
     public NavDrawer(Activity activity, OnNavigationItemSelectedListener listener, DrawerLayout drawer, Toolbar toolbar, NavigationView navigationView) {
@@ -42,27 +40,18 @@ public class NavDrawer {
         mToggle = new ActionBarDrawerToggle(activity, drawer, toolbar, R.string.drawer_open, R.string.drawer_close);
         drawer.addDrawerListener(mToggle);
         mToggle.syncState();
-        mNavigationView = navigationView;
-        mNavigationView.setNavigationItemSelectedListener(listener);
+        navigationView.setNavigationItemSelectedListener(listener);
 
-        Menu menu = mNavigationView.getMenu();
+        Menu menu = navigationView.getMenu();
         menuMyTopics = menu.findItem(R.id.nav_my_topics);
         menuSubscriptions = menu.findItem(R.id.nav_subscriptions);
 
-        mNavigationView.setCheckedItem(R.id.nav_all);
+        navigationView.setCheckedItem(R.id.nav_all);
     }
 
-    private void rebuild() {
-        if (!mIsLoggedIn) {
-            showMenuItems(false);
-        } else {
-            showMenuItems(true);
-        }
-    }
-
-    private void showMenuItems(boolean visible) {
-        menuMyTopics.setVisible(visible);
-        menuSubscriptions.setVisible(visible);
+    private void showMenuItems() {
+        menuMyTopics.setVisible(mIsLoggedIn);
+//        menuSubscriptions.setVisible(mIsLoggedIn);
     }
 
     public boolean onBackPressed() {
@@ -79,8 +68,6 @@ public class NavDrawer {
     }
 
     public void update() {
-
-
         //        mND.mListAdapter.notifyDataSetInvalidated();
         //        mND.buildMenu(Topics_Activity.this);
         //        mND.mListAdapter.notifyDataSetChanged();
@@ -92,6 +79,6 @@ public class NavDrawer {
 
     public void setLoggedIn(boolean isLoggedIn) {
         mIsLoggedIn = isLoggedIn;
-        rebuild();
+        showMenuItems();
     }
 }

@@ -5,6 +5,20 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/mess_headerVoteHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/sVoteResults"
+        android:textAppearance="@style/TextDefault"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
     <LinearLayout
         android:id="@+id/votes"
         android:layout_width="match_parent"
@@ -12,72 +26,19 @@
         android:orientation="vertical"
         android:padding="8dp"
         android:visibility="gone"
-        tools:visibility="visible">
+        tools:visibility="visible" />
 
-        <TextView
-            android:id="@+id/mess_headerVoteHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:text="@string/sVoteResults"
-            android:textAppearance="@style/TextDefault"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/mess_headerVote1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Результат1:"
-            android:textAppearance="@style/TextDefault.Vote"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <TextView
-            android:id="@+id/mess_headerVote2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Результат2:"
-            android:textAppearance="@style/TextDefault.Vote"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <TextView
-            android:id="@+id/mess_headerVote3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Результат3:"
-            android:textAppearance="@style/TextDefault.Vote"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <TextView
-            android:id="@+id/mess_headerVote4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Результат4:"
-            android:textAppearance="@style/TextDefault.Vote"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <TextView
-            android:id="@+id/mess_headerVote5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Результат5:"
-            android:textAppearance="@style/TextDefault.Vote"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/divider_list"/>
-
-    </LinearLayout>
-
-
+    <View
+        android:id="@+id/votes_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/divider_list"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <include layout="@layout/message_row" />
 

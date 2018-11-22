@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:dropDownListViewStyle">@style/MistaSpinnerStyle</item>
+        <item name="android:divider">@drawable/divider_list</item>
+        <item name="android:listDivider">@drawable/divider_list</item>
+        <item name="selectableItemBackgroundBorderless">?android:attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="AppTheme.Black.Dialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:background">@color/grey_900</item>
+        <item name="colorAccent">@color/teal_300</item>
+    </style>
+
+    <style name="AppTheme.Light.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorBackgroundFloating">@color/grey_50</item>
+        <item name="colorAccent">@color/cyan_600</item>
+    </style>
+
+</resources>

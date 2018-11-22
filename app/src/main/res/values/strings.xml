@@ -12,6 +12,7 @@
     <string name="sNavDrawerAll">Все</string>
     <string name="sNavDrawer1C">1C</string>
     <string name="sNavDrawerIT">IT</string>
+    <string name="sNavDrawerJOB">JOB</string>
     <string name="sNavDrawerLIFE">LIFE</string>
     <string name="sNavDrawerSect1">ФОРУМЫ</string>
     <string name="sNavDrawerSect2">НАСТРОЙКИ</string>
@@ -61,7 +62,7 @@
 
     <string name="sAbout">О программе</string>
 
-	<string name="sAboutDetailsVersion">Версия: 2.0</string>
+	<string name="sAboutDetailsVersion">Версия: 2.2</string>
 	<string name="sAboutDetails">Разработка: vhl</string>
 	<string name="sAboutDetails2">При поддержке: Asmody</string>
 	<string name="sAboutMarket">Оценить приложение</string>

@@ -2,6 +2,7 @@ package com.mistareader.util.textProcessors;
 
 import android.util.Log;
 
+import com.mistareader.util.Empty;
 import com.mistareader.util.S;
 
 import java.io.StringWriter;
@@ -31,13 +32,9 @@ public class StringUtils {
     public static String mista_URL_Encode(String str) {
         String ret = str;
         try {
-
             ret = URLEncoder.encode(str, "windows-1251").replace("+", "%20");
-
         } catch (UnsupportedEncodingException e) {
-
             S.L("mista_URL_Encode: " + Log.getStackTraceString(e));
-
         }
 
         return ret;
@@ -110,11 +107,11 @@ public class StringUtils {
     }
 
     public static String concat(String str1, String str2) {
-        if (!S.isEmpty(str1) && !S.isEmpty(str2)) {
+        if (!Empty.is(str1) && !Empty.is(str2)) {
             return str1 + ", " + str2;
-        } else if (!S.isEmpty(str1)) {
+        } else if (!Empty.is(str1)) {
             return str1;
-        } else if (!S.isEmpty(str2)) {
+        } else if (!Empty.is(str2)) {
             return str2;
         }
         return null;

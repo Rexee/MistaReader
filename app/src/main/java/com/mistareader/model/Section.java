@@ -1,45 +1,44 @@
 package com.mistareader.model;
 
-import com.mistareader.util.textProcessors.JSONProcessor;
+import com.bluelinelabs.logansquare.LoganSquare;
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.bluelinelabs.logansquare.annotation.JsonObject.FieldDetectionPolicy;
+import com.mistareader.util.Empty;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-
+@JsonObject(fieldDetectionPolicy = FieldDetectionPolicy.NONPRIVATE_FIELDS)
 public class Section {
-
+    @JsonField(name = "shortn")
     public String sectionShortName;
+    @JsonField(name = "fulln")
     public String sectionFullName;
+    @JsonField(name = "forum")
     public String forumName;
+    @JsonField(name = "id")
     public String sectionId;
 
     public static String getSectionID(String strValue) {
         return "15";//dummy until server side will return proper ID's
     }
 
+    public static ArrayList<String> getUniqueForums(List<Section> sections) {
+        if (Empty.is(sections)) return null;
 
-    public static ArrayList<String> getUniqueForums(ArrayList<Section> sections) {
-
-        if (sections == null || sections.isEmpty()) return null;
-
-        HashSet<String> hs = new HashSet<String>();
-
+        HashSet<String> hs = new HashSet<>();
         for (Section section : sections) {
             hs.add(section.forumName);
         }
 
-        ArrayList<String> forumsUnique = new ArrayList<String>();
-        forumsUnique.addAll(hs);
-
-        List<String> subList = forumsUnique.subList(0, forumsUnique.size());
-        Collections.sort(subList);
-//        forumsUnique.clear();
-//        forumsUnique.addAll(subList);
+        ArrayList<String> forumsUnique = new ArrayList<>(hs);
+        Collections.sort(forumsUnique, String::compareTo);
 
         return forumsUnique;
-
     }
 
     public static ArrayList<String> getSectionsListForForum(ArrayList<Section> sections, ArrayList<String> forums, int forumIndex) {
@@ -58,20 +57,25 @@ public class Section {
         return resList;
     }
 
-
     public static String getSectionsAsString(ArrayList<Section> sections) {
-
-        String result = "";
-
-        result = JSONProcessor.arrayToString(sections);
-
-        return result;
+        try {
+            return LoganSquare.serialize(sections, Section.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
-
     public static ArrayList<Section> getSectionsFromString(String sSections) {
-
-        return JSONProcessor.stringToArray(sSections);
+        if (Empty.is(sSections)) {
+            return null;
+        }
+        try {
+            return (ArrayList<Section>) LoganSquare.parseList(sSections, Section.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static ArrayList<Section> fillDefauiltSectionsList() {

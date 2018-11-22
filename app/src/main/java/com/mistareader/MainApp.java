@@ -2,46 +2,39 @@ package com.mistareader;
 
 import android.app.Application;
 
-import com.facebook.common.logging.FLog;
-import com.facebook.drawee.backends.pipeline.Fresco;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-import java.util.concurrent.Executor;
+import io.fabric.sdk.android.Fabric;
 
 public class MainApp extends Application {
-    private static Executor executor;
-
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics.Builder()
+                .core(new CrashlyticsCore.Builder()
+                        .disabled(BuildConfig.DEBUG)
+                        .build())
+                .build());
 
-        FLog.setMinimumLoggingLevel(FLog.VERBOSE);
-//        Set<RequestListener> requestListeners = new HashSet<>();
-//        requestListeners.add(new RequestLoggingListener());
-//        ImagePipelineConfig config = ImagePipelineConfig.newBuilder(this)
-//                .setRequestListeners(requestListeners)
-//                .build();
-        Fresco.initialize(this);
+        initImageLoader();
+    }
 
-//        com.mistareader.util.views.SimpleDraweeView.initialize(Fresco.getDraweeControllerBuilderSupplier());
-//        com.mistareader.util.views.SimpleDraweeView.initialize(Fresco.getDraweeControllerBuilderSupplier());
+    private void initImageLoader() {
+        DisplayImageOptions displayImageOptions = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .build();
 
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration
+                .Builder(this)
+                .defaultDisplayImageOptions(displayImageOptions)
+                //.writeDebugLogs()
+                .build();
 
-
-//        DisplayImageOptions displayImageOptions = new DisplayImageOptions.Builder()
-//                .showImageOnLoading(R.drawable.ic_person)
-//                .showImageForEmptyUri(R.drawable.ic_person)
-//                .cacheInMemory(true)
-//                .cacheOnDisk(true)
-//                .build();
-//
-//        ImageLoaderConfiguration config = new ImageLoaderConfiguration
-//                .Builder(this)
-//                .defaultDisplayImageOptions(displayImageOptions)
-//                //.writeDebugLogs()
-//                .build();
-//
-//        ImageLoader.getInstance().init(config);
-
-
+        ImageLoader.getInstance().init(config);
     }
 }

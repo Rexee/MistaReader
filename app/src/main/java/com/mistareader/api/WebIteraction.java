@@ -29,10 +29,12 @@ public class WebIteraction {
 
     public static boolean isInternetAvailable(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        if (cm == null) {
+            return false;
+        } else {
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        }
     }
 
     public static class RequestResult<T> {
@@ -165,11 +167,12 @@ public class WebIteraction {
     static public RequestResult doServerRequest(String url, String cookie) {
         RequestResult res = new RequestResult("", cookie);
 
+        HttpURLConnection conn = null;
         try {
             URL page = new URL(url);
-            HttpURLConnection conn = (HttpURLConnection) page.openConnection();
+            conn = (HttpURLConnection) page.openConnection();
             setUpConnection(conn, cookie);
-            conn.getContent();
+            //            conn.getContent();
 
             InputStreamReader in = new InputStreamReader(conn.getInputStream(), "windows-1251");
             BufferedReader buff = new BufferedReader(in);
@@ -186,7 +189,7 @@ public class WebIteraction {
 
                 conn = (HttpURLConnection) page.openConnection();
                 setUpConnection(conn, resCookie);
-                conn.getContent();
+                //                conn.getContent();
 
                 in = new InputStreamReader(conn.getInputStream(), "windows-1251");
                 buff = new BufferedReader(in);
@@ -210,10 +213,14 @@ public class WebIteraction {
         } catch (Exception e) {
             S.L("getServerResponse: " + Log.getStackTraceString(e));
             return res;
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
         }
     }
 
-    static void setUpConnection(HttpURLConnection conn, String cookie) {
+    public static void setUpConnection(HttpURLConnection conn, String cookie) {
         conn.setReadTimeout(DEFAULT_TIMEOUT);
         conn.setConnectTimeout(DEFAULT_TIMEOUT);
 

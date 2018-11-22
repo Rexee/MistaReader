@@ -32,7 +32,7 @@ public class SystemUtils {
     }
 
     public static void callSkype(Activity activity, String skypeId) {
-        if (S.isEmpty(skypeId)) {
+        if (Empty.is(skypeId)) {
             return;
         }
 

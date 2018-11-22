@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="blue_gray">#6795ac</color>
     <color name="lightCyan">#28BEFF</color>
     <color name="lvTextCol">#F7F7F7</color>
 

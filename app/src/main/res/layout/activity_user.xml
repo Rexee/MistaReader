@@ -1,33 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/userProfileBackground"
-    tools:context=".ui.user.UserActivity">
+    style="@style/LayoutPre21"
+    android:background="?attr/userProfileBackground">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="32dp"
             android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingTop="32dp">
 
-            <com.facebook.drawee.view.SimpleDraweeView
+            <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/avatar"
-                android:layout_width="150dp"
-                android:layout_height="@dimen/avatar_height"
-                android:layout_marginEnd="32dp"
-                android:layout_marginLeft="32dp"
-                android:layout_marginRight="32dp"
-                android:layout_marginStart="32dp"
-                android:scaleType="centerInside"
-                fresco:roundedCornerRadius="5dp" />
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:adjustViewBounds="true"
+                android:maxHeight="@dimen/avatar_max_height"
+                android:scaleType="fitCenter"
+                android:transitionName="@string/transition_avatar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.8"
+                tools:src="@drawable/a81943"
+                tools:ignore="UnusedAttribute" />
 
             <TextView
                 android:id="@+id/userName"
@@ -36,7 +41,10 @@
                 android:layout_marginTop="8dp"
                 android:drawablePadding="8dp"
                 android:textAppearance="@style/TextDefault.Title"
-                tools:text="Имя пользователя" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/avatar"
+                tools:text="Злопчинский" />
 
             <TextView
                 android:id="@+id/realName"
@@ -44,73 +52,67 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextDefault.Large"
                 android:textColor="?android:attr/textColorSecondary"
-                tools:text="Вася Пупкин" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/userName"
+                tools:text="Сергей" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/messages"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
+                android:layout_marginTop="12dp"
+                android:textAppearance="@style/TextDefault.Large"
+                app:layout_constraintEnd_toStartOf="@+id/topics"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/realName"
+                tools:text="12345" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
+            <TextView
+                android:id="@+id/messages_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Сообщений"
+                android:textAppearance="@style/TextDefault"
+                android:textColor="?android:attr/textColorSecondary"
+                app:layout_constraintEnd_toStartOf="@+id/topics"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/messages" />
 
-                    <TextView
-                        android:id="@+id/messages"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextDefault.Large"
-                        tools:text="12345" />
+            <TextView
+                android:id="@+id/topics"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textAppearance="@style/TextDefault.Large"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/messages"
+                app:layout_constraintTop_toBottomOf="@+id/realName"
+                tools:text="12345" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Сообщений"
-                        android:textAppearance="@style/TextDefault"
-                        android:textColor="?android:attr/textColorSecondary" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
-                    android:paddingLeft="48dp"
-                    android:paddingStart="48dp">
-
-                    <TextView
-                        android:id="@+id/topics"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextDefault.Large"
-                        tools:text="12345" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Тем"
-                        android:textAppearance="@style/TextDefault"
-                        android:textColor="?android:attr/textColorSecondary" />
-                </LinearLayout>
-
-            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Тем"
+                android:textAppearance="@style/TextDefault"
+                android:textColor="?android:attr/textColorSecondary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/messages"
+                app:layout_constraintTop_toBottomOf="@+id/topics" />
 
             <LinearLayout
                 android:id="@+id/properties"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp" />
-        </LinearLayout>
+                android:padding="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/messages_title" />
+        </android.support.constraint.ConstraintLayout>
 
     </ScrollView>
 
-    <ImageButton
+    <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -119,7 +121,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:background="?android:attr/selectableItemBackground"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_arrow_back"
         android:tint="?android:attr/textColorPrimary" />
 

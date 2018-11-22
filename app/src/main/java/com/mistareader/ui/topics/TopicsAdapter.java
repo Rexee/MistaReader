@@ -3,16 +3,19 @@ package com.mistareader.ui.topics;
 import android.content.Context;
 import android.content.res.Resources.Theme;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
 import com.mistareader.R;
+import com.mistareader.api.API;
 import com.mistareader.model.Topic;
+import com.mistareader.util.Empty;
+import com.mistareader.util.ThemesManager;
 import com.mistareader.util.views.Recycler.RecyclerAdapter;
 import com.mistareader.util.views.Recycler.RecyclerViewHolder;
-import com.mistareader.util.ThemesManager;
 
 import butterknife.BindView;
 
@@ -20,6 +23,7 @@ import butterknife.BindView;
 public class TopicsAdapter extends RecyclerAdapter<Topic, TopicsAdapter.ViewHolder> {
     private static final int TYPE_USER  = 1;
     private static final int TYPE_USER0 = 2;
+
 
     public interface TopicClicks {
         void onTopicClick(Topic topic);
@@ -30,17 +34,20 @@ public class TopicsAdapter extends RecyclerAdapter<Topic, TopicsAdapter.ViewHold
     }
 
     private boolean mShowSections;
-    private static int mDefaultColor = -1;
-    private static int mAuthorColor  = -1;
-    private static int mAccountColor = -1;
+    private int mDefaultColor ;
+    private int mAuthorColor  ;
+    private int mAccountColor;
     private String  mAccount;
     private boolean mModeSubscription;
 
-    public boolean reachedMaxTopics;
+    public  boolean  reachedMaxTopics;
+    private Drawable mBlockDrawable;
+    private Drawable mVotesDrawable;
 
     private TopicClicks mCallback;
 
     public TopicsAdapter(Context context, TopicClicks callback, String accountName, String selectedSection, boolean modeSubscription) {
+        super(R.layout.topic_row);
         mCallback = callback;
         mAccount = accountName;
 
@@ -53,22 +60,26 @@ public class TopicsAdapter extends RecyclerAdapter<Topic, TopicsAdapter.ViewHold
         mDefaultColor = ThemesManager.getColorByAttr(theme, typedValue, android.R.attr.textColorPrimary);
         mAuthorColor = ThemesManager.getColorByAttr(theme, typedValue, R.attr.text_author);
         mAccountColor = ThemesManager.getColorByAttr(theme, typedValue, R.attr.text_account);
+        mBlockDrawable = ThemesManager.tint(context, R.drawable.ic_block, mDefaultColor);
+        mVotesDrawable = ThemesManager.tint(context, R.drawable.ic_vote, mDefaultColor);
+    }
+
+    public void setShowSections(boolean showSections) {
+        mShowSections = showSections;
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position, Topic item) {
         holder.replies.setText(String.valueOf(item.answ));
-        holder.text.setText(item.text);
-        holder.time.setText(item.time_text);
+        holder.text.setText(item.getForumTitle());
         holder.user0.setText(item.user0);
-        holder.user.setText(item.user);
 
         if (mModeSubscription) {
-            if (item.newAnsw == 0) {
+            if (item.getNewAnsw() == 0) {
                 holder.newReplies.setVisibility(View.INVISIBLE);
             } else {
                 holder.newReplies.setVisibility(View.VISIBLE);
-                holder.newReplies.setText("+" + item.newAnsw);
+                holder.newReplies.setText("+" + item.getNewAnsw());
             }
         }
 
@@ -82,10 +93,19 @@ public class TopicsAdapter extends RecyclerAdapter<Topic, TopicsAdapter.ViewHold
         else
             holder.user0.setTextColor(mAuthorColor);
 
-        if (item.user.equals(mAccount))
-            holder.user.setTextColor(mAccountColor);
-        else
-            holder.user.setTextColor(mDefaultColor);
+        if (item.user == null) {
+            holder.user.setVisibility(View.INVISIBLE);
+            holder.time.setVisibility(View.INVISIBLE);
+        } else {
+            holder.user.setVisibility(View.VISIBLE);
+            holder.time.setVisibility(View.VISIBLE);
+            holder.user.setText(item.user);
+            holder.time.setText(item.getTimeText());
+            if (item.user.equals(mAccount))
+                holder.user.setTextColor(mAccountColor);
+            else
+                holder.user.setTextColor(mDefaultColor);
+        }
 
         if (item.answ >= 100)
             holder.text.setTypeface(null, Typeface.BOLD);
@@ -93,11 +113,11 @@ public class TopicsAdapter extends RecyclerAdapter<Topic, TopicsAdapter.ViewHold
             holder.text.setTypeface(null, Typeface.NORMAL);
 
         if (item.closed == 1) {
-            holder.text.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_block, 0, 0, 0);
+            holder.text.setCompoundDrawablesWithIntrinsicBounds(mBlockDrawable, null, null, null);
         } else if (item.is_voting == 1) {
-            holder.text.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_vote, 0, 0, 0);
+            holder.text.setCompoundDrawablesWithIntrinsicBounds(mVotesDrawable, null, null, null);
         } else {
-            holder.text.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            holder.text.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
         }
     }
 
@@ -106,16 +126,11 @@ public class TopicsAdapter extends RecyclerAdapter<Topic, TopicsAdapter.ViewHold
         return mItems.get(position).id;
     }
 
-    public long getTopicTime(int pos) {
-        if (mItems == null || mItems.isEmpty()) {
+    public long getLastTopicTime(int totalItemsCount) {
+        if (Empty.is(mItems) || totalItemsCount == API.DEFAULT_PAGE) {
             return 0;
         }
-
-        if (mItems.size() > pos) {
-            return mItems.get(mItems.size() - 1).utime;
-        } else {
-            return mItems.get(pos - 1).utime;
-        }
+        return mItems.get(mItems.size() - 1).utime;
     }
 
     public class ViewHolder extends RecyclerViewHolder {

@@ -3,7 +3,7 @@
         android:type="linear"
         android:centerX="50%"
         android:startColor="#171c1e"
-        android:centerColor="#36474F"
+        android:centerColor="#2d393e"
         android:endColor="#000000"
         android:angle="45"/>
 </shape>

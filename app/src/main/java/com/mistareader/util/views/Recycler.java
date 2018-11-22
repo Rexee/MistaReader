@@ -5,44 +5,105 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.OrientationHelper;
+import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
+import android.support.v7.widget.SnapHelper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.mistareader.R;
-import com.mistareader.util.views.Recycler.RecyclerViewHolder;
+import com.mistareader.util.Empty;
 import com.mistareader.util.ThemesManager;
+import com.mistareader.util.views.Recycler.RecyclerViewHolder;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import butterknife.ButterKnife;
 
+import static com.mistareader.api.API.DEFAULT_PAGE;
+import static com.mistareader.api.API.DEFAULT_TOPICS_COUNT;
+
 public class Recycler<T, VH extends RecyclerViewHolder> {
     private static final int DEFAULT_PREFETCH_ITEMS_COUNT = 5;
-    private RecyclerView mRecyclerView;
-    private RecyclerAdapter<T, VH> mAdapter;
-    public LinearLayoutManager    mLinearLayoutManager;
+    private RecyclerView                          mRecyclerView;
+    public  RecyclerAdapter<T, VH>                mAdapter;
+    public  LinearLayoutManager                   mLinearLayoutManager;
+    public  EndlessRecyclerOnScrollListenerProper mOnScrollListener;
+    private boolean mDisableScrolling = false;
+    public  boolean mHasMoreItems     = true;
+    private boolean mIsLoading        = true;
+    public  int     mPage             = 1;
 
-    public Recycler(RecyclerView recyclerView, RecyclerAdapter<T, VH> adapter) {
-        this(recyclerView, -1, adapter, true, true);
+    public Recycler() {
     }
 
-    public Recycler(RecyclerView recyclerView, int layoutItemResId, RecyclerAdapter<T, VH> adapter, boolean divider, boolean vertical) {
+    public Recycler(RecyclerView recyclerView, RecyclerAdapter<T, VH> adapter) {
+        this(recyclerView, adapter.mLayoutItemResId, adapter, true, true, null);
+    }
+
+    public Recycler(RecyclerView recyclerView, RecyclerAdapter<T, VH> adapter, boolean divider, boolean vertical) {
+        this(recyclerView, adapter.mLayoutItemResId, adapter, divider, vertical, null);
+    }
+
+    public Recycler(RecyclerView recyclerView, RecyclerAdapter<T, VH> adapter, boolean divider, boolean vertical, LinearLayoutManager layoutManager) {
+        this(recyclerView, adapter.mLayoutItemResId, adapter, divider, vertical, layoutManager);
+    }
+
+    public Recycler(RecyclerView recyclerView, RecyclerAdapter<T, VH> adapter, boolean divider) {
+        this(recyclerView, adapter.mLayoutItemResId, adapter, divider, true, null);
+    }
+
+    public Recycler(RecyclerView recyclerView, int layoutItemResId, RecyclerAdapter<T, VH> adapter, boolean divider, boolean vertical, LinearLayoutManager layoutManager) {
+        init(recyclerView, layoutItemResId, adapter, divider, vertical, layoutManager);
+    }
+
+    public Recycler(RecyclerView recyclerView, int layoutItemResId, RecyclerAdapter<T, VH> adapter) {
+        this(recyclerView, layoutItemResId, adapter, true, true, null);
+    }
+
+    public Recycler(RecyclerView recyclerView, int layoutItemResId, RecyclerAdapter<T, VH> adapter, boolean divider) {
+        this(recyclerView, layoutItemResId, adapter, divider, true, null);
+    }
+
+    public void init(RecyclerView recyclerView, int layoutItemResId, RecyclerAdapter<T, VH> adapter, boolean divider, boolean vertical, LinearLayoutManager layoutManager) {
         mRecyclerView = recyclerView;
+        if (mDisableScrolling) {
+            mRecyclerView.setHasFixedSize(true);
+            mRecyclerView.setNestedScrollingEnabled(false);
+        }
         Context context = mRecyclerView.getContext();
-        if (vertical) {
-            mLinearLayoutManager = new LinearLayoutManager(context);
+        if (layoutManager == null) {
+            if (vertical) {
+                mLinearLayoutManager = new LinearLayoutManager(context);
+            } else {
+                mLinearLayoutManager = new LinearLayoutManager(context, OrientationHelper.HORIZONTAL, false);
+            }
         } else {
-            mLinearLayoutManager = new LinearLayoutManager(context, OrientationHelper.HORIZONTAL, false);
+            mLinearLayoutManager = layoutManager;
+        }
+        if (mDisableScrolling) {
+            mLinearLayoutManager.setAutoMeasureEnabled(true);
         }
         mLinearLayoutManager.setSmoothScrollbarEnabled(false);
-        mLinearLayoutManager.setInitialPrefetchItemCount(DEFAULT_PREFETCH_ITEMS_COUNT);
+        //        mLinearLayoutManager.setInitialPrefetchItemCount(DEFAULT_PREFETCH_ITEMS_COUNT);
 
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         if (divider) mRecyclerView.addItemDecoration(new HorizontalItemDecoration(context));
@@ -52,20 +113,99 @@ public class Recycler<T, VH extends RecyclerViewHolder> {
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    public Recycler(RecyclerView recyclerView, int layoutItemResId, RecyclerAdapter<T, VH> adapter) {
-        this(recyclerView, layoutItemResId, adapter, true, true);
+    public void disableChangesAnimations() {
+        ((SimpleItemAnimator) mRecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
     }
 
-    public Recycler(RecyclerView recyclerView, int layoutItemResId, RecyclerAdapter<T, VH> adapter, boolean divider) {
-        this(recyclerView, layoutItemResId, adapter, divider, true);
+    public void setHasStableIds(boolean hasStableIds) {
+        mAdapter.setHasStableIds(hasStableIds);
     }
 
-    public void updateList(LinkedHashMap<String, T> newItems) {
-        mAdapter.updateList(newItems);
+    public void addOnScrollListener(int threshold, final OnScroll callback) {
+        mOnScrollListener = new EndlessRecyclerOnScrollListenerProper(mLinearLayoutManager, threshold) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                callback.onLoadMore(page, totalItemsCount);
+            }
+        };
+        mRecyclerView.addOnScrollListener(mOnScrollListener);
     }
 
-    public void updateList(List<T> newItems) {
-        mAdapter.updateList(newItems);
+    public void addOnScrollListener(final OnScroll callback) {
+        mOnScrollListener = new EndlessRecyclerOnScrollListenerProper(mLinearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                callback.onLoadMore(page, totalItemsCount);
+            }
+        };
+        mRecyclerView.addOnScrollListener(mOnScrollListener);
+    }
+
+    public void setSnapAsPager(boolean pager) {
+        SnapHelper snapHelper;
+        if (pager) {
+            snapHelper = new PagerSnapHelper();
+        } else {
+            snapHelper = new LinearSnapHelper();
+        }
+
+        snapHelper.attachToRecyclerView(mRecyclerView);
+    }
+
+    public void removeOnScrollListener() {
+        if (mOnScrollListener != null) {
+            mRecyclerView.removeOnScrollListener(mOnScrollListener);
+        }
+    }
+
+    public void addOnItemClickListener(OnRecyclerItemClickListener<T> callback) {
+        mAdapter.mCallback = callback;
+    }
+
+    public void setLayoutManager(LinearLayoutManager layoutManager) {
+        mLinearLayoutManager = layoutManager;
+        mRecyclerView.setLayoutManager(mLinearLayoutManager);
+        if (mOnScrollListener != null) {
+            mOnScrollListener.setLayoutManager(mLinearLayoutManager);
+        }
+    }
+
+    public void setLoading(boolean loading) {
+        mIsLoading = loading;
+        if (mOnScrollListener != null) {
+            mOnScrollListener.setLoading(loading);
+        }
+    }
+
+    public boolean isLoading() {
+        if (mOnScrollListener != null) {
+            return mOnScrollListener.isLoading();
+        } else {
+            return mIsLoading;
+        }
+    }
+
+    public void disableScrolling() {
+        mDisableScrolling = true;
+
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setNestedScrollingEnabled(false);
+        mLinearLayoutManager.setAutoMeasureEnabled(true);
+    }
+
+    public void refresh() {
+        if (mOnScrollListener != null) {
+            mOnScrollListener.refresh();
+        }
+        mLinearLayoutManager.scrollToPosition(0);
+    }
+
+    public void setList(LinkedHashMap<String, T> newItems) {
+        mAdapter.setList(newItems);
+    }
+
+    public void setList(List<T> newItems) {
+        mAdapter.setList(newItems);
     }
 
     public void appendList(List<T> newItems) {
@@ -74,6 +214,10 @@ public class Recycler<T, VH extends RecyclerViewHolder> {
 
     public void appendList(T newItem) {
         mAdapter.appendList(newItem);
+    }
+
+    public void appendList(T newItem, boolean addToTop) {
+        mAdapter.appendList(newItem, addToTop);
     }
 
     public void appendList(List<T> newItems, boolean addToTop) {
@@ -108,10 +252,6 @@ public class Recycler<T, VH extends RecyclerViewHolder> {
         return mAdapter.isEmpty();
     }
 
-    public void setHasStableIds(boolean hasStableIds) {
-        mAdapter.setHasStableIds(hasStableIds);
-    }
-
     public void clear() {
         mAdapter.clear();
     }
@@ -124,36 +264,90 @@ public class Recycler<T, VH extends RecyclerViewHolder> {
         return mLinearLayoutManager.findLastVisibleItemPosition();
     }
 
+    public List<T> getItems() {
+        return mAdapter.getItems();
+    }
+
+    public boolean loadData(int page) {
+        mPage = page;
+        if (page == DEFAULT_PAGE) {
+            mHasMoreItems = true;
+            if (mOnScrollListener != null) {
+                mOnScrollListener.setCurrentPage(DEFAULT_PAGE);
+            }
+        }
+        mIsLoading = mHasMoreItems;
+        if (mOnScrollListener != null) {
+            mOnScrollListener.setLoading(mHasMoreItems);
+        }
+        return mHasMoreItems;
+    }
+
+    public int size() {
+        return mAdapter.size();
+    }
+
+    public void setPage(int page) {
+        mPage = page;
+        if (mOnScrollListener != null) {
+            mOnScrollListener.setCurrentPage(page);
+        }
+    }
+
+    public void onLoadedList(List<T> items, long page) {
+        setLoading(false);
+        mHasMoreItems = !(Empty.is(items) || items.size() < DEFAULT_TOPICS_COUNT);
+
+        if (page == DEFAULT_PAGE) {
+            setList(items);
+        } else {
+            appendList(items);
+        }
+    }
+
     public static abstract class RecyclerAdapter<T, VH extends RecyclerViewHolder> extends RecyclerView.Adapter<VH> {
-        protected List<T> mItems;
-        protected int     mLayoutItemResId;
+        protected List<T>                        mItems;
+        public    int                            mLayoutItemResId;
+        protected OnRecyclerItemClickListener<T> mCallback;
+        protected Constructor<VH>                mHolderConstructor;
+
+        public RecyclerAdapter(int layoutItemResId) {
+            mLayoutItemResId = layoutItemResId;
+        }
 
         public void setLayoutItemResId(int layoutItemId) {
             this.mLayoutItemResId = layoutItemId;
         }
 
-        //TODO: remove reflection!
+        @NonNull
         public VH onCreateViewHolder(View v, int viewType) {
             try {
-                Class<VH> VH_class = (Class<VH>) ((ParameterizedType) getClass().getGenericSuperclass())
-                        .getActualTypeArguments()[1];
-                return VH_class.getConstructor(this.getClass(), View.class).newInstance(this, v);
+                if (mHolderConstructor == null) {
+                    Type classType = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
+                    mHolderConstructor = ((Class<VH>) classType).getConstructor(this.getClass(), View.class);
+                }
+                return mHolderConstructor.newInstance(this, v);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
             return null;
         }
 
-        public abstract void onBindViewHolder(VH holder, int position, T item);
+        //        public VH onCreateViewHolder(View v, int viewType) {
+        //            return null;
+        //        }
 
-        @Override
+        public void onBindViewHolder(VH holder, int position, T item) {}
+
+        @NonNull @Override
         public VH onCreateViewHolder(ViewGroup viewGroup, int viewType) {
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(mLayoutItemResId, viewGroup, false);
             return onCreateViewHolder(v, viewType);
         }
 
         @Override
-        public void onBindViewHolder(VH holder, int position) {
+        public void onBindViewHolder(@NonNull VH holder, int position) {
             T item = mItems.get(position);
             onBindViewHolder(holder, position, item);
         }
@@ -167,26 +361,47 @@ public class Recycler<T, VH extends RecyclerViewHolder> {
             return mItems.indexOf(item);
         }
 
-        public void updateList(List<T> items) {
-            mItems = items;
-            notifyDataSetChanged();
+        public void setList(List<T> items) {
+            setList(items, true);
         }
 
-        public void updateList(LinkedHashMap<String, T> items) {
+        public void setList(List<T> items, boolean notify) {
+            mItems = items;
+            if (notify) {
+                notifyDataSetChanged();
+            }
+        }
+
+        public void setList(LinkedHashMap<String, T> items) {
             mItems = new ArrayList<>(items.size());
             mItems.addAll(items.values());
             notifyDataSetChanged();
         }
 
+        public void addItemNoNotif(T item) {
+            if (mItems == null) {
+                mItems = new ArrayList<>();
+            }
+            mItems.add(item);
+        }
+
         public void appendList(T item) {
+            appendList(item, false);
+        }
+
+        public void appendList(T item, boolean addToTop) {
             if (mItems == null) {
                 mItems = new ArrayList<>();
                 mItems.add(item);
                 notifyDataSetChanged();
             } else {
-                int pos = mItems.size();
-                mItems.add(item);
-                notifyItemRangeInserted(pos, 1);
+                if (addToTop) {
+                    mItems.add(0, item);
+                    notifyItemRangeInserted(0, 1);
+                } else {
+                    mItems.add(item);
+                    notifyItemRangeInserted(mItems.size() - 1, 1);
+                }
             }
         }
 
@@ -195,9 +410,11 @@ public class Recycler<T, VH extends RecyclerViewHolder> {
         }
 
         public void appendList(List<T> items, boolean addToTop) {
+            if (items == null) {
+                return;
+            }
             if (mItems == null) {
-                mItems = items;
-                notifyDataSetChanged();
+                setList(items);
             } else {
                 if (addToTop) {
                     mItems.addAll(0, items);
@@ -222,6 +439,24 @@ public class Recycler<T, VH extends RecyclerViewHolder> {
                     int pos = mItems.size();
                     mItems.addAll(items);
                     notifyItemRangeInserted(pos, items.size());
+                }
+            }
+        }
+
+        //Let's assume that items are already sorted
+        //Update only if new list have changes
+        public void updateItems(List<T> items) {
+            if (mItems == null || items.size() != mItems.size()) {
+                mItems = items;
+                notifyDataSetChanged();
+                return;
+            }
+
+            for (int i = 0; i < mItems.size(); i++) {
+                if (!mItems.get(i).equals(items.get(i))) {
+                    mItems = items;
+                    notifyDataSetChanged();
+                    return;
                 }
             }
         }
@@ -264,6 +499,12 @@ public class Recycler<T, VH extends RecyclerViewHolder> {
             }
         }
 
+        public void deleteItemByPos(int pos) {
+            if (mItems == null || pos < 0) return;
+            mItems.remove(pos);
+            notifyItemRemoved(pos);
+        }
+
         public void deleteItems(boolean notify) {
             if (mItems == null) return;
             int count = mItems.size();
@@ -282,6 +523,23 @@ public class Recycler<T, VH extends RecyclerViewHolder> {
             }
         }
 
+        public T getItemById(long listItemId) {
+            if (mItems == null) return null;
+            for (int i = 0; i < mItems.size(); i++) {
+                if (getItemId(i) == listItemId) {
+                    return mItems.get(i);
+                }
+            }
+            return null;
+        }
+
+        public T getItemByPos(int pos) {
+            if (mItems == null || pos < 0) {
+                return null;
+            }
+            return mItems.get(pos);
+        }
+
         public boolean isEmpty() {
             return mItems == null || mItems.isEmpty();
         }
@@ -291,10 +549,65 @@ public class Recycler<T, VH extends RecyclerViewHolder> {
         }
 
         public void clear() {
+            clear(true);
+        }
+
+        protected OnClickListener getCallback(final RecyclerView.ViewHolder holder) {
+            return new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mCallback != null) {
+                        int pos = holder.getAdapterPosition();
+                        if (pos < 0 || Empty.is(mItems)) {
+                            return;
+                        }
+                        mCallback.onRecyclerItemClicked(mItems.get(pos), pos, v);
+                    }
+                }
+            };
+        }
+
+        public int size() {
+            return getItemCount();
+        }
+
+        public void clear(boolean notify) {
             if (mItems != null) {
                 int count = mItems.size();
                 mItems.clear();
-                notifyItemRangeRemoved(0, count);
+                if (notify) {
+                    notifyItemRangeRemoved(0, count);
+                }
+            }
+        }
+
+        @Nullable
+        public T getCurrentItem(RecyclerView.ViewHolder holder) {
+            if (Empty.is(mItems)) {
+                return null;
+            }
+            int pos = holder.getAdapterPosition();
+            if (pos < 0 || pos > mItems.size() - 1) {
+                return null;
+            }
+            return mItems.get(pos);
+        }
+
+        protected void setText(TextView textView, String value) {
+            if (Empty.is(value)) {
+                textView.setVisibility(View.GONE);
+            } else {
+                textView.setVisibility(View.VISIBLE);
+                textView.setText(value);
+            }
+        }
+
+        protected void displayImage(ImageLoader imageLoader, String url, ImageView imageView, ImageLoadingListener callback) {
+            if (Empty.is(url)) {
+                imageView.setVisibility(View.GONE);
+            } else {
+                imageView.setVisibility(View.VISIBLE);
+                imageLoader.displayImage(url, imageView, callback);
             }
         }
     }
@@ -309,6 +622,21 @@ public class Recycler<T, VH extends RecyclerViewHolder> {
             super(LayoutInflater.from(viewGroup.getContext()).inflate(layoutItemResId, viewGroup, false));
             ButterKnife.bind(this, itemView);
         }
+
+        public RecyclerViewHolder(ViewGroup viewGroup, int layoutItemResId, boolean allowBind) {
+            super(LayoutInflater.from(viewGroup.getContext()).inflate(layoutItemResId, viewGroup, false));
+            if (allowBind) {
+                ButterKnife.bind(this, itemView);
+            }
+        }
+    }
+
+    public interface OnRecyclerItemClickListener<T> {
+        void onRecyclerItemClicked(T item, int pos, View v);
+    }
+
+    public interface OnScroll {
+        void onLoadMore(int page, int totalItemsCount);
     }
 
     public static class HorizontalItemDecoration extends RecyclerView.ItemDecoration {
@@ -318,7 +646,7 @@ public class Recycler<T, VH extends RecyclerViewHolder> {
             final TypedArray a = context.obtainStyledAttributes(new int[]{android.R.attr.listDivider});
             mDivider = a.getDrawable(0);
             a.recycle();
-            ThemesManager.tint(context, mDivider, R.attr.dividerListTint);
+            ThemesManager.tintAttr(context, mDivider, R.attr.dividerListTint);
         }
 
         @Override
@@ -372,6 +700,46 @@ public class Recycler<T, VH extends RecyclerViewHolder> {
                 mDivider.setBounds(left, top, right, bottom);
                 mDivider.draw(c);
             }
+        }
+    }
+
+    public abstract static class BasicDiff<T> extends DiffUtil.Callback {
+        protected final List<T> mOldList;
+        protected final List<T> mNewList;
+
+        public BasicDiff(List<T> oldList, List<T> newList) {
+            this.mOldList = oldList;
+            this.mNewList = newList;
+        }
+
+        @Override
+        public int getOldListSize() {
+            return mOldList.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return mNewList.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            return getOldId(oldItemPosition).equals(getNewId(newItemPosition));
+        }
+
+        protected abstract String getOldId(int pos);
+
+        protected abstract String getNewId(int pos);
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            return defaultCompare(oldItemPosition, newItemPosition);
+        }
+
+        private boolean defaultCompare(int oldItemPosition, int newItemPosition) {
+            final T oldCategories = mOldList.get(oldItemPosition);
+            final T newCategories = mNewList.get(newItemPosition);
+            return oldCategories.equals(newCategories);
         }
     }
 }

@@ -2,56 +2,69 @@ package com.mistareader.model;
 
 import android.text.Spanned;
 
+import com.bluelinelabs.logansquare.annotation.JsonField;
+import com.bluelinelabs.logansquare.annotation.JsonObject;
+import com.bluelinelabs.logansquare.annotation.JsonObject.FieldDetectionPolicy;
+import com.bluelinelabs.logansquare.annotation.OnJsonParseComplete;
+import com.mistareader.util.DateUtils;
+import com.mistareader.util.MessagesUtils;
+import com.mistareader.util.S;
+
 import java.util.ArrayList;
+import java.util.List;
 
+
+@JsonObject(fieldDetectionPolicy = FieldDetectionPolicy.NONPRIVATE_FIELDS)
 public class Topic {
-
-    public Topic() {}
-
+    //    public String v8;
+    //    public Integer created;
+    public String  error;
     public long    id;
     public String  forum;
     public String  sect1;
     public String  sect2;
-    public Spanned text;
+    public String  text;
     public int     closed;
     public int     down;
     public String  user0;
     public String  user;
     public long    utime;
     public int     answ;
+    public Integer answers_count;
     public int     is_voting;
-    public String  time_text;
     public int     deleted;
-    public int     newAnsw;
 
-    public ArrayList<Votes>   votes;
-    public ArrayList<Message> messages;
+    @JsonField(name = "voting")
+    public ArrayList<Votes> votes;
 
-    public class Votes {
-        public String voteName;
-        public int    voteCount;
-    }
+    private Spanned forumTitle;
+    private String  timeText;
+    private int newAnsw;
+    private ArrayList<Message> messages;
 
-    public void deleteMessages() {
-        messages.clear();
-    }
+    public Topic() {}
 
-    public int getLastMessageNumber() {
-        if (messages == null || messages.isEmpty()) {
-            return 0;
+    @OnJsonParseComplete
+    void onParseComplete() {
+        if (answers_count != null) {
+            answ = answers_count;
         }
-
-        return messages.get(messages.size() - 1).n;
+        if (text != null) {
+            forumTitle = S.fromHtml(text);
+        }
+        timeText = DateUtils.SDF_D_M_H_M.format(utime * 1000);
     }
 
-    public void addNewMessages(ArrayList<Message> newMessages, int messagesFrom, int messagesTo) {
+    public void addNewMessages(List<Message> newMessages, int messagesFrom, int messagesTo) {
         if (messages == null) {
             allocateMessages(answ);
         }
 
         int len = messages.size();
         for (Message newMessage : newMessages) {
-            if (newMessage.n > len) {
+            MessagesUtils.setQuotesInMessages(newMessage, messages);
+
+            if (newMessage.n >= len) {
                 messages.add(newMessage);
             } else {
                 //TODO: check if need to update reply links
@@ -62,7 +75,7 @@ public class Topic {
         //mark deleted posts as loaded too
         messagesTo = Math.min(answ, messagesTo);
         for (int i = messagesFrom; i < messagesTo; i++) {
-            messages.get(i).isLoaded = true;
+            messages.get(i).setLoaded(true);
         }
     }
 
@@ -84,5 +97,45 @@ public class Topic {
         for (int i = 0; i <= count; i++) {
             messages.add(new Message());
         }
+    }
+
+    public String getTimeText() {
+        return timeText;
+    }
+
+    public void setTimeText(String timeText) {
+        this.timeText = timeText;
+    }
+
+    public int getNewAnsw() {
+        return newAnsw;
+    }
+
+    public void setNewAnsw(int newAnsw) {
+        this.newAnsw = newAnsw;
+    }
+
+    public ArrayList<Votes> getVotes() {
+        return votes;
+    }
+
+    public void setVotes(ArrayList<Votes> votes) {
+        this.votes = votes;
+    }
+
+    public ArrayList<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(ArrayList<Message> messages) {
+        this.messages = messages;
+    }
+
+    public Spanned getForumTitle() {
+        return forumTitle;
+    }
+
+    public void setForumTitle(Spanned forumTitle) {
+        this.forumTitle = forumTitle;
     }
 }

@@ -1,9 +1,5 @@
 package com.mistareader.util;
 
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -11,23 +7,26 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.Html;
 
-import com.mistareader.util.S;
 import com.mistareader.model.Topic;
+
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class DB extends SQLiteOpenHelper {
 
-    private static final String DB_NAME                      = "main.db";
-    private static final int    DB_VERSION                   = 1;
+    private static final String DB_NAME    = "main.db";
+    private static final int    DB_VERSION = 1;
 
-    private static final String TABLE_VIEW_HISTORY           = "topicviewhistory";
-    private static final String TABLE_SUBSCRIPTIONS          = "topicsubscriptions";
-    private static final String TABLE_LOG                    = "log";
+    private static final String TABLE_VIEW_HISTORY  = "topicviewhistory";
+    private static final String TABLE_SUBSCRIPTIONS = "topicsubscriptions";
+    private static final String TABLE_LOG           = "log";
 
-    private static final String FIELD_TOPIC_ID               = "id";
+    private static final String FIELD_TOPIC_ID = "id";
 
     // *******Messages
-    private static final String FIELD_MESSAGE_ID             = "message";
-    private static final String FIELD_MESSAGE_TIMESTAMP      = "timestamp";
+    private static final String FIELD_MESSAGE_ID        = "message";
+    private static final String FIELD_MESSAGE_TIMESTAMP = "timestamp";
 
     // *******subscriptions
     private static final String FIELD_TOPIC_CUR_MESS_COUNT   = "curansw";
@@ -39,8 +38,8 @@ public class DB extends SQLiteOpenHelper {
     private static final String FIELD_TOPIC_AUTHOR           = "author";
     private static final String FIELD_TOPIC_SECTION          = "section";
 
-    private static final String FIELD_TIME                   = "time";
-    private static final String FIELD_TEXT                   = "text";
+    private static final String FIELD_TIME = "time";
+    private static final String FIELD_TEXT = "text";
 
     public DB(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -100,7 +99,7 @@ public class DB extends SQLiteOpenHelper {
         final SQLiteDatabase db = this.getReadableDatabase();
 
         final Cursor cursor = db.rawQuery("SELECT MESSAGE FROM " + TABLE_VIEW_HISTORY + " WHERE " + FIELD_TOPIC_ID + " = ? LIMIT 1",
-                new String[] { Long.toString(id) });
+                new String[]{Long.toString(id)});
 
         int res = 0;
         while (cursor.moveToNext()) {
@@ -125,7 +124,7 @@ public class DB extends SQLiteOpenHelper {
         row.put(FIELD_TOPIC_ADDED_MESS_COUNT, 0);
         row.put(FIELD_TOPIC_LAST_USER, curTopic.user);
         row.put(FIELD_TOPIC_LAST_TIME, curTopic.utime);
-        row.put(FIELD_TOPIC_LAST_TIME_TEXT, curTopic.time_text);
+        row.put(FIELD_TOPIC_LAST_TIME_TEXT, curTopic.getTimeText());
         row.put(FIELD_TOPIC_AUTHOR, curTopic.user0);
         row.put(FIELD_TOPIC_SECTION, curTopic.sect1);
 
@@ -145,10 +144,10 @@ public class DB extends SQLiteOpenHelper {
         long topicID = newSubscription.id;
 
         row.put(FIELD_TOPIC_CUR_MESS_COUNT, newSubscription.answ);
-        row.put(FIELD_TOPIC_ADDED_MESS_COUNT, newSubscription.newAnsw);
+        row.put(FIELD_TOPIC_ADDED_MESS_COUNT, newSubscription.getNewAnsw());
         row.put(FIELD_TOPIC_LAST_USER, newSubscription.user);
         row.put(FIELD_TOPIC_LAST_TIME, newSubscription.utime);
-        row.put(FIELD_TOPIC_LAST_TIME_TEXT, newSubscription.time_text);
+        row.put(FIELD_TOPIC_LAST_TIME_TEXT, newSubscription.getTimeText());
 
         final long result = db.update(TABLE_SUBSCRIPTIONS, row, FIELD_TOPIC_ID + " = " + topicID, null);
 
@@ -170,16 +169,15 @@ public class DB extends SQLiteOpenHelper {
 
         Topic newSub;
         while (cursor.moveToNext()) {
-
             newSub = new Topic();
 
             newSub.id = cursor.getLong(0);
             newSub.answ = cursor.getInt(1);
-            newSub.text = Html.fromHtml(cursor.getString(2));
-            newSub.newAnsw = cursor.getInt(3);
+            newSub.setForumTitle(Html.fromHtml(cursor.getString(2)));
+            newSub.setNewAnsw(cursor.getInt(3));
             newSub.user = cursor.getString(4);
             newSub.utime = cursor.getInt(5);
-            newSub.time_text = cursor.getString(6);
+            newSub.setTimeText(cursor.getString(6));
             newSub.user0 = cursor.getString(7);
             newSub.sect1 = cursor.getString(8);
 
@@ -197,7 +195,7 @@ public class DB extends SQLiteOpenHelper {
         final SQLiteDatabase db = this.getReadableDatabase();
 
         final Cursor cursor = db.rawQuery("SELECT 1 FROM " + TABLE_SUBSCRIPTIONS + " WHERE " + FIELD_TOPIC_ID + " = ? LIMIT 1",
-                new String[] { Long.toString(id) });
+                new String[]{Long.toString(id)});
 
         boolean res = false;
         if (cursor.getCount() > 0) {
@@ -211,7 +209,7 @@ public class DB extends SQLiteOpenHelper {
     public void removeTopicFromSubscriptions(long id) {
 
         final SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_SUBSCRIPTIONS, FIELD_TOPIC_ID + "=?", new String[] { String.valueOf(id) });
+        db.delete(TABLE_SUBSCRIPTIONS, FIELD_TOPIC_ID + "=?", new String[]{String.valueOf(id)});
 
     }
 
@@ -235,11 +233,10 @@ public class DB extends SQLiteOpenHelper {
 
         if (answ == 0) {
             db.execSQL("UPDATE " + TABLE_SUBSCRIPTIONS + " SET " + FIELD_TOPIC_ADDED_MESS_COUNT + " = 0 WHERE " + FIELD_TOPIC_ID + " = ?",
-                    new String[] { Long.toString(id) });
-        }
-        else
+                    new String[]{Long.toString(id)});
+        } else
             db.execSQL("UPDATE " + TABLE_SUBSCRIPTIONS + " SET " + FIELD_TOPIC_ADDED_MESS_COUNT + " = 0, " + FIELD_TOPIC_CUR_MESS_COUNT + " = ? WHERE "
-                    + FIELD_TOPIC_ID + " = ?", new String[] { Long.toString(answ), Long.toString(id) });
+                    + FIELD_TOPIC_ID + " = ?", new String[]{Long.toString(answ), Long.toString(id)});
 
     }
 

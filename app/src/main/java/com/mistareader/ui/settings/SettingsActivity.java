@@ -3,15 +3,16 @@ package com.mistareader.ui.settings;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.mistareader.Forum;
 import com.mistareader.R;
-import com.mistareader.model.Forum.iOnLoggedIn;
-import com.mistareader.ui.BaseActivity;
+import com.mistareader.ui.BaseNetworkActivity;
 import com.mistareader.ui.settings.SettingsFragment.SettingsCallbacks;
+import com.mistareader.util.Empty;
 
-public class SettingsActivity extends BaseActivity implements SettingsCallbacks, iOnLoggedIn {
-    private boolean isLoginChanged        = false;
-    private boolean isThemeChanged        = false;
-    private boolean isSubscriptionChanged = false;
+public class SettingsActivity extends BaseNetworkActivity implements SettingsCallbacks {
+    private boolean          isLoginChanged        = false;
+    private boolean          isThemeChanged        = false;
+    private boolean          isSubscriptionChanged = false;
     private SettingsFragment settingsFragment;
 
     @Override
@@ -26,31 +27,6 @@ public class SettingsActivity extends BaseActivity implements SettingsCallbacks,
         getFragmentManager().beginTransaction().replace(R.id.content, settingsFragment).commit();
     }
 
-
-    @Override
-    public void onLoggedIn(boolean isLoggedIn) {
-        isLoginChanged = true;
-        settingsFragment.updateAccountDescription(isLoggedIn);
-
-        updateResult();
-    }
-
-    //    @Override
-    //    public void onThemeChanged(int newTheme) {
-    //        ThemesManager.currentTheme = newTheme;
-    //
-    //        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
-    //
-    //        Forum forum = Forum.getInstance();
-    //        forum.saveSettings(sPref);
-    //
-    ////        settingsFragment.updateThemeDescription();
-    //
-    //        isThemeChanged = true;
-    //
-    //        updateResult();
-    //    }
-
     private void updateResult() {
         Intent intent = new Intent();
         intent.putExtra("isLoginChanged", isLoginChanged);
@@ -61,26 +37,27 @@ public class SettingsActivity extends BaseActivity implements SettingsCallbacks,
 
     @Override
     public void onThemeChanged() {
-        //        Palette.Swatch swatch = new Swatch(Color.rgb());
-        //        List<Swatch> list = new ArrayList<>();
-        //        list.add(swatch);
-        //        Palette.from(list).generate(new PaletteAsyncListener() {
-        //            @SuppressLint("NewApi")
-        //            @Override
-        //            public void onGenerated(Palette palette) {
-        //                Swatch vibrant = palette.getVibrantSwatch();
-        //                if (vibrant == null) {
-        //                    vibrant = palette.getDarkVibrantSwatch();
-        //                }
-        //                if (vibrant == null) return;
-        //
-        //                Window window = getWindow();
-        //                window.addFlags(LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        //                window.setStatusBarColor(vibrant.getRgb());
-        //                toolbar.setBackgroundColor(palette.getMutedColor(bgColor));
-        //            }
-        //        });
-
         recreate();
+    }
+
+    @Override public void onLogin(String username, String password) {
+        if (Empty.is(username) || Empty.is(password)) {
+            return;
+        }
+
+        netProvider.login(username, password, result -> {
+            isLoginChanged = true;
+            if (result != null) {
+                Forum forum = Forum.getInstance();
+                forum.onLoginFinished(username, password, result);
+            }
+            netProvider.onLogin(this);
+            settingsFragment.updateAccountDescription(result != null, username);
+            updateResult();
+        });
+    }
+
+    @Override public void onReloadSections() {
+        netProvider.getSectionsList(result -> Forum.getInstance().setSections(result));
     }
 }

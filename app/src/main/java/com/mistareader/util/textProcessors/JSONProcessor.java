@@ -6,11 +6,12 @@ import android.util.Log;
 
 import com.mistareader.api.API;
 import com.mistareader.model.Message;
-import com.mistareader.model.Message.Reply;
 import com.mistareader.model.Section;
 import com.mistareader.model.Topic;
 import com.mistareader.model.User;
 import com.mistareader.util.DateUtils;
+import com.mistareader.util.Empty;
+import com.mistareader.util.MessagesUtils;
 import com.mistareader.util.S;
 import com.mistareader.util.S.ResultContainer;
 
@@ -41,22 +42,22 @@ public class JSONProcessor {
 
                 Topic newTopic = new Topic();
 
-                newTopic.id = mainObj.getLong("id");
-                newTopic.forum = mainObj.getString("forum");
-                newTopic.sect1 = mainObj.getString("sect1");
-                newTopic.sect2 = mainObj.getString("sect2");
-                newTopic.text = Html.fromHtml(mainObj.getString("text"));
-                newTopic.closed = mainObj.getInt("closed");
-                newTopic.down = mainObj.getInt("down");
-                newTopic.user0 = mainObj.getString("user0");
-                newTopic.user = mainObj.getString("user");
-                newTopic.utime = mainObj.getLong("utime");
-
-                Date date = new Date(newTopic.utime * 1000L);
-                newTopic.time_text = DateUtils.SDF_D_M_H_M.format(date);
-
-                newTopic.answ = mainObj.getInt("answ");
-                newTopic.is_voting = mainObj.optInt("is_voting");
+                //                newTopic.id = mainObj.getLong("id");
+                //                newTopic.forum = mainObj.getString("forum");
+                //                newTopic.sect1 = mainObj.getString("sect1");
+                //                newTopic.sect2 = mainObj.getString("sect2");
+                //                newTopic.text = Html.fromHtml(mainObj.getString("text"));
+                //                newTopic.closed = mainObj.getInt("closed");
+                //                newTopic.down = mainObj.getInt("down");
+                //                newTopic.user0 = mainObj.getString("user0");
+                //                newTopic.user = mainObj.getString("user");
+                //                newTopic.utime = mainObj.getLong("utime");
+                //
+                //                Date date = new Date(newTopic.utime * 1000L);
+                //                newTopic.time_text = DateUtils.SDF_D_M_H_M.format(date);
+                //
+                //                newTopic.answ = mainObj.getInt("answ");
+                //                newTopic.is_voting = mainObj.optInt("is_voting");
 
                 locTopics.add(newTopic);
 
@@ -78,29 +79,36 @@ public class JSONProcessor {
 
         try {
             Message newMessage;
-            String textMessage;
             JSONArray jArray = new JSONArray(inputString);
 
             for (int i = 0; i < jArray.length(); i++) {
                 JSONObject mainObj = (JSONObject) jArray.get(i);
 
                 newMessage = new Message();
-                newMessage.isLoaded = true;
+
                 newMessage.id = mainObj.getLong("id");
                 newMessage.n = mainObj.getInt("n");
-                textMessage = mainObj.getString("text");
-                newMessage.text = Html.fromHtml(textMessage);
+                newMessage.text = mainObj.getString("text");
                 newMessage.user = mainObj.getString("user");
                 newMessage.vote = mainObj.getInt("vote");
                 newMessage.utime = mainObj.getLong("utime");
-                newMessage.isLoaded = true;
-                newMessage.isDeleted = false;
 
+                newMessage.setLoaded(true);
+                newMessage.setDeleted(false);
+                newMessage.setMessage(Html.fromHtml(newMessage.text));
                 Date date = new Date(newMessage.utime * 1000L);
-                newMessage.timeText = DateUtils.SDF_D_M_H_M.format(date);
+                newMessage.setTimeText(DateUtils.SDF_D_M_H_M.format(date));
+                newMessage.setRepliedTo(MessagesUtils.extractReplies(newMessage.text));
+                MessagesUtils.setQuotesInMessages(newMessage, messages);
 
-                newMessage.repliedTo = extractReplies(textMessage);
-                setQuotesInMessages(newMessage, messages);
+                //                newMessage.isLoaded = true;
+                //                newMessage.isDeleted = false;
+                //
+                //                Date date = new Date(newMessage.utime * 1000L);
+                //                newMessage.timeText = DateUtils.SDF_D_M_H_M.format(date);
+                //
+                //                newMessage.repliedTo = extractReplies(textMessage);
+                //                setQuotesInMessages(newMessage, messages);
 
                 messages.add(newMessage);
             }
@@ -164,7 +172,6 @@ public class JSONProcessor {
     }
 
     public static Topic parseTopicInfo(String inputString) {
-
         Topic newTopic = new Topic();
 
         try {
@@ -175,32 +182,31 @@ public class JSONProcessor {
 
             JSONObject mainObj = new JSONObject(inputString);
 
-            newTopic.id = mainObj.getLong("id");
-            newTopic.text = Html.fromHtml(mainObj.getString("text"));
-            newTopic.closed = mainObj.getInt("closed");
-            newTopic.down = mainObj.getInt("down");
-            newTopic.deleted = mainObj.getInt("deleted");
-            newTopic.answ = mainObj.getInt("answers_count");
-            newTopic.is_voting = mainObj.getInt("is_voting");
-
-            if (newTopic.is_voting == 1) {
-                newTopic.votes = new ArrayList<Topic.Votes>(5);
-
-                JSONArray jArray = mainObj.getJSONArray("voting");
-                for (int i = 0; i < jArray.length(); i++) {
-
-                    JSONObject mainObj2 = (JSONObject) jArray.get(i);
-
-                    Topic.Votes newVote = newTopic.new Votes();
-                    newVote.voteName = mainObj2.getString("select");
-                    newVote.voteCount = mainObj2.getInt("result");
-
-                    newTopic.votes.add(newVote);
-                }
-            }
+            //            newTopic.id = mainObj.getLong("id");
+            //            newTopic.text = Html.fromHtml(mainObj.getString("text"));
+            //            newTopic.closed = mainObj.getInt("closed");
+            //            newTopic.down = mainObj.getInt("down");
+            //            newTopic.deleted = mainObj.getInt("deleted");
+            //            newTopic.answ = mainObj.getInt("answers_count");
+            //            newTopic.is_voting = mainObj.getInt("is_voting");
+            //
+            //            if (newTopic.is_voting == 1) {
+            //                newTopic.votes = new ArrayList<>(5);
+            //
+            //                JSONArray jArray = mainObj.getJSONArray("voting");
+            //                for (int i = 0; i < jArray.length(); i++) {
+            //
+            //                    JSONObject mainObj2 = (JSONObject) jArray.get(i);
+            //
+            //                    Topic.Votes newVote = newTopic.new Votes();
+            //                    newVote.voteName = mainObj2.getString("select");
+            //                    newVote.voteCount = mainObj2.getInt("result");
+            //
+            //                    newTopic.votes.add(newVote);
+            //                }
+            //            }
 
         } catch (Exception e) {
-
             S.L("Forum.parseTopicInfo: " + Log.getStackTraceString(e));
         }
 
@@ -216,35 +222,57 @@ public class JSONProcessor {
             }
 
             JSONObject mainObj = new JSONObject(inputString);
-
-            user.id = mainObj.getLong("id");
-            user.real_name = mainObj.getString("real_name");
-            user.url = mainObj.getString("url");
-            user.skype = mainObj.getString("skype");
-            user.registered_unixtime = getDate(mainObj, "registered_unixtime");
-            user.is_moderator = getBool(mainObj, "is_moderator");
-            user.light_moderator = getBool(mainObj, "light_moderator");
-            user.town = mainObj.getString("town");
-            user.country = mainObj.getString("country");
-            user.expirience = mainObj.getString("expirience");
-            user.interest = mainObj.getString("interest");
-            user.profession = mainObj.getString("profession");
-            user.birthyear = mainObj.getInt("birthyear");
-            user.female = getBool(mainObj, "female");
-            user.last_acted = getDate(mainObj, "last_acted");
-            user.topics = mainObj.getInt("topics");
-            user.messages = mainObj.getInt("messages");
-            user.name = mainObj.getString("name");
-            user.photo = mainObj.getString("photo");
-            if (user.photo.equals("http://forum.mista.ru/")) {
-                user.photo = null;
-            }
+//            user.id = getLong(mainObj, "id");
+//            user.real_name = getString(mainObj, "real_name");
+//            user.url = getString(mainObj, "url");
+//            user.skype = getString(mainObj, "skype");
+//            user.registered_unixtime = getDate(mainObj, "registered_unixtime");
+//            user.is_moderator = getBool(mainObj, "is_moderator");
+//            user.light_moderator = getBool(mainObj, "light_moderator");
+//            user.town = getString(mainObj, "town");
+//            user.country = getString(mainObj, "country");
+//            user.expirience = getString(mainObj, "expirience");
+//            user.interest = getString(mainObj, "interest");
+//            user.profession = getString(mainObj, "profession");
+//            user.birthyear = getInt(mainObj, "birthyear");
+//            user.female = getBool(mainObj, "female");
+//            user.last_acted = getDate(mainObj, "last_acted");
+//            user.topics = getInt(mainObj, "topics");
+//            user.messages = getInt(mainObj, "messages");
+//            user.name = getString(mainObj, "name");
+//            user.photo = getString(mainObj, "photo");
+//            if (user.photo.equals("/")) {
+//                user.photo = null;
+//            } else if (user.photo.startsWith("/")) {
+//                user.photo = API.MAIN_DOMAIN + user.photo;
+//            }
 
         } catch (Exception e) {
             S.L("parseUserInfo: " + Log.getStackTraceString(e));
         }
 
         return user;
+    }
+
+    private static int getInt(JSONObject mainObj, String field) throws JSONException {
+        if (mainObj.has(field)) {
+            return mainObj.getInt(field);
+        }
+        return 0;
+    }
+
+    private static long getLong(JSONObject mainObj, String field) throws JSONException {
+        if (mainObj.has(field)) {
+            return mainObj.getLong(field);
+        }
+        return 0;
+    }
+
+    private static String getString(JSONObject mainObj, String field) throws JSONException {
+        if (mainObj.has(field)) {
+            return mainObj.getString(field);
+        }
+        return "";
     }
 
     private static Date getDate(JSONObject jsonObject, String field) throws JSONException {
@@ -271,12 +299,12 @@ public class JSONProcessor {
             JSONObject mainObj = new JSONObject(inputString);
 
             Topic res = new Topic();
-            res.answ = mainObj.getInt("answers_count");
-            res.user = mainObj.getString("updated_name");
-            res.utime = mainObj.getLong("updated");
+            //            res.answ = mainObj.getInt("answers_count");
+            //            res.user = mainObj.getString("updated_name");
+            //            res.utime = mainObj.getLong("updated");
 
             Date date = new Date(res.utime * 1000L);
-            res.time_text = DateUtils.SDF_D_M_H_M.format(date);
+            //            res.time_text = DateUtils.SDF_D_M_H_M.format(date);
 
             return res;
 
@@ -293,7 +321,7 @@ public class JSONProcessor {
         ArrayList<Section> locSections = new ArrayList<Section>();
         String str = "";
 
-        if (S.isEmpty(inputString) || inputString.equals("{}")) {
+        if (Empty.is(inputString) || inputString.equals("{}")) {
             String errorString = "Sections list empty...";
             S.L(errorString);
             return locSections;
@@ -328,82 +356,6 @@ public class JSONProcessor {
 
     }
 
-    private static Message getMessageByN(int n, ArrayList<Message> messages) {
-        for (Message locMessage : messages) {
-            if (locMessage.n == n) {
-                return locMessage;
-            }
-        }
-        return null;
-    }
-
-    private static boolean isReplyInArray(int n, ArrayList<Reply> replies) {
-
-        for (Reply loceReply : replies) {
-            if (loceReply.n == n) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static void setQuotesInMessages(Message newMessage, ArrayList<Message> messages) {
-        Message locMessage;
-
-        for (int i = 0; i < newMessage.repliedTo.size(); i++) {
-            locMessage = getMessageByN(newMessage.repliedTo.get(i), messages);
-            if (locMessage != null) {
-                if (locMessage.quote == null)
-                    locMessage.quote = new ArrayList<>(1);
-
-                if (!isReplyInArray(newMessage.n, locMessage.quote)) {
-                    locMessage.quote.add(new Reply(newMessage.id, newMessage.n));
-                    locMessage.quoteRepresentation = locMessage.quoteRepresentation + " (" + newMessage.n + ")";
-                }
-            }
-        }
-    }
-
-    private static ArrayList<Integer> extractReplies(String s) {
-
-        ArrayList<Integer> replies = new ArrayList<Integer>();
-        int startPos, endPos, n;
-
-        startPos = s.indexOf("(");
-
-        while (startPos != -1) {
-            endPos = s.indexOf(")", startPos + 1);
-            if (endPos == -1)
-                break;
-
-            String messNum = s.substring(startPos + 1, endPos);
-            if (isNumeric(messNum) && messNum.length() <= 4) {
-
-                n = Integer.parseInt(messNum);
-
-                replies.add(n);
-            }
-
-            startPos = s.indexOf("(", endPos + 1);
-        }
-
-        return replies;
-
-    }
-
-    public static boolean isNumeric(String s) {
-        if (s == null)
-            return false;
-
-        if (s.length() == 0)
-            return false;
-
-        for (int i = 0; i < s.length(); i++) {
-            if (!Character.isDigit(s.charAt(i)))
-                return false;
-        }
-        return true;
-    }
 
     public static String arrayToString(ArrayList<Section> list) {
 

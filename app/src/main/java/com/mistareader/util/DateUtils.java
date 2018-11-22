@@ -3,7 +3,6 @@ package com.mistareader.util;
 import java.text.ChoiceFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 import static com.mistareader.util.DateUtils.CustomDate.DAYS;
@@ -29,10 +28,10 @@ public class DateUtils {
         return String.format("%s (~%s)", year, getYearStr(years));
     }
 
-    public static String formatDateRange(Date time) {
+    public static String formatDateRange(long time) {
         Calendar calUser = Calendar.getInstance();
         Calendar calNow = Calendar.getInstance();
-        calUser.setTime(time);
+        calUser.setTimeInMillis(time);
         CustomDate dateUser = new CustomDate(calUser);
         CustomDate dateNow = new CustomDate(calNow);
 

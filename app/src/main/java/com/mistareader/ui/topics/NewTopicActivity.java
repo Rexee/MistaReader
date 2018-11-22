@@ -20,8 +20,8 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 
-import com.mistareader.model.ErrorMessage;
-import com.mistareader.model.Forum;
+import com.mistareader.util.ErrorMessage;
+import com.mistareader.Forum;
 import com.mistareader.R;
 import com.mistareader.model.Section;
 import com.mistareader.util.ThemesManager;

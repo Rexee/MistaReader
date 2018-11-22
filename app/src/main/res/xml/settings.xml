@@ -2,7 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceScreen
-        android:icon="?iconAccount"
         android:key="settingsAccont"
         android:summary="summary"
         android:title="@string/sAccount" />
@@ -11,54 +10,53 @@
         android:defaultValue="1"
         android:entries="@array/arrThemes"
         android:entryValues="@array/arrThemes_values"
-        android:icon="?iconThemes"
         android:key="settingsThemes"
         android:summary="summary"
         android:title="@string/sTheme" />
 
-    <PreferenceCategory
-        android:key="settingsSubscriptions"
-        android:title="@string/sSubscriptions">
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="settingsSubscriptionsUse"
-            android:summary="@string/sSubscriptionsUseD"
-            android:title="@string/sSubscriptionsUse" />
+    <!--<PreferenceCategory-->
+        <!--android:key="settingsSubscriptions"-->
+        <!--android:title="@string/sSubscriptions">-->
+        <!--<CheckBoxPreference-->
+            <!--android:defaultValue="false"-->
+            <!--android:key="settingsSubscriptionsUse"-->
+            <!--android:summary="@string/sSubscriptionsUseD"-->
+            <!--android:title="@string/sSubscriptionsUse" />-->
 
-        <ListPreference
-            android:defaultValue="15"
-            android:dependency="settingsSubscriptionsUse"
-            android:entries="@array/notifications_interval"
-            android:entryValues="@array/notifications_interval_values"
-            android:key="settingsSubscriptionsInterval"
-            android:summary="summary"
-            android:title="@string/sSubscriptionsInterval" />
+        <!--<ListPreference-->
+            <!--android:defaultValue="15"-->
+            <!--android:dependency="settingsSubscriptionsUse"-->
+            <!--android:entries="@array/notifications_interval"-->
+            <!--android:entryValues="@array/notifications_interval_values"-->
+            <!--android:key="settingsSubscriptionsInterval"-->
+            <!--android:summary="summary"-->
+            <!--android:title="@string/sSubscriptionsInterval" />-->
 
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="settingsSubscriptionsUse"
-            android:key="settingsNotificationsUse"
-            android:summary="@string/sNotificationsShowInBarD"
-            android:title="@string/sNotificationsShowInBar" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="settingsNotificationsUse"
-            android:key="settingsNotificationsVibrate"
-            android:summary="@string/sNotificationsVibrateD"
-            android:title="@string/sNotificationsVibrate" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="settingsNotificationsUse"
-            android:key="settingsNotificationsSound"
-            android:summary="@string/sNotificationsSoundD"
-            android:title="@string/sNotificationsSound" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="settingsNotificationsUse"
-            android:key="settingsNotificationsLED"
-            android:summary="@string/sNotificationsLEDD"
-            android:title="@string/sNotificationsLED" />
-    </PreferenceCategory>
+        <!--<CheckBoxPreference-->
+            <!--android:defaultValue="false"-->
+            <!--android:dependency="settingsSubscriptionsUse"-->
+            <!--android:key="settingsNotificationsUse"-->
+            <!--android:summary="@string/sNotificationsShowInBarD"-->
+            <!--android:title="@string/sNotificationsShowInBar" />-->
+        <!--<CheckBoxPreference-->
+            <!--android:defaultValue="false"-->
+            <!--android:dependency="settingsNotificationsUse"-->
+            <!--android:key="settingsNotificationsVibrate"-->
+            <!--android:summary="@string/sNotificationsVibrateD"-->
+            <!--android:title="@string/sNotificationsVibrate" />-->
+        <!--<CheckBoxPreference-->
+            <!--android:defaultValue="false"-->
+            <!--android:dependency="settingsNotificationsUse"-->
+            <!--android:key="settingsNotificationsSound"-->
+            <!--android:summary="@string/sNotificationsSoundD"-->
+            <!--android:title="@string/sNotificationsSound" />-->
+        <!--<CheckBoxPreference-->
+            <!--android:defaultValue="false"-->
+            <!--android:dependency="settingsNotificationsUse"-->
+            <!--android:key="settingsNotificationsLED"-->
+            <!--android:summary="@string/sNotificationsLEDD"-->
+            <!--android:title="@string/sNotificationsLED" />-->
+    <!--</PreferenceCategory>-->
 
     <PreferenceCategory
         android:key="settingsOther"

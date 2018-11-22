@@ -39,9 +39,17 @@
     </style>
 
     <style name="RecyclerView">
-        <item name="android:layout_width">match_parent</item>
         <item name="android:scrollbarThumbVertical">@drawable/scroll_indicator</item>
         <item name="android:scrollbars">vertical</item>
+    </style>
+
+    <style name="ToolbarShadowPre21">
+        <item name="android:background">@drawable/toolbar_shadow</item>
+    </style>
+
+    <style name="LayoutPre21">
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:background">?attr/colorPrimaryDark</item>
     </style>
 
 </resources>

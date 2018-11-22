@@ -116,7 +116,7 @@ public class Subscriptions extends IntentService {
 
             for (int i = 0; i < topicsList.size(); i++) {
                 Topic curTopic = topicsList.get(i);
-                if (curTopic.newAnsw == 0) {
+                if (curTopic.getNewAnsw() == 0) {
                     continue;
                 }
 
@@ -125,7 +125,7 @@ public class Subscriptions extends IntentService {
                 newSub.topicId = curTopic.id;
                 newSub.text = curTopic.text.toString();
                 newSub.answ = curTopic.answ;
-                newSub.newAnsw = curTopic.newAnsw;
+                newSub.newAnsw = curTopic.getNewAnsw();
 
                 newSubsList.add(newSub);
             }

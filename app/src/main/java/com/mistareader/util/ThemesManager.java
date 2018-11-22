@@ -5,6 +5,11 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.TypedValue;
@@ -52,16 +57,41 @@ public class ThemesManager {
         return typedValue.data;
     }
 
-    public static Drawable tint(Context context, int drawableRes, int attr) {
+    public static Drawable tintAttr(Context context, int drawableRes, @AttrRes int attr) {
         int tintColor = ThemesManager.getColorByAttr(context, attr);
         Drawable drawable = ContextCompat.getDrawable(context, drawableRes);
-        DrawableCompat.setTint(drawable, tintColor);
+        if (drawable == null) {
+            return null;
+        }
+        Drawable wrapped = DrawableCompat.wrap(drawable.mutate());
+        DrawableCompat.setTint(wrapped, tintColor);
         return drawable;
     }
 
-    public static void tint(Context context, Drawable drawable, int attr) {
+    public static void tintAttr(Context context, Drawable drawable, @AttrRes int attr) {
         int tintColor = ThemesManager.getColorByAttr(context, attr);
-        DrawableCompat.setTint(drawable, tintColor);
+        tint(drawable, tintColor);
+    }
+
+    public static void tint(Context context, Drawable drawable, @ColorRes int color) {
+        int tintColor = ContextCompat.getColor(context, color);
+        tint(drawable, tintColor);
+    }
+
+    public static void tint(Drawable drawable, @ColorInt int tintColor) {
+        Drawable wrapped = DrawableCompat.wrap(drawable.mutate());
+        DrawableCompat.setTint(wrapped, tintColor);
+    }
+
+    @Nullable
+    public static Drawable tint(@NonNull Context context, @DrawableRes int drawableRes, @ColorInt int tintColor) {
+        Drawable drawable = ContextCompat.getDrawable(context, drawableRes);
+        if (drawable == null) {
+            return null;
+        }
+        Drawable wrapped = DrawableCompat.wrap(drawable.mutate());
+        DrawableCompat.setTint(wrapped, tintColor);
+        return wrapped;
     }
 
     public static void tintMenu(int menuResId, Context context, MenuInflater menuInflater, Menu menu) {

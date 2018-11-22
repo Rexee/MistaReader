@@ -5,14 +5,16 @@
 
     <item
         android:id="@+id/menu_add"
-        android:icon="?iconNewItem"
+        android:visible="false"
+        android:icon="@drawable/ic_add"
         android:title="@string/sCreate"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_markAll"
+        android:visible="false"
         android:title="@string/sMarkAll"
-        android:icon="?iconMarkAll"
+        android:icon="@drawable/ic_done_all"
         app:showAsAction="ifRoom" />
 
     <item

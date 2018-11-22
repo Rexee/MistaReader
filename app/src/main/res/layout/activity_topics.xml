@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.topics.TopicsActivity">
+    tools:context=".ui.topics.TopicsActivity"
+    style="@style/LayoutPre21">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -27,25 +28,47 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.DrawerLayout
-        android:id="@+id/drawer_layout"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:openDrawer="start">
+        android:background="?android:attr/windowBackground"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <include layout="@layout/activity_topics_content" />
-
-        <android.support.design.widget.NavigationView
-            android:id="@+id/nav_view"
-            android:layout_width="wrap_content"
+        <android.support.v4.widget.DrawerLayout
+            android:id="@+id/drawer_layout"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:background="?attr/navDrawerBgColor"
-            app:itemIconTint="@color/nav_drawer_menu_text_color"
-            app:itemTextColor="@color/nav_drawer_menu_text_color"
-            app:menu="@menu/activity_main_drawer" />
+            tools:openDrawer="start">
 
-    </android.support.v4.widget.DrawerLayout>
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipe"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/list"
+                    style="@style/RecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </android.support.v4.widget.SwipeRefreshLayout>
+
+            <android.support.design.widget.NavigationView
+                android:id="@+id/nav_view"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                android:background="?attr/navDrawerBgColor"
+                app:itemIconTint="@color/nav_drawer_menu_text_color"
+                app:itemTextColor="@color/nav_drawer_menu_text_color"
+                app:menu="@menu/activity_main_drawer" />
+
+        </android.support.v4.widget.DrawerLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            style="@style/ToolbarShadowPre21" />
+
+    </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>

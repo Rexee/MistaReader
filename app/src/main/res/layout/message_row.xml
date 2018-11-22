@@ -51,7 +51,6 @@
             android:id="@+id/mess_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:autoLink="all"
             android:linksClickable="true"
             android:minHeight="25dp"
             android:textAppearance="@style/TextDefault.Large"

@@ -3,7 +3,8 @@
 
     <item
         android:id="@+id/menu_add"
-        android:icon="?iconNewItem"
+        android:visible="false"
+        android:icon="@drawable/ic_add"
         android:title="@string/sCreate"
         mistareader:showAsAction="ifRoom" />
 
